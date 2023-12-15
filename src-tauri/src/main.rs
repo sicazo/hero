@@ -3,19 +3,37 @@
 
 mod server;
 use std::thread;
-use tauri::AppHandle;
+use tauri::{AppHandle, generate_handler};
+mod local_storage;
+use local_storage::{set_key, get_key, update_key, create_storage};
+
+#[tauri::command]
+#[specta::specta]
+fn greet() -> String {
+    "Hello World!".to_string()
+}
+
+
 
 fn main() {
-    let devtools = devtools::init();
+
+    let specta_builder = {
+        let specta_builder = tauri_specta::ts::builder().commands(tauri_specta::collect_commands![greet, set_key, get_key, update_key]);
+        #[cfg(debug_assertions)]
+        let specta_builder = specta_builder.path("../lib/bindings.ts");
+
+        specta_builder.into_plugin()
+    };
     tauri::Builder::default()
-        .plugin(devtools)
-        .plugin(tauri_plugin_persisted_scope::init())
+    .plugin(specta_builder)
         .setup(|app| {
+            create_storage().expect("error while creating storage");
             let handle: AppHandle = app.handle().to_owned();
             let boxed_handle = Box::new(handle);
             thread::spawn(move || server::init(*boxed_handle).unwrap());
             Ok(())
         })
+        .invoke_handler(generate_handler![greet, set_key, get_key, update_key])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
