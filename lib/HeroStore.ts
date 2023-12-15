@@ -1,5 +1,5 @@
 'use client'
-import {commands, State as HeroStoreState} from "@/lib/bindings"
+import {commands,  HeroStoreState} from "@/lib/bindings"
 import {create} from 'zustand'
 import {createJSONStorage, persist,  StateStorage} from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";

@@ -8,11 +8,11 @@ use std::str::FromStr;
 
 #[derive(Debug, Serialize, Deserialize, Clone, Type, Event)]
 struct HeroStore {
-    state: State,
+    state: HeroStoreState,
     version: i32,
 }
 #[derive(Debug, Serialize, Deserialize, Clone, Type, Event)]
-pub struct State {
+pub struct HeroStoreState {
     test: i32,
 }
 
@@ -89,7 +89,7 @@ pub fn create_storage() -> Result<(), io::Error> {
     if contents.is_empty() {
         let default_data = Data {
             hero_store: HeroStore {
-                state: State { test: 0 },
+                state: HeroStoreState { test: 0 },
                 version: 0,
             },
         };
