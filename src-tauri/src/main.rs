@@ -5,7 +5,7 @@ mod server;
 use std::thread;
 use tauri::{AppHandle, generate_handler};
 mod local_storage;
-use local_storage::{remove_store, get_store, update_store, create_storage};
+use local_storage::{remove_store, get_store, update_store, create_storage, State};
 
 #[tauri::command]
 #[specta::specta]
@@ -18,7 +18,7 @@ fn greet() -> String {
 fn main() {
 
     let specta_builder = {
-        let specta_builder = tauri_specta::ts::builder().commands(tauri_specta::collect_commands![greet, remove_store, get_store, update_store]);
+        let specta_builder = tauri_specta::ts::builder().commands(tauri_specta::collect_commands![greet, remove_store, get_store, update_store]).events(tauri_specta::collect_events!(State));
         #[cfg(debug_assertions)]
         let specta_builder = specta_builder.path("../lib/bindings.ts");
 

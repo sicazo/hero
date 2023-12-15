@@ -1,11 +1,9 @@
 'use client'
-import {commands} from "@/lib/bindings"
+import {commands, State as HeroStoreState} from "@/lib/bindings"
 import {create} from 'zustand'
-import {createJSONStorage, persist, PersistStorage, StateStorage} from "zustand/middleware";
+import {createJSONStorage, persist,  StateStorage} from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 
-
-//TODO: create local settings.json file
 const storage:  StateStorage = {
     getItem: async (name,): Promise<string> => {
         return await commands.getStore(name)
@@ -15,10 +13,6 @@ const storage:  StateStorage = {
         await commands.updateStore(name, value)
     },
     removeItem: async (name): Promise<void> => {await commands.removeStore(name)},
-}
-
-interface HeroStoreState {
-test: number
 }
 
 interface HeroStoreActions {

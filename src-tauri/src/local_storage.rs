@@ -1,22 +1,22 @@
 use serde::{Serialize, Deserialize};
-use serde_json::{Value, json};
+use specta::Type;
+use tauri_specta::Event;
 use std::fs::{OpenOptions, File};
 use std::io::{self, Read, Write};
-use std::path::Path;
 use std::str::FromStr;
 
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Type, Event)]
 struct HeroStore {
     state: State,
-    version: usize,
+    version: i32,
 }
-#[derive(Debug, Serialize, Deserialize, Clone)]
-struct State {
-    test: usize,
+#[derive(Debug, Serialize, Deserialize, Clone, Type, Event)]
+pub struct State {
+    test: i32,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Type,Event)]
 struct Data {
     hero_store: HeroStore,
 }

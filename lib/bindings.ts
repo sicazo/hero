@@ -15,11 +15,15 @@ return await TAURI_INVOKE("plugin:tauri-specta|update_store", { store, value });
 }
 }
 
-
+export const events = __makeEvents__<{
+state: State
+}>({
+state: "plugin:tauri-specta:state"
+})
 
 /** user-defined types **/
 
-
+export type State = { test: number }
 
 /** tauri-specta globals **/
 
