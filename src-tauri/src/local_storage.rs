@@ -52,9 +52,12 @@ pub fn get_store(store: String) -> String {
     let storage = get_settings_file().expect("Failed to open settings.json");
 
     let content: Data = read_json_file("settings.json", &storage).unwrap();
-    let hero_store_json = serde_json::to_string(&content.hero_store).unwrap();
+    let json = match store.as_str() {
+        "hero_store" => serde_json::to_string(&content.hero_store).unwrap(),
+        _ => format!("Store not found: {}", store),
+    };
 
-    hero_store_json
+    json
 }
 
 #[tauri::command]
