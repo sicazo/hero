@@ -4,14 +4,14 @@
 async greet() : Promise<string> {
 return await TAURI_INVOKE("plugin:tauri-specta|greet");
 },
-async setKey() : Promise<string> {
-return await TAURI_INVOKE("plugin:tauri-specta|set_key");
+async removeStore(key: string) : Promise<null> {
+return await TAURI_INVOKE("plugin:tauri-specta|remove_store", { key });
 },
-async getKey() : Promise<string> {
-return await TAURI_INVOKE("plugin:tauri-specta|get_key");
+async getStore(store: string) : Promise<string> {
+return await TAURI_INVOKE("plugin:tauri-specta|get_store", { store });
 },
-async updateKey() : Promise<string> {
-return await TAURI_INVOKE("plugin:tauri-specta|update_key");
+async updateStore(store: string, value: string) : Promise<null> {
+return await TAURI_INVOKE("plugin:tauri-specta|update_store", { store, value });
 }
 }
 
