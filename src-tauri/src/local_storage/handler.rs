@@ -1,48 +1,27 @@
-use serde::{Serialize, Deserialize};
-use specta::Type;
-use tauri_specta::Event;
-use std::fs::{OpenOptions, File};
-use std::io::{self, Read, Write};
-use std::str::FromStr;
-
-
-#[derive(Debug, Serialize, Deserialize, Clone, Type, Event)]
-struct HeroStore {
-    state: HeroStoreState,
-    version: i32,
-}
-#[derive(Debug, Serialize, Deserialize, Clone, Type, Event)]
-pub struct HeroStoreState {
-    test: i32,
-}
-
-#[derive(Debug, Serialize, Deserialize, Clone, Type,Event)]
-struct Data {
-    hero_store: HeroStore,
-}
-
-impl FromStr for HeroStore {
-    type Err = serde_json::Error;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        serde_json::from_str(s)
-    }
-}
-
+use crate::local_storage::types::{Data, SettingsStore, TranslationStore};
+use crate::local_storage::{SettingsStoreState, TranslationStoreState};
+use serde::{Deserialize, Serialize};
+use std::fs::{File, OpenOptions};
+use std::io;
+use std::io::{Read, Write};
 
 #[tauri::command]
 #[specta::specta]
-pub fn remove_store(key: String) {
-    let mut storage = get_settings_file().expect("Failed to open settings.json");
-    let mut content = String::new();
-    storage
-        .read_to_string(&mut content)
-        .expect("Failed to read settings.json");
+pub fn remove_store(store: String) {
+    let storage = get_settings_file().expect("Failed to open settings.json");
 
-    let mut data: Data = serde_json::from_str(&content).unwrap();
-    data.hero_store.state.test = 0; // Modify the appropriate field
+    let mut data: Data = read_json_file("settings.json", &storage).unwrap();
 
-    write_json_file::<Data>( &data.into()).expect("Failed to write to file");
+    match store.as_str() {
+        "settings_store" => {
+            data.settings_store = SettingsStore::default();
+        }
+        "translation_store" => {
+            data.translation_store = TranslationStore::default();
+        }
+        _ => unreachable!(),
+    };
+    write_json_file::<Data>(&data.into()).expect("Failed to write to file");
 }
 
 #[tauri::command]
@@ -53,8 +32,9 @@ pub fn get_store(store: String) -> String {
 
     let content: Data = read_json_file("settings.json", &storage).unwrap();
     let json = match store.as_str() {
-        "hero_store" => serde_json::to_string(&content.hero_store).unwrap(),
-        _ => format!("Store not found: {}", store),
+        "settings_store" => serde_json::to_string(&content.settings_store).unwrap(),
+        "translation_store" => serde_json::to_string(&content.translation_store).unwrap(),
+        _ => unreachable!(),
     };
 
     json
@@ -73,9 +53,17 @@ pub fn update_store(store: String, value: String) {
         .expect("Failed to read settings.json");
 
     let mut data: Data = serde_json::from_str(&content).unwrap();
-    data.hero_store = value.parse::<HeroStore>().unwrap(); // Update the appropriate field
+    match store.as_str() {
+        "settings_store" => {
+            data.settings_store = value.parse::<SettingsStore>().unwrap();
+        }
+        "translation_store" => {
+            data.translation_store = value.parse::<TranslationStore>().unwrap();
+        }
+        _ => unreachable!(),
+    };
 
-    write_json_file::<Data>( &data.into()).expect("Failed to write to file");
+    write_json_file::<Data>(&data.into()).expect("Failed to write to file");
 }
 
 pub fn create_storage() -> Result<(), io::Error> {
@@ -88,12 +76,10 @@ pub fn create_storage() -> Result<(), io::Error> {
 
     if contents.is_empty() {
         let default_data = Data {
-            hero_store: HeroStore {
-                state: HeroStoreState { test: 0 },
-                version: 0,
-            },
+            settings_store: SettingsStore::default(),
+            translation_store: TranslationStore::default(),
         };
-        write_json_file( &default_data)?;
+        write_json_file(&default_data)?;
     }
 
     Ok(())
@@ -112,12 +98,12 @@ where
     Ok(data)
 }
 
-fn write_json_file<T>( data: &T) -> Result<(), io::Error>
+fn write_json_file<T>(data: &T) -> Result<(), io::Error>
 where
     T: Serialize,
 {
-    
-    let config_dir = dirs::config_dir().ok_or_else(|| io::Error::new(io::ErrorKind::NotFound, "Config directory not found"))?;
+    let config_dir = dirs::config_dir()
+        .ok_or_else(|| io::Error::new(io::ErrorKind::NotFound, "Config directory not found"))?;
     let folder_path = config_dir.join("translationHero");
     let file_path = folder_path.join("settings.json");
 
@@ -135,7 +121,8 @@ where
 }
 
 fn get_settings_file() -> Result<File, io::Error> {
-    let config_dir = dirs::config_dir().ok_or_else(|| io::Error::new(io::ErrorKind::NotFound, "Config directory not found"))?;
+    let config_dir = dirs::config_dir()
+        .ok_or_else(|| io::Error::new(io::ErrorKind::NotFound, "Config directory not found"))?;
     let folder_path = config_dir.join("translationHero");
     let file_path = folder_path.join("settings.json");
 

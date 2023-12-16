@@ -1,19 +1,14 @@
-'use client'
-import {useHeroStore} from "@/lib/HeroStore";
-import {commands} from "@/lib/bindings";
-import {useEffect} from "react";
-import {invoke} from "@tauri-apps/api";
+"use client";
+import { commands } from "@/lib/bindings";
+import { useSettingsStore } from "@/lib/stores";
+import { invoke } from "@tauri-apps/api";
+import { useEffect } from "react";
 
 export default function Home() {
 
-  const {test, updateTest} = useHeroStore()
-   
+	return (
+		<>
 
-  return (
-      <>
-          <p>{test}</p>
-          <button onClick={() => updateTest(test + 1)}>Test</button>
-
-      </>
-  )
+		</>
+	);
 }

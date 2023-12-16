@@ -4,8 +4,8 @@
 async greet() : Promise<string> {
 return await TAURI_INVOKE("plugin:tauri-specta|greet");
 },
-async removeStore(key: string) : Promise<null> {
-return await TAURI_INVOKE("plugin:tauri-specta|remove_store", { key });
+async removeStore(store: string) : Promise<null> {
+return await TAURI_INVOKE("plugin:tauri-specta|remove_store", { store });
 },
 async getStore(store: string) : Promise<string> {
 return await TAURI_INVOKE("plugin:tauri-specta|get_store", { store });
@@ -16,14 +16,17 @@ return await TAURI_INVOKE("plugin:tauri-specta|update_store", { store, value });
 }
 
 export const events = __makeEvents__<{
-heroStoreState: HeroStoreState
+settingsStoreState: SettingsStoreState,
+translationStoreState: TranslationStoreState
 }>({
-heroStoreState: "plugin:tauri-specta:hero-store-state"
+settingsStoreState: "plugin:tauri-specta:settings-store-state",
+translationStoreState: "plugin:tauri-specta:translation-store-state"
 })
 
 /** user-defined types **/
 
-export type HeroStoreState = { test: number }
+export type SettingsStoreState = { nav_open: boolean; theme: string; translation_command: string; run_translation_on_change: boolean; watch_directories: boolean }
+export type TranslationStoreState = { test: number }
 
 /** tauri-specta globals **/
 
