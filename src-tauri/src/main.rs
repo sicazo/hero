@@ -1,14 +1,15 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-mod server;
+use local_storage::{create_storage, get_store, remove_store, update_store};
 use std::thread;
 use tauri::AppHandle;
+use stores::settings_store::SettingsStoreState;
+use stores::translation_store::TranslationStoreState;
+
 mod local_storage;
-use local_storage::{
-    create_storage, get_store, remove_store, update_store, SettingsStoreState,
-    TranslationStoreState,
-};
+mod server;
+pub mod stores;
 
 #[tauri::command]
 #[specta::specta]

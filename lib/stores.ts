@@ -45,6 +45,7 @@ export const useSettingsStore = create<
 			name: "settings_store",
 			storage: createJSONStorage(() => storage),
 			skipHydration: true,
+			version: 0.0
 		},
 	),
 );
@@ -64,6 +65,7 @@ export const useTranslationStore = create<
 			name: "translation_store",
 			storage: createJSONStorage(() => storage),
 			skipHydration: true,
+			version: 0.0
 		},
 	),
 );
