@@ -43,7 +43,7 @@ impl FromStr for SettingsStore {
 }
 
 impl StoreUpgrade for SettingsStore {
-    fn upgrade(&mut self, current_data_version: f32) -> Result<(), Box<dyn Error>> {
+    fn upgrade(&mut self, _current_data_version: f32) -> Result<(), Box<dyn Error>> {
         // Upgrade logic for SettingsStore
         Ok(())
     }

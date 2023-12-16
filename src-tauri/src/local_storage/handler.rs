@@ -2,7 +2,6 @@ use crate::local_storage::types::{Data,  StoreUpgrade};
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use std::fs::{File, OpenOptions};
 use std::io::{self, Read, Write};
-use specta::specta;
 use crate::stores::settings_store::SettingsStore;
 use crate::stores::translation_store::TranslationStore;
 
@@ -41,7 +40,7 @@ pub fn remove_store(store: String) {
     let mut data: Data = read_json_file("settings.json", &storage).unwrap();
     let store_type = StoreType::from_string(store);
     data = store_type.to_default();
-    write_json_file::<Data>(&data.into()).expect("Failed to write to file");
+    write_json_file::<Data>(&data).expect("Failed to write to file");
 }
 
 fn update_data<T>(store_type: StoreType, value: String) -> Data
@@ -71,7 +70,7 @@ pub fn update_store(store: String, value: String) {
     println!("value: {}", value);
     let store_type = StoreType::from_string(store);
     let data = update_data::<Data>(store_type, value);
-    write_json_file::<Data>(&data.into()).expect("Failed to write to file");
+    write_json_file::<Data>(&data).expect("Failed to write to file");
 }
 
 fn get_data<T>(store_type: StoreType) -> String
@@ -96,8 +95,8 @@ where
 pub fn get_store(store: String) -> String {
     println!("get_store");
     let store_type = StoreType::from_string(store);
-    let json = get_data::<Data>(store_type);
-    json
+    
+    get_data::<Data>(store_type)
 }
 
 pub fn create_storage() -> Result<(), Box<dyn std::error::Error>> {
@@ -119,7 +118,7 @@ pub fn create_storage() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-fn read_json_file<T>(file_path: &str, file: &File) -> Result<T, io::Error>
+fn read_json_file<T>(_file_path: &str, file: &File) -> Result<T, io::Error>
 where
     T: for<'de> Deserialize<'de>,
 {
@@ -156,11 +155,11 @@ fn get_settings_file() -> Result<File, io::Error> {
     if !folder_path.exists() {
         std::fs::create_dir_all(&folder_path)?;
     }
-    Ok(OpenOptions::new()
+    OpenOptions::new()
         .read(true)
         .write(true)
         .create(true)
-        .open(file_path)?)
+        .open(file_path)
 }
 
 impl Data {

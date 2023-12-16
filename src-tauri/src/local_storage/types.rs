@@ -2,7 +2,7 @@
 use serde::{Deserialize, Serialize};
 use specta::Type;
 use std::error::Error;
-use std::str::FromStr;
+
 use tauri_specta::Event;
 use crate::stores::settings_store::SettingsStore;
 use crate::stores::translation_store::TranslationStore;

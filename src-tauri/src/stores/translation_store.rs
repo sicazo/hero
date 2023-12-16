@@ -34,7 +34,7 @@ impl FromStr for TranslationStore {
 }
 
 impl StoreUpgrade for TranslationStore {
-    fn upgrade(&mut self, current_data_version: f32) -> Result<(), Box<dyn Error>> {
+    fn upgrade(&mut self, _current_data_version: f32) -> Result<(), Box<dyn Error>> {
         // Upgrade logic for TranslationStore
         Ok(())
     }
