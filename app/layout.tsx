@@ -1,24 +1,24 @@
 "use client";
 import ThemeProvider from "@/components/theme/theme_provider";
-import { Toaster } from "@/components/ui/toaster";
-import { commands } from "@/lib/bindings";
-import { useSettingsStore } from "@/lib/stores";
+import {Toaster} from "@/components/ui/toaster";
+import {useSettingsStore} from "@/lib/stores";
 import {
 	isPermissionGranted,
-	requestPermission,
 } from "@tauri-apps/api/notification";
-import { Inter } from "next/font/google";
-import { useEffect } from "react";
+import {Inter} from "next/font/google";
+import {useEffect} from "react";
 import "./globals.css";
+import Nav from "@/components/nav/main_nav";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({subsets: ["latin"]});
+
 
 export default function RootLayout({
-	children,
-}: {
+									   children,
+								   }: {
 	children: React.ReactNode;
 }) {
-	const { notifications_enabled, setNotifications } = useSettingsStore();
+	const {notifications_enabled, setNotifications} = useSettingsStore();
 	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	useEffect(() => {
 		useSettingsStore.persist.rehydrate();
@@ -33,12 +33,18 @@ export default function RootLayout({
 
 	return (
 		<html lang="en">
-			<body className={inter.className}>
-				<ThemeProvider defaultTheme={theme}>
-					{children}
-					<Toaster />
-				</ThemeProvider>
-			</body>
+		<body className={inter.className}>
+		<ThemeProvider defaultTheme={theme}>
+			<div className="h-screen w-screen overflow-hidden flex">
+				<aside className=" w-1/5">
+					<Nav/>
+				</aside>
+				<div className="flex-1">{children}</div>
+			</div>
+			<Toaster/>
+		</ThemeProvider>
+		</body>
 		</html>
 	);
 }
+
