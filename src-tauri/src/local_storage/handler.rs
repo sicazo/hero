@@ -43,6 +43,7 @@ pub fn remove_store(store: String) {
     write_json_file::<Data>(&data).expect("Failed to write to file");
 }
 
+
 fn update_data<T>(store_type: StoreType, value: String) -> Data
 where
     T: DeserializeOwned + Default,

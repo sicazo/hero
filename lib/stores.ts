@@ -7,6 +7,7 @@ import {
 import { create } from "zustand";
 import { StateStorage, createJSONStorage, persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
+import {useTheme} from "next-themes";
 
 const storage: StateStorage = {
 	getItem: async (name): Promise<string> => {
@@ -21,7 +22,8 @@ const storage: StateStorage = {
 };
 
 interface SettingsStoreActions {
-	toggleNav: () => void
+	toggleNav: () => void,
+	setTheme: (theme: "light" | "dark") => void,
 }
 interface TranslationStoreActions {
 	updateTest: (x: number) => void;
@@ -39,7 +41,10 @@ export const useSettingsStore = create<
 			watch_directories: false,
 
 			// actions
-			toggleNav: () => set((state) => {state.nav_open = !state.nav_open})
+			toggleNav: () => set((state) => {state.nav_open = !state.nav_open}),
+			setTheme: (theme: "light" | "dark") => set((state) => {
+				state.theme = theme
+			}),
 		})),
 		{
 			name: "settings_store",
