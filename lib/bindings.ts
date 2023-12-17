@@ -25,7 +25,8 @@ translationStoreState: "plugin:tauri-specta:translation-store-state"
 
 /** user-defined types **/
 
-export type SettingsStoreState = { nav_open: boolean; theme: Theme; translation_command: string; run_translation_on_change: boolean; watch_directories: boolean }
+export type Notifications = { file_changes: boolean; finished_translation: boolean; finished_scan: boolean }
+export type SettingsStoreState = { nav_open: boolean; theme: Theme; translation_command: string; run_translation_on_change: boolean; notifications_enabled: boolean; enabled_notification_types: Notifications }
 export type Theme = "light" | "dark"
 export type TranslationStoreState = { test: number }
 

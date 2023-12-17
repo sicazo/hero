@@ -10,7 +10,7 @@
 		}
 	},
 	"files": {
-		"ignore": ["lib/bindings.ts", "src-tauri/"],
+		"ignore": ["lib/bindings.ts", "src-tauri/", "components/ui"],
 		"ignoreUnknown": true
 	}
 }

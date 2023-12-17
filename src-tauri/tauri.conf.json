@@ -11,6 +11,11 @@
 		"version": "0.1.0"
 	},
 	"tauri": {
+		"allowlist": {
+			"notification": {
+				"all": true
+			}
+		},
 		"bundle": {
 			"active": true,
 			"category": "DeveloperTool",

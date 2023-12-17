@@ -1,20 +1,17 @@
-'use client'
+"use client";
 
-import {useSettingsStore} from "@/lib/stores";
-import AppearanceForm from "@/components/settings/appearance_form"
-import {Separator} from "@/components/ui/separator";
+import { Separator } from "@/components/ui/separator";
 
-export default function Page() {
-    return (
-        <div className="space-y-6">
-            <div>
-                <h3 className="text-lg font-medium">Appearance</h3>
-                <p className="text-sm text-muted-foreground">
-                    Customize the appearance of the app.
-                </p>
-            </div>
-            <Separator/>
-            <AppearanceForm/>
-        </div>
-    )
+export default function SettingsProfilePage() {
+	return (
+		<div className="space-y-6">
+			<div>
+				<h3 className="text-lg font-medium">Translations</h3>
+				<p className="text-sm text-muted-foreground">
+					Here you can edit the translation specific settings for the tool.
+				</p>
+			</div>
+			<Separator />
+		</div>
+	);
 }

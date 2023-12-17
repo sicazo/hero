@@ -18,8 +18,17 @@ pub struct SettingsStoreState {
     pub theme: Theme,
     pub translation_command: String,
     pub run_translation_on_change: bool,
-    pub watch_directories: bool,
+    pub notifications_enabled: bool,
+    pub enabled_notification_types: Notifications
 }
+#[derive(Debug, Serialize, Deserialize, Clone, Type, Event)]
+pub struct Notifications {
+    file_changes: bool,
+    finished_translation: bool,
+    finished_scan: bool,
+
+}
+
 #[derive(Debug, Serialize, Deserialize, Clone, Type, Event)]
 #[serde(rename_all = "lowercase")]
 pub enum Theme {
@@ -57,7 +66,12 @@ impl Default for SettingsStore {
                 theme: Theme::default(),
                 translation_command: "".to_string(),
                 run_translation_on_change: false,
-                watch_directories: false,
+                notifications_enabled: false,
+                enabled_notification_types: Notifications {
+                    file_changes: false,
+                    finished_translation: false,
+                    finished_scan: false,
+                },
             },
             version: 0.0,
         }

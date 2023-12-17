@@ -1,13 +1,14 @@
 "use client";
 import {
+	Notifications,
 	SettingsStoreState,
 	TranslationStoreState,
 	commands,
 } from "@/lib/bindings";
+import { useTheme } from "next-themes";
 import { create } from "zustand";
 import { StateStorage, createJSONStorage, persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
-import {useTheme} from "next-themes";
 
 const storage: StateStorage = {
 	getItem: async (name): Promise<string> => {
@@ -22,8 +23,10 @@ const storage: StateStorage = {
 };
 
 interface SettingsStoreActions {
-	toggleNav: () => void,
-	setTheme: (theme: "light" | "dark") => void,
+	toggleNav: () => void;
+	setTheme: (theme: "light" | "dark") => void;
+	setNotifications: (x: boolean) => void;
+	updateNotificationTypes: (x: Notifications) => void;
 }
 interface TranslationStoreActions {
 	updateTest: (x: number) => void;
@@ -35,22 +38,39 @@ export const useSettingsStore = create<
 	persist(
 		immer((set, get) => ({
 			nav_open: true,
-			theme: 'light',
+			theme: "light",
 			translation_command: "",
 			run_translation_on_change: false,
-			watch_directories: false,
+			notifications_enabled: false,
+			enabled_notification_types: {
+				file_changes: false,
+				finished_translation: false,
+				finished_scan: false,
+			},
 
 			// actions
-			toggleNav: () => set((state) => {state.nav_open = !state.nav_open}),
-			setTheme: (theme: "light" | "dark") => set((state) => {
-				state.theme = theme
-			}),
+			toggleNav: () =>
+				set((state) => {
+					state.nav_open = !state.nav_open;
+				}),
+			setTheme: (theme: "light" | "dark") =>
+				set((state) => {
+					state.theme = theme;
+				}),
+			setNotifications: (x) =>
+				set((state) => {
+					state.notifications_enabled = x;
+				}),
+			updateNotificationTypes: (x) =>
+				set((state) => {
+					state.enabled_notification_types = x;
+				}),
 		})),
 		{
 			name: "settings_store",
 			storage: createJSONStorage(() => storage),
 			skipHydration: true,
-			version: 0.0
+			version: 0.0,
 		},
 	),
 );
@@ -70,7 +90,7 @@ export const useTranslationStore = create<
 			name: "translation_store",
 			storage: createJSONStorage(() => storage),
 			skipHydration: true,
-			version: 0.0
+			version: 0.0,
 		},
 	),
 );
