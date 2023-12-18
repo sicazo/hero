@@ -1,3 +1,3 @@
 export default function Page() {
-    return <div>Locations</div>
+	return <div>Locations</div>;
 }

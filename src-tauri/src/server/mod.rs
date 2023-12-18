@@ -1,27 +1,50 @@
-mod handlers;
+use axum::routing::get;
+use serde_json::Value;
+use socketioxide::{
+    extract::{AckSender, Bin, Data, SocketRef},
+    SocketIo,
+};
+use tracing::info;
+use tracing_subscriber::FmtSubscriber;
 
-use std::sync::Mutex;
+fn on_connect(socket: SocketRef, Data(data): Data<Value>) {
+    info!("Socket.IO connected: {:?} {:?}", socket.ns(), socket.id);
+    socket.emit("auth", data).ok();
 
-use actix_web::{middleware, web, App, HttpServer};
-use tauri::AppHandle;
+    socket.on(
+        "message",
+        |socket: SocketRef, Data::<Value>(data), Bin(bin)| {
+            info!("Received event: {:?} {:?}", data, bin);
+            socket.bin(bin).emit("message-back", data).ok();
+        },
+    );
 
-struct TauriAppState {
-    app: Mutex<AppHandle>,
+    socket.on(
+        "message-with-ack",
+        |Data::<Value>(data), ack: AckSender, Bin(bin)| {
+            info!("Received event: {:?} {:?}", data, bin);
+            ack.bin(bin).send(data).ok();
+        },
+    );
 }
 
-#[actix_web::main]
-pub async fn init(app: AppHandle) -> std::io::Result<()> {
-    let tauri_app = web::Data::new(TauriAppState {
-        app: Mutex::new(app),
-    });
+#[tokio::main]
+pub async fn init() -> Result<(), Box<dyn std::error::Error>> {
+    tracing::subscriber::set_global_default(FmtSubscriber::default())?;
 
-    HttpServer::new(move || {
-        App::new()
-            .app_data(tauri_app.clone())
-            .wrap(middleware::Logger::default())
-            .service(handlers::test::handle)
-    })
-    .bind(("0.0.0.0", 6969))?
-    .run()
-    .await
+    let (layer, io) = SocketIo::new_layer();
+
+    io.ns("/", on_connect);
+    io.ns("/custom", on_connect);
+
+    let app = axum::Router::new()
+        .route("/", get(|| async { "Hello, World!" }))
+        .layer(layer);
+
+    info!("Starting server");
+
+    let listener = tokio::net::TcpListener::bind("0.0.0.0:3001").await.unwrap();
+    axum::serve(listener, app).await.unwrap();
+
+    Ok(())
 }

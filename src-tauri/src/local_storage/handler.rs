@@ -2,6 +2,7 @@ use crate::local_storage::types::{Data,  StoreUpgrade};
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use std::fs::{File, OpenOptions};
 use std::io::{self, Read, Write};
+use tracing::info;
 use crate::stores::settings_store::SettingsStore;
 use crate::stores::translation_store::TranslationStore;
 
@@ -67,8 +68,7 @@ where
 #[tauri::command]
 #[specta::specta]
 pub fn update_store(store: String, value: String) {
-    println!("update_store");
-    println!("value: {}", value);
+    info!("update_store {}", store);
     let store_type = StoreType::from_string(store);
     let data = update_data::<Data>(store_type, value);
     write_json_file::<Data>(&data).expect("Failed to write to file");
@@ -94,7 +94,7 @@ where
 #[tauri::command]
 #[specta::specta]
 pub fn get_store(store: String) -> String {
-    println!("get_store");
+    info!("get_store {}", store);
     let store_type = StoreType::from_string(store);
     
     get_data::<Data>(store_type)

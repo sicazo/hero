@@ -38,9 +38,7 @@ fn main() {
         .plugin(specta_builder)
         .setup(|app| {
             create_storage().expect("error while creating storage");
-            let handle: AppHandle = app.handle().to_owned();
-            let boxed_handle = Box::new(handle);
-            thread::spawn(move || server::init(*boxed_handle).unwrap());
+            thread::spawn(move || server::init().unwrap());
             Ok(())
         })
         .run(tauri::generate_context!())
