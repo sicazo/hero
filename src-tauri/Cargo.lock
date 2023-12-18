@@ -74,6 +74,8 @@ version = "0.1.0"
 dependencies = [
  "axum",
  "dirs",
+ "glob",
+ "regex",
  "serde",
  "serde_json",
  "socketioxide",

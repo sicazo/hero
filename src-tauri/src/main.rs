@@ -3,13 +3,14 @@
 
 use local_storage::{create_storage, get_store, remove_store, update_store};
 use std::thread;
-use tauri::AppHandle;
 use stores::settings_store::SettingsStoreState;
 use stores::translation_store::TranslationStoreState;
+use tauri::AppHandle;
 
 mod local_storage;
 mod server;
 pub mod stores;
+mod translation_handler;
 
 #[tauri::command]
 #[specta::specta]

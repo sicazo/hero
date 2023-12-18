@@ -1,10 +1,10 @@
-use crate::local_storage::types::{Data,  StoreUpgrade};
+use crate::local_storage::types::{Data, StoreUpgrade};
+use crate::stores::settings_store::SettingsStore;
+use crate::stores::translation_store::TranslationStore;
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use std::fs::{File, OpenOptions};
 use std::io::{self, Read, Write};
 use tracing::info;
-use crate::stores::settings_store::SettingsStore;
-use crate::stores::translation_store::TranslationStore;
 
 #[derive(PartialEq)]
 enum StoreType {
@@ -43,7 +43,6 @@ pub fn remove_store(store: String) {
     data = store_type.to_default();
     write_json_file::<Data>(&data).expect("Failed to write to file");
 }
-
 
 fn update_data<T>(store_type: StoreType, value: String) -> Data
 where
@@ -96,7 +95,7 @@ where
 pub fn get_store(store: String) -> String {
     info!("get_store {}", store);
     let store_type = StoreType::from_string(store);
-    
+
     get_data::<Data>(store_type)
 }
 

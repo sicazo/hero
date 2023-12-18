@@ -28,8 +28,9 @@ translationStoreState: "plugin:tauri-specta:translation-store-state"
 export type Notifications = { file_changes: boolean; finished_translation: boolean; finished_scan: boolean }
 export type SettingsStoreState = { nav_open: boolean; theme: Theme; notifications_enabled: boolean; enabled_notification_types: Notifications; translation_settings: TranslationSettings }
 export type Theme = "light" | "dark"
+export type TranslationEntry = { key: string; value: string; translations: { [key in string]: string }; in_use: boolean }
 export type TranslationSettings = { translate_new_strings: boolean; translate_updated_strings: boolean; default_language: string; translation_command: string }
-export type TranslationStoreState = { languages: string[] }
+export type TranslationStoreState = { languages: string[]; translation_entries: TranslationEntry[] }
 
 /** tauri-specta globals **/
 

@@ -17,6 +17,7 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { Checkbox } from "@/components/ui/checkbox";
 import { clsx } from "clsx";
+import TranslationLanguageDropdown from "@/components/settings/translations/language_dropdown";
 
 const translationFormSchema = z.object({
 	translate_new_strings: z.boolean().default(false),
@@ -94,44 +95,60 @@ export default function TranslationForm() {
 						)}
 					/>
 				</div>
-
-				<FormField
-					control={form.control}
-					name="translation_command"
-					disabled={
-						!translation_settings.translate_new_strings &&
-						!translation_settings.translate_updated_strings
-					}
-					render={({ field }) => (
-						<FormItem
-							className={clsx("", {
-								"text-gray-500":
-									!translation_settings.translate_new_strings &&
-									!translation_settings.translate_updated_strings,
-							})}
-						>
-							<FormLabel>Translation Command</FormLabel>
-							<FormControl>
-								<Input
-									placeholder="yarn translate <translation_key>"
-									{...field}
-								/>
-							</FormControl>
-							<FormDescription className="-mx-2">
-								This is the translation command that will be used to translate
-								strings.
-							</FormDescription>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
+				<div className="flex grow justify-between w-full space-x-5">
+					<FormField
+						control={form.control}
+						name="translation_command"
+						disabled={
+							!translation_settings.translate_new_strings &&
+							!translation_settings.translate_updated_strings
+						}
+						render={({ field }) => (
+							<FormItem
+								className={clsx("", {
+									"text-gray-500":
+										!translation_settings.translate_new_strings &&
+										!translation_settings.translate_updated_strings,
+								})}
+							>
+								<FormLabel>Translation Command</FormLabel>
+								<FormControl>
+									<Input
+										placeholder="yarn translate <translation_key>"
+										{...field}
+									/>
+								</FormControl>
+								<FormDescription className="">
+									This is the translation command that will be used to translate
+									strings.
+								</FormDescription>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+					<FormField
+						control={form.control}
+						name="default_language"
+						render={({ field }) => (
+							<FormItem
+								className="w-[250px]"
+							>
+								<FormLabel>Default Language</FormLabel>
+								<FormControl className="w-full">
+									<TranslationLanguageDropdown />
+								</FormControl>
+								<FormDescription className="">
+									This is the default language that the translations will be
+									shown in.
+								</FormDescription>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+				</div>
 
 				<Button
 					type="submit"
-					disabled={
-						!translation_settings.translate_updated_strings &&
-						!translation_settings.translate_new_strings
-					}
 				>
 					Update Settings
 				</Button>
