@@ -1,6 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import {
 	Form,
 	FormControl,
@@ -84,8 +83,13 @@ export default function AppearanceForm() {
 							</FormDescription>
 							<FormMessage />
 							<RadioGroup
-								onValueChange={field.onChange}
-								defaultValue={field.value}
+								onValueChange={(theme) => {
+									setTheme(theme)
+									// @ts-ignore
+									settings.setTheme(theme)
+								}
+								}
+								defaultValue={settings.theme}
 								className="grid max-w-md grid-cols-2 gap-8 pt-2"
 							>
 								<FormItem>
@@ -144,8 +148,6 @@ export default function AppearanceForm() {
 						</FormItem>
 					)}
 				/>
-
-				<Button type="submit">Update preferences</Button>
 			</form>
 		</Form>
 	);

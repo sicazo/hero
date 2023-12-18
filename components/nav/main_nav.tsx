@@ -9,6 +9,7 @@ import { GearIcon } from "@radix-ui/react-icons";
 import clsx from "clsx";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import {Button} from "@/components/ui/button";
 
 const links = [
 	{
@@ -44,9 +45,9 @@ function NavLinks() {
 						key={link.title}
 						href={link.href}
 						className={clsx(
-							"flex h-[48px] items-center  gap-2 rounded-md bg-gray-50  text-sm font-medium hover:bg-sky-100 hover:text-blue-600 flex-none justify-start p-2 px-3 pl-5",
+							"dark:bg-gray-800 flex h-[48px] items-center  gap-2 rounded-md bg-gray-50  text-sm font-medium hover:bg-sky-100 hover:text-blue-600 flex-none justify-start p-2 px-3 pl-5",
 							{
-								"bg-sky-100 text-blue-600": pathName.includes(
+								"bg-sky-100 text-blue-600 dark:bg-gray-700 dark:text-blue-400": pathName.includes(
 									link.title.toLowerCase(),
 								),
 							},
@@ -72,7 +73,7 @@ export default function Nav() {
 			</Link>
 			<div className="flex grow  justify-between flex-col space-x-0 space-y-2">
 				<NavLinks />
-				<div className="h-auto w-full grow rounded-md bg-gray-50 block" />
+				<div className="dark:bg-gray-950 h-auto w-full grow rounded-md bg-gray-50 block" />
 			</div>
 		</div>
 	);

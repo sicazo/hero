@@ -4,7 +4,7 @@ import { Separator } from "@/components/ui/separator";
 
 export default function SettingsProfilePage() {
 	return (
-		<div className="space-y-6">
+		<div className=" dark:bg-gray-950 space-y-6">
 			<div>
 				<h3 className="text-lg font-medium">Translations</h3>
 				<p className="text-sm text-muted-foreground">
