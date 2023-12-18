@@ -16,17 +16,22 @@ pub struct SettingsStore {
 pub struct SettingsStoreState {
     pub nav_open: bool,
     pub theme: Theme,
-    pub translation_command: String,
-    pub run_translation_on_change: bool,
     pub notifications_enabled: bool,
-    pub enabled_notification_types: Notifications
+    pub enabled_notification_types: Notifications,
+    pub translation_settings: TranslationSettings,
 }
 #[derive(Debug, Serialize, Deserialize, Clone, Type, Event)]
 pub struct Notifications {
     file_changes: bool,
     finished_translation: bool,
     finished_scan: bool,
-
+}
+#[derive(Debug, Serialize, Deserialize, Clone, Type, Event)]
+pub struct TranslationSettings {
+    pub translate_new_strings: bool,
+    pub translate_updated_strings: bool,
+    pub default_language: String,
+    pub translation_command: String,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, Type, Event)]
@@ -64,13 +69,17 @@ impl Default for SettingsStore {
             state: SettingsStoreState {
                 nav_open: true,
                 theme: Theme::default(),
-                translation_command: "".to_string(),
-                run_translation_on_change: false,
                 notifications_enabled: false,
                 enabled_notification_types: Notifications {
                     file_changes: false,
                     finished_translation: false,
                     finished_scan: false,
+                },
+                translation_settings: TranslationSettings {
+                    translate_new_strings: false,
+                    translate_updated_strings: false,
+                    default_language: "en-GB".to_string(),
+                    translation_command: "".to_string(),
                 },
             },
             version: 0.0,

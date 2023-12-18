@@ -12,11 +12,11 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { toast } from "@/components/ui/use-toast";
 import { useSettingsStore } from "@/lib/stores";
+import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { clsx } from "clsx";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import {cn} from "@/lib/utils";
-import {clsx} from "clsx";
 
 const notificationsFormSchema = z.object({
 	file_changes: z.boolean().default(false).optional(),
@@ -47,7 +47,13 @@ export function NotificationsForm() {
 		<Form {...form}>
 			<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
 				<div>
-					<h3 className={clsx("mb-4 text-lg font-medium", {"text-gray-400" : !notifications_enabled })}>Notify me about...</h3>
+					<h3
+						className={clsx("mb-4 text-lg font-medium", {
+							"text-gray-400": !notifications_enabled,
+						})}
+					>
+						Notify me about...
+					</h3>
 					<div className="space-y-4">
 						<FormField
 							control={form.control}
@@ -55,8 +61,16 @@ export function NotificationsForm() {
 							render={({ field }) => (
 								<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
 									<div className="space-y-0.5">
-										<FormLabel className={clsx("text-base", {"text-gray-400": !notifications_enabled})} />
-										<FormDescription className={clsx("", {"text-gray-400": !notifications_enabled})}>
+										<FormLabel
+											className={clsx("text-base", {
+												"text-gray-400": !notifications_enabled,
+											})}
+										/>
+										<FormDescription
+											className={clsx("", {
+												"text-gray-400": !notifications_enabled,
+											})}
+										>
 											Receive notifications when translation files in your
 											watched locations change.
 										</FormDescription>
@@ -84,7 +98,11 @@ export function NotificationsForm() {
 								<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
 									<div className="space-y-0.5">
 										<FormLabel className="text-base" />
-										<FormDescription className={clsx("", {"text-gray-400": !notifications_enabled})}>
+										<FormDescription
+											className={clsx("", {
+												"text-gray-400": !notifications_enabled,
+											})}
+										>
 											Receive notifications when a translation process finishes.
 										</FormDescription>
 									</div>
@@ -111,7 +129,11 @@ export function NotificationsForm() {
 								<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
 									<div className="space-y-0.5">
 										<FormLabel className="text-base" />
-										<FormDescription className={clsx("", {"text-gray-400": !notifications_enabled})}>
+										<FormDescription
+											className={clsx("", {
+												"text-gray-400": !notifications_enabled,
+											})}
+										>
 											Receive notifications when a directory scan finishes.
 										</FormDescription>
 									</div>

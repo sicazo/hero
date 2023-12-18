@@ -1,5 +1,6 @@
 "use client";
 
+import TranslationForm from "@/components/settings/translations/translations_form";
 import { Separator } from "@/components/ui/separator";
 
 export default function SettingsProfilePage() {
@@ -12,6 +13,7 @@ export default function SettingsProfilePage() {
 				</p>
 			</div>
 			<Separator />
+			<TranslationForm />
 		</div>
 	);
 }

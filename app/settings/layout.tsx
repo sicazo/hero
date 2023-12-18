@@ -7,10 +7,6 @@ const sidebarNavItems = [
 		title: "Translations",
 		href: "/settings",
 	},
-	// {
-	//     title: "Account",
-	//     href: "/settings/account",
-	// },
 	{
 		title: "Appearance",
 		href: "/settings/appearance",
@@ -19,10 +15,10 @@ const sidebarNavItems = [
 		title: "Notifications",
 		href: "/settings/notifications",
 	},
-	{
-		title: "Display",
-		href: "/settings/display",
-	},
+	// {
+	// 	title: "Display",
+	// 	href: "/settings/display",
+	// },
 ];
 
 interface SettingsLayoutProps {
@@ -32,7 +28,10 @@ interface SettingsLayoutProps {
 export default function SettingsLayout({ children }: SettingsLayoutProps) {
 	return (
 		<>
-			<div id="header" className="dark:bg-gray-950 sticky top-0 z-50  p-5  pb-16 h-full w-full">
+			<div
+				id="header"
+				className="dark:bg-gray-950 sticky top-0 z-50  p-5  pb-16 h-full w-full"
+			>
 				<div className="space-y-8 px-3">
 					<h2 className="text-2xl font-bold tracking-tight">Settings</h2>
 				</div>

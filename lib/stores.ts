@@ -3,7 +3,7 @@ import {
 	Notifications,
 	SettingsStoreState,
 	TranslationStoreState,
-	commands,
+	commands, TranslationSettings,
 } from "@/lib/bindings";
 import { useTheme } from "next-themes";
 import { create } from "zustand";
@@ -27,9 +27,10 @@ interface SettingsStoreActions {
 	setTheme: (theme: "light" | "dark") => void;
 	setNotifications: (x: boolean) => void;
 	updateNotificationTypes: (x: Notifications) => void;
+	updateTranslationSettings: (x: TranslationSettings) => void;
 }
 interface TranslationStoreActions {
-	updateTest: (x: number) => void;
+	test:()=>void
 }
 
 export const useSettingsStore = create<
@@ -39,13 +40,17 @@ export const useSettingsStore = create<
 		immer((set, get) => ({
 			nav_open: true,
 			theme: "light",
-			translation_command: "",
-			run_translation_on_change: false,
 			notifications_enabled: false,
 			enabled_notification_types: {
 				file_changes: false,
 				finished_translation: false,
 				finished_scan: false,
+			},
+			translation_settings: {
+				translate_new_strings: false,
+				translate_updated_strings: false,
+				default_language: "en-GBs",
+				translation_command: ""
 			},
 
 			// actions
@@ -65,6 +70,10 @@ export const useSettingsStore = create<
 				set((state) => {
 					state.enabled_notification_types = x;
 				}),
+			updateTranslationSettings: (x) =>
+				set((state) => {
+					state.translation_settings = x;
+				})
 		})),
 		{
 			name: "settings_store",
@@ -80,11 +89,8 @@ export const useTranslationStore = create<
 >()(
 	persist(
 		immer((set, get) => ({
-			test: 0,
-			updateTest: (x: number) =>
-				set((state) => {
-					state.test = x;
-				}),
+			languages: [],
+			test: () => {}
 		})),
 		{
 			name: "translation_store",

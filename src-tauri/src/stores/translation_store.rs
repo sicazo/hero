@@ -13,14 +13,13 @@ pub struct TranslationStore {
 
 #[derive(Debug, Serialize, Deserialize, Clone, Type, Event)]
 pub struct TranslationStoreState {
-    // Example Fields.
-    pub test: i32,
+    pub languages: Vec<String>,
 }
 
 impl Default for TranslationStore {
     fn default() -> Self {
         Self {
-            state: TranslationStoreState { test: 0 },
+            state: TranslationStoreState { languages: vec![]},
             version: 0.0,
         }
     }

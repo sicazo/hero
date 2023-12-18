@@ -84,11 +84,10 @@ export default function AppearanceForm() {
 							<FormMessage />
 							<RadioGroup
 								onValueChange={(theme) => {
-									setTheme(theme)
+									setTheme(theme);
 									// @ts-ignore
-									settings.setTheme(theme)
-								}
-								}
+									settings.setTheme(theme);
+								}}
 								defaultValue={settings.theme}
 								className="grid max-w-md grid-cols-2 gap-8 pt-2"
 							>
