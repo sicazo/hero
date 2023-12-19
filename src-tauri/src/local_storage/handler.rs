@@ -6,6 +6,7 @@ use crate::stores::settings_store::SettingsStore;
 use crate::stores::translation_store::TranslationStore;
 use std::io::Read;
 use tracing::info;
+use crate::stores::location_store::LocationStore;
 
 #[tauri::command]
 #[specta::specta]
@@ -45,6 +46,7 @@ pub fn create_storage() -> Result<(), Box<dyn std::error::Error>> {
         Data {
             settings_store: SettingsStore::default(),
             translation_store: TranslationStore::default(),
+            location_store: LocationStore::default(),
         }
     } else {
         serde_json::from_str(&contents)?

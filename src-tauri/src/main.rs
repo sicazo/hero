@@ -5,6 +5,7 @@ use local_storage::{create_storage, get_store, remove_store, update_store};
 use std::thread;
 use stores::settings_store::SettingsStoreState;
 use stores::translation_store::TranslationStoreState;
+use stores::location_store::LocationStoreState;
 
 mod local_storage;
 mod server;
@@ -28,7 +29,8 @@ fn main() {
             ])
             .events(tauri_specta::collect_events!(
                 SettingsStoreState,
-                TranslationStoreState
+                TranslationStoreState,
+                LocationStoreState
             ));
         let specta_builder = specta_builder.path("../lib/bindings.ts");
 

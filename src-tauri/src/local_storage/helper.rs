@@ -6,11 +6,13 @@ use serde::{Deserialize, Serialize};
 use std::fs::{File, OpenOptions};
 use std::io;
 use std::io::{Read, Write};
+use crate::stores::location_store::LocationStore;
 
 #[derive(PartialEq)]
 pub enum StoreType {
     SettingsStore,
     TranslationStore,
+    LocationStore
 }
 
 impl StoreType {
@@ -18,6 +20,7 @@ impl StoreType {
         match s.as_str() {
             "settings_store" => StoreType::SettingsStore,
             "translation_store" => StoreType::TranslationStore,
+            "location_store" => StoreType::LocationStore,
             _ => unreachable!(),
         }
     }
@@ -29,6 +32,10 @@ impl StoreType {
             },
             StoreType::TranslationStore => Data {
                 translation_store: TranslationStore::default(),
+                ..Data::default()
+            },
+            StoreType::LocationStore => Data {
+                location_store: LocationStore::default(),
                 ..Data::default()
             },
         }
@@ -52,6 +59,9 @@ where
         StoreType::TranslationStore => {
             data.translation_store = serde_json::from_str(&value).unwrap();
         }
+        StoreType::LocationStore => {
+            data.location_store = serde_json::from_str(&value).unwrap();
+        }
     };
     data
 }
@@ -69,6 +79,9 @@ where
         }
         StoreType::TranslationStore => {
             result = serde_json::to_string(&content.translation_store).unwrap();
+        }
+        StoreType::LocationStore => {
+            result = serde_json::to_string(&content.location_store).unwrap();
         }
     };
     result
@@ -126,6 +139,11 @@ impl Data {
                 .expect("TODO: panic message");
         };
         if self.settings_store.version < version {
+            self.settings_store
+                .upgrade(version)
+                .expect("TODO: panic message");
+        };
+        if self.location_store.version < version {
             self.settings_store
                 .upgrade(version)
                 .expect("TODO: panic message");

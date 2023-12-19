@@ -17,14 +17,18 @@ return await TAURI_INVOKE("plugin:tauri-specta|update_store", { store, value });
 
 export const events = __makeEvents__<{
 settingsStoreState: SettingsStoreState,
-translationStoreState: TranslationStoreState
+translationStoreState: TranslationStoreState,
+locationStoreState: LocationStoreState
 }>({
 settingsStoreState: "plugin:tauri-specta:settings-store-state",
-translationStoreState: "plugin:tauri-specta:translation-store-state"
+translationStoreState: "plugin:tauri-specta:translation-store-state",
+locationStoreState: "plugin:tauri-specta:location-store-state"
 })
 
 /** user-defined types **/
 
+export type Location = { name: string; is_favourite: boolean; num_of_keys: number; num_of_untranslated_keys: number; added_at: string }
+export type LocationStoreState = { locations: Location[] }
 export type Notifications = { file_changes: boolean; finished_translation: boolean; finished_scan: boolean }
 export type SettingsStoreState = { nav_open: boolean; theme: Theme; notifications_enabled: boolean; enabled_notification_types: Notifications; translation_settings: TranslationSettings }
 export type Theme = "light" | "dark"
