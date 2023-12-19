@@ -19,6 +19,7 @@ pub struct LocationStoreState {
 #[derive(Debug, Serialize, Deserialize, Clone, Type, Event)]
 pub struct Location {
     pub name: String,
+    pub path: String,
     pub is_favourite: bool,
     pub num_of_keys: u32,
     pub num_of_untranslated_keys: u32,

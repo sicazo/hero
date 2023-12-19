@@ -25,13 +25,13 @@ impl TranslationHandler {
         }
     }
 
-    pub fn extract_language_code(line: &str, language_code_regex: &regex::Regex) -> Option<String> {
+    fn extract_language_code(line: &str, language_code_regex: &regex::Regex) -> Option<String> {
         let captures = language_code_regex.captures(line)?;
         let language_code = captures.get(1)?;
         Some(language_code.as_str().to_string())
     }
 
-    fn extract_language_codes_from_locales(path: String) -> Vec<String> {
+    pub fn extract_language_codes_from_locales(path: String) -> Vec<String> {
         let sub_path = Self::create_sub_path(path, PathType::TranslationExportFile);
         info!("Reading locales.ts file in {}", sub_path);
         let language_code_regex = regex::Regex::new(r"'(\w{2}-\w{2})").unwrap();
@@ -45,6 +45,21 @@ impl TranslationHandler {
 
         info!("Finished reading locales.ts file in {}", sub_path);
         language_codes
+    }
+
+    pub async fn get_key_values_from_messages_ts(path: &str) -> HashMap<String, String> {
+        let sub_path = Self::create_sub_path(path.to_string(), PathType::MessageTsFile);
+        let file_content = read_to_string(&sub_path)
+            .expect(format!("Failed to read messages.ts file in {}", sub_path).as_str());
+        let mut mappings = HashMap::new();
+        info!("Reading messages.ts file in {}", sub_path);
+        let key_value_regex = regex::Regex::new(r#"(\w+): '(.*)'"#).unwrap();
+        for capture in key_value_regex.captures_iter(&file_content) {
+            let key = capture.get(1).unwrap().as_str().to_string();
+            let value = capture.get(2).unwrap().as_str().to_string();
+            mappings.insert(key, value);
+        }
+        mappings
     }
 }
 
