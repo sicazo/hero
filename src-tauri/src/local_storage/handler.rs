@@ -2,11 +2,11 @@ use crate::local_storage::types::{Data, StoreUpgrade};
 use crate::local_storage::{
     get_data, get_settings_file, read_json_file, update_data, write_json_file, StoreType,
 };
+use crate::stores::location_store::LocationStore;
 use crate::stores::settings_store::SettingsStore;
 use crate::stores::translation_store::TranslationStore;
 use std::io::Read;
 use tracing::info;
-use crate::stores::location_store::LocationStore;
 
 #[tauri::command]
 #[specta::specta]

@@ -1,4 +1,5 @@
 use crate::local_storage::types::{Data, StoreUpgrade};
+use crate::stores::location_store::LocationStore;
 use crate::stores::settings_store::SettingsStore;
 use crate::stores::translation_store::TranslationStore;
 use serde::de::DeserializeOwned;
@@ -6,13 +7,12 @@ use serde::{Deserialize, Serialize};
 use std::fs::{File, OpenOptions};
 use std::io;
 use std::io::{Read, Write};
-use crate::stores::location_store::LocationStore;
 
 #[derive(PartialEq)]
 pub enum StoreType {
     SettingsStore,
     TranslationStore,
-    LocationStore
+    LocationStore,
 }
 
 impl StoreType {

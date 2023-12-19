@@ -1,0 +1,9 @@
+POST http://localhost:3001/translation/keys
+Content-Type: application/json
+
+{
+  "path": "/Users/marius/Developer/Github/translation_hero/testfiles/"
+}
+
+###
+

@@ -2,10 +2,10 @@ use serde::{Deserialize, Serialize};
 use specta::Type;
 use std::error::Error;
 
+use crate::stores::location_store::LocationStore;
 use crate::stores::settings_store::SettingsStore;
 use crate::stores::translation_store::TranslationStore;
 use tauri_specta::Event;
-use crate::stores::location_store::LocationStore;
 
 pub trait StoreDefault {
     fn default() -> Self;
