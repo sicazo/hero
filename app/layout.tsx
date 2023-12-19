@@ -2,7 +2,9 @@
 import Nav from "@/components/nav/main_nav";
 import ThemeProvider from "@/components/theme/theme_provider";
 import { Toaster } from "@/components/ui/toaster";
-import {useSettingsStore, useTranslationStore} from "@/lib/stores";
+import { useLocationStore } from "@/lib/stores/location_store";
+import { useSettingsStore } from "@/lib/stores/settings_store";
+import { useTranslationStore } from "@/lib/stores/translation_store";
 import { isPermissionGranted } from "@tauri-apps/api/notification";
 import { Inter } from "next/font/google";
 import { useEffect } from "react";
@@ -20,6 +22,7 @@ export default function RootLayout({
 	useEffect(() => {
 		useSettingsStore.persist.rehydrate();
 		useTranslationStore.persist.rehydrate();
+		useLocationStore.persist.rehydrate();
 
 		if (notifications_enabled) {
 			isPermissionGranted().then((permission) => {

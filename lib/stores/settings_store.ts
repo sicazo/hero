@@ -1,25 +1,17 @@
 "use client";
 import {
+	Location,
+	LocationStoreState,
 	Notifications,
 	SettingsStoreState,
+	TranslationSettings,
 	TranslationStoreState,
-	commands, TranslationSettings,
+	commands,
 } from "@/lib/bindings";
+import storage from "@/lib/stores/local_storage_handler";
 import { create } from "zustand";
 import { StateStorage, createJSONStorage, persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
-
-const storage: StateStorage = {
-	getItem: async (name): Promise<string> => {
-		return await commands.getStore(name);
-	},
-	setItem: async (name, value): Promise<void> => {
-		await commands.updateStore(name, value);
-	},
-	removeItem: async (name): Promise<void> => {
-		await commands.removeStore(name);
-	},
-};
 
 interface SettingsStoreActions {
 	toggleNav: () => void;
@@ -28,9 +20,6 @@ interface SettingsStoreActions {
 	updateNotificationTypes: (x: Notifications) => void;
 	updateTranslationSettings: (x: TranslationSettings) => void;
 	setDefaultLanguage: (x: string) => void;
-}
-interface TranslationStoreActions {
-	test:()=>void
 }
 
 export const useSettingsStore = create<
@@ -50,7 +39,7 @@ export const useSettingsStore = create<
 				translate_new_strings: false,
 				translate_updated_strings: false,
 				default_language: "en-GB",
-				translation_command: ""
+				translation_command: "",
 			},
 
 			// actions
@@ -87,24 +76,3 @@ export const useSettingsStore = create<
 		},
 	),
 );
-
-export const useTranslationStore = create<
-	TranslationStoreState & TranslationStoreActions
->()(
-	persist(
-		immer((set, get) => ({
-			languages: [],
-			translation_entries: [],
-			test: () => {}
-		})),
-		{
-			name: "translation_store",
-			storage: createJSONStorage(() => storage),
-			skipHydration: true,
-			version: 0.0,
-		},
-	),
-);
-
-
-export const useLocationStore = create()(immer((set, get) => ({})));

@@ -11,13 +11,13 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
+import TranslationLanguageDropdown from "@/components/settings/translations/language_dropdown";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useSettingsStore } from "@/lib/stores";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { clsx } from "clsx";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { Checkbox } from "@/components/ui/checkbox";
-import { clsx } from "clsx";
-import TranslationLanguageDropdown from "@/components/settings/translations/language_dropdown";
 
 const translationFormSchema = z.object({
 	translate_new_strings: z.boolean().default(false),
@@ -130,9 +130,7 @@ export default function TranslationForm() {
 						control={form.control}
 						name="default_language"
 						render={({ field }) => (
-							<FormItem
-								className="w-[250px]"
-							>
+							<FormItem className="w-[250px]">
 								<FormLabel>Default Language</FormLabel>
 								<FormControl className="w-full">
 									<TranslationLanguageDropdown />
@@ -147,11 +145,7 @@ export default function TranslationForm() {
 					/>
 				</div>
 
-				<Button
-					type="submit"
-				>
-					Update Settings
-				</Button>
+				<Button type="submit">Update Settings</Button>
 			</form>
 		</Form>
 	);

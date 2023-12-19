@@ -1,29 +1,31 @@
 "use client";
 
-import { useState } from "react";
-import { useSettingsStore, useTranslationStore } from "@/lib/stores";
+import { Button } from "@/components/ui/button";
+import {
+	Command,
+	CommandEmpty,
+	CommandGroup,
+	CommandInput,
+	CommandItem,
+} from "@/components/ui/command";
 import {
 	Popover,
 	PopoverContent,
 	PopoverTrigger,
 } from "@/components/ui/popover";
-import { Button } from "@/components/ui/button";
-import { ChevronUpDownIcon } from "@heroicons/react/24/outline";
-import {
-	Command,
-	CommandInput,
-	CommandEmpty,
-	CommandGroup,
-	CommandItem,
-} from "@/components/ui/command";
-import { CheckIcon } from "@radix-ui/react-icons";
+import { useSettingsStore, useTranslationStore } from "@/lib/stores";
 import { cn } from "@/lib/utils";
+import { ChevronUpDownIcon } from "@heroicons/react/24/outline";
+import { CheckIcon } from "@radix-ui/react-icons";
+import { useState } from "react";
 
 export default function TranslationLanguageDropdown() {
 	const { default_language } = useSettingsStore(
 		(state) => state.translation_settings,
 	);
-	const setDefaultLanguage = useSettingsStore(state => state.setDefaultLanguage);
+	const setDefaultLanguage = useSettingsStore(
+		(state) => state.setDefaultLanguage,
+	);
 	const { languages } = useTranslationStore();
 	const [open, setOpen] = useState(false);
 	const [value, setValue] = useState(default_language);
