@@ -7,6 +7,7 @@ use serde::{Deserialize, Serialize};
 use std::fs::{File, OpenOptions};
 use std::io;
 use std::io::{Read, Write};
+use tracing::info;
 
 #[derive(PartialEq)]
 pub enum StoreType {

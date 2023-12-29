@@ -1,13 +1,22 @@
 "use client";
-import Nav from "@/components/nav/main_nav";
+import { NavTest } from "@/components/nav/nav_test";
 import ThemeProvider from "@/components/theme/theme_provider";
-import { Toaster } from "@/components/ui/toaster";
+import {
+	ResizableHandle,
+	ResizablePanel,
+	ResizablePanelGroup,
+} from "@/components/ui/resizable";
+import { Toaster } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { useLocationStore } from "@/lib/stores/location_store";
 import { useSettingsStore } from "@/lib/stores/settings_store";
+import { useStatisticsStore } from "@/lib/stores/statistics_store";
 import { useTranslationStore } from "@/lib/stores/translation_store";
+import { cn } from "@/lib/utils";
 import { isPermissionGranted } from "@tauri-apps/api/notification";
+import { ArchiveX, File, Inbox, Send } from "lucide-react";
 import { Inter } from "next/font/google";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -18,30 +27,94 @@ export default function RootLayout({
 	children: React.ReactNode;
 }) {
 	const { notifications_enabled, setNotifications } = useSettingsStore();
-	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	useEffect(() => {
 		useSettingsStore.persist.rehydrate();
 		useTranslationStore.persist.rehydrate();
 		useLocationStore.persist.rehydrate();
-
+		useStatisticsStore.persist.rehydrate();
+	}, []);
+	useEffect(() => {
 		if (notifications_enabled) {
 			isPermissionGranted().then((permission) => {
 				setNotifications(permission);
 			});
 		}
-	}, []);
+	}, [notifications_enabled, setNotifications]);
 	const theme = useSettingsStore((state) => state.theme);
+	const { home_default_sizes, home_nav_collapsed, home_collapsed_size } =
+		useSettingsStore((state) => state.resizable_panel_state);
+	const setHomePanelSizes = useSettingsStore(
+		(state) => state.setHomePanelSizes,
+	);
+	const updateNavCollapsed = useSettingsStore(
+		(state) => state.updateNavCollapsed,
+	);
 
+	const navCollapsedSize = 4;
+	const [isCollapsed, setIsCollapsed] = useState(home_nav_collapsed);
 	return (
 		<html lang="en">
 			<body className={inter.className}>
 				<ThemeProvider defaultTheme={theme}>
-					<div className="h-screen w-screen overflow-hidden flex">
-						<aside className=" w-1/5">
-							<Nav />
-						</aside>
-						<div className="flex-1">{children}</div>
-					</div>
+					<TooltipProvider delayDuration={0}>
+						<ResizablePanelGroup
+							direction="horizontal"
+							onLayout={(sizes: number[]) => {
+								setHomePanelSizes(sizes);
+							}}
+							className="h-full max-h-[800px] items-stretch"
+						>
+							<ResizablePanel
+								defaultSize={home_default_sizes[0]}
+								collapsedSize={home_collapsed_size}
+								collapsible={true}
+								minSize={15}
+								maxSize={20}
+								onCollapse={(state: boolean) => {
+									setIsCollapsed(state);
+									updateNavCollapsed(state);
+								}}
+								className={cn(
+									isCollapsed &&
+										"min-w-[50px] transition-all duration-300 ease-in-out",
+								)}
+							>
+								<NavTest
+									isCollapsed={isCollapsed}
+									links={[
+										{
+											title: "Home",
+											label: "",
+											icon: Inbox,
+											variant: "default",
+										},
+										{
+											title: "Editor",
+											label: "",
+											icon: File,
+											variant: "ghost",
+										},
+										{
+											title: "Locations",
+											label: "",
+											icon: Send,
+											variant: "ghost",
+										},
+										{
+											title: "Settings",
+											label: "",
+											icon: ArchiveX,
+											variant: "ghost",
+										},
+									]}
+								/>
+							</ResizablePanel>
+							<ResizableHandle />
+							<ResizablePanel defaultSize={home_default_sizes[1]} minSize={30}>
+								{children}
+							</ResizablePanel>
+						</ResizablePanelGroup>
+					</TooltipProvider>
 					<Toaster />
 				</ThemeProvider>
 			</body>

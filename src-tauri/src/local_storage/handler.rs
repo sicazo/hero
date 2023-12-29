@@ -51,7 +51,7 @@ pub fn create_storage() -> Result<(), Box<dyn std::error::Error>> {
     } else {
         serde_json::from_str(&contents)?
     };
-    data.upgrade(0.0); // upgrade method is now more sensible
+    data.upgrade(0.1); // upgrade method is now more sensible
     write_json_file(&data)?;
     Ok(())
 }

@@ -20,6 +20,8 @@ interface SettingsStoreActions {
 	updateNotificationTypes: (x: Notifications) => void;
 	updateTranslationSettings: (x: TranslationSettings) => void;
 	setDefaultLanguage: (x: string) => void;
+	setHomePanelSizes: (x: number[]) => void;
+	updateNavCollapsed: (x: boolean) => void;
 }
 
 export const useSettingsStore = create<
@@ -40,6 +42,11 @@ export const useSettingsStore = create<
 				translate_updated_strings: false,
 				default_language: "en-GB",
 				translation_command: "",
+			},
+			resizable_panel_state: {
+				home_default_sizes: [265, 440, 655],
+				home_nav_collapsed: false,
+				home_collapsed_size: 4,
 			},
 
 			// actions
@@ -67,12 +74,21 @@ export const useSettingsStore = create<
 				set((state) => {
 					state.translation_settings.default_language = x;
 				}),
+			setHomePanelSizes: (x) => {
+				set((state) => {
+					state.resizable_panel_state.home_default_sizes = x;
+				});
+			},
+			updateNavCollapsed: (x) => {
+				set((state) => {
+					state.resizable_panel_state.home_nav_collapsed = x;
+				});
+			},
 		})),
 		{
 			name: "settings_store",
 			storage: createJSONStorage(() => storage),
 			skipHydration: true,
-			version: 0.0,
 		},
 	),
 );
