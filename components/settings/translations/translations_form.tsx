@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 
 import TranslationLanguageDropdown from "@/components/settings/translations/language_dropdown";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useSettingsStore } from "@/lib/stores";
+import { useSettingsStore } from "@/lib/stores/settings_store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { clsx } from "clsx";
 import { useForm } from "react-hook-form";

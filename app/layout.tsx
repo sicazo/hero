@@ -1,5 +1,5 @@
 "use client";
-import { NavTest } from "@/components/nav/nav_test";
+import { Nav } from "@/components/nav/main_nav";
 import ThemeProvider from "@/components/theme/theme_provider";
 import {
 	ResizableHandle,
@@ -14,7 +14,7 @@ import { useStatisticsStore } from "@/lib/stores/statistics_store";
 import { useTranslationStore } from "@/lib/stores/translation_store";
 import { cn } from "@/lib/utils";
 import { isPermissionGranted } from "@tauri-apps/api/notification";
-import { ArchiveX, File, Inbox, Send } from "lucide-react";
+import { Database, Home, PencilRuler } from "lucide-react";
 import { Inter } from "next/font/google";
 import { useEffect, useState } from "react";
 import "./globals.css";
@@ -49,8 +49,6 @@ export default function RootLayout({
 	const updateNavCollapsed = useSettingsStore(
 		(state) => state.updateNavCollapsed,
 	);
-
-	const navCollapsedSize = 4;
 	const [isCollapsed, setIsCollapsed] = useState(home_nav_collapsed);
 	return (
 		<html lang="en">
@@ -76,41 +74,39 @@ export default function RootLayout({
 								}}
 								className={cn(
 									isCollapsed &&
-										"min-w-[50px] transition-all duration-300 ease-in-out",
+										"min-w-[50px] transition-all duration-300 ease-in-out z-50",
 								)}
 							>
-								<NavTest
+								<Nav
 									isCollapsed={isCollapsed}
 									links={[
 										{
 											title: "Home",
 											label: "",
-											icon: Inbox,
-											variant: "default",
+											link: "/home",
+											icon: Home,
 										},
 										{
 											title: "Editor",
 											label: "",
-											icon: File,
-											variant: "ghost",
+											link: "/editor",
+											icon: PencilRuler,
 										},
 										{
 											title: "Locations",
 											label: "",
-											icon: Send,
-											variant: "ghost",
-										},
-										{
-											title: "Settings",
-											label: "",
-											icon: ArchiveX,
-											variant: "ghost",
+											link: "/locations",
+											icon: Database,
 										},
 									]}
 								/>
 							</ResizablePanel>
 							<ResizableHandle />
-							<ResizablePanel defaultSize={home_default_sizes[1]} minSize={30}>
+							<ResizablePanel
+								defaultSize={home_default_sizes[1]}
+								minSize={30}
+								className="z-10"
+							>
 								{children}
 							</ResizablePanel>
 						</ResizablePanelGroup>

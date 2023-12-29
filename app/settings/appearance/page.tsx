@@ -2,7 +2,6 @@
 
 import AppearanceForm from "@/components/settings/appearance/appearance_form";
 import { Separator } from "@/components/ui/separator";
-import { useSettingsStore } from "@/lib/stores";
 
 export default function Page() {
 	return (

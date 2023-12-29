@@ -2,7 +2,7 @@
 import { NotificationsForm } from "@/components/settings/notifications/notifications_form";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
-import { useSettingsStore } from "@/lib/stores";
+import { useSettingsStore } from "@/lib/stores/settings_store";
 
 export default function Page() {
 	const { notifications_enabled, setNotifications } = useSettingsStore();
