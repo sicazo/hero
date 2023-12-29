@@ -1,6 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import {
 	Form,
 	FormControl,
@@ -10,9 +9,7 @@ import {
 	FormLabel,
 } from "@/components/ui/form";
 import { Switch } from "@/components/ui/switch";
-import { toast } from "@/components/ui/use-toast";
-import { useSettingsStore } from "@/lib/stores";
-import { cn } from "@/lib/utils";
+import { useSettingsStore } from "@/lib/stores/settings_store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { clsx } from "clsx";
 import { useForm } from "react-hook-form";

@@ -6,6 +6,7 @@ use std::fmt::Display;
 use std::str::FromStr;
 use tauri_specta::Event;
 
+
 #[derive(Debug, Serialize, Deserialize, Clone, Type, Event)]
 pub struct SettingsStore {
     pub state: SettingsStoreState,
@@ -19,12 +20,19 @@ pub struct SettingsStoreState {
     pub notifications_enabled: bool,
     pub enabled_notification_types: Notifications,
     pub translation_settings: TranslationSettings,
+    pub resizable_panel_state: ResizablePanelState,
 }
 #[derive(Debug, Serialize, Deserialize, Clone, Type, Event)]
 pub struct Notifications {
     file_changes: bool,
     finished_translation: bool,
     finished_scan: bool,
+}
+#[derive(Debug, Serialize, Deserialize, Clone, Type, Event)]
+pub struct ResizablePanelState {
+    pub home_default_sizes: Vec<f32>,
+    pub home_nav_collapsed: bool,
+    pub home_collapsed_size: i32,
 }
 #[derive(Debug, Serialize, Deserialize, Clone, Type, Event)]
 pub struct TranslationSettings {
@@ -81,6 +89,13 @@ impl Default for SettingsStore {
                     default_language: "en-GB".to_string(),
                     translation_command: "".to_string(),
                 },
+                resizable_panel_state: {
+                    ResizablePanelState {
+                        home_default_sizes: vec![265.0, 400.0, 655.0],
+                        home_nav_collapsed: false,
+                        home_collapsed_size: 4,
+                    }
+                },
             },
             version: 0.0,
         }
@@ -95,8 +110,16 @@ impl FromStr for SettingsStore {
 }
 
 impl StoreUpgrade for SettingsStore {
-    fn upgrade(&mut self, _current_data_version: f32) -> Result<(), Box<dyn Error>> {
+    fn upgrade(&mut self, current_data_version: f32) -> Result<(), Box<dyn Error>> {
         // Upgrade logic for SettingsStore
+        if current_data_version == 0.1 {
+            self.version = current_data_version;
+            self.state.resizable_panel_state = ResizablePanelState {
+                home_default_sizes: vec![265.0, 400.0, 655.0],
+                home_nav_collapsed: false,
+                home_collapsed_size: 4,
+            };
+        }
         Ok(())
     }
 }
