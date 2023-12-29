@@ -1,78 +1,144 @@
-"use client";
-
-import { Button } from "@/components/ui/button";
-import {
-	DocumentDuplicateIcon,
-	HomeIcon,
-	UserGroupIcon,
-} from "@heroicons/react/24/outline";
-import { GearIcon } from "@radix-ui/react-icons";
-import clsx from "clsx";
+import { LucideIcon, Settings2 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const links = [
-	{
-		title: "Home",
-		href: "/",
-		icon: HomeIcon,
-	},
-	{
-		title: "Editor",
-		href: "/editor",
-		icon: HomeIcon,
-	},
-	{
-		title: "Locations",
-		href: "/locations",
-		icon: HomeIcon,
-	},
-	{
-		title: "Settings",
-		href: "/settings",
-		icon: GearIcon,
-	},
-];
+import { buttonVariants } from "@/components/ui/button";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 
-function NavLinks() {
-	const pathName = usePathname();
-	return (
-		<>
-			{links.map((link) => {
-				const LinkIcon = link.icon;
-				return (
-					<Link
-						key={link.title}
-						href={link.href}
-						className={clsx(
-							"dark:bg-gray-800 flex h-[48px] items-center  gap-2 rounded-md bg-gray-50  text-sm font-medium hover:bg-sky-100 hover:text-blue-600 flex-none justify-start p-2 px-3 pl-5",
-							{
-								"bg-sky-100 text-blue-600 dark:bg-gray-700 dark:text-blue-400":
-									pathName.includes(link.title.toLowerCase()),
-							},
-						)}
-					>
-						<LinkIcon className="w-6" />
-						<p className="block">{link.title}</p>
-					</Link>
-				);
-			})}
-		</>
-	);
+interface NavProps {
+	isCollapsed: boolean;
+	links: {
+		title: string;
+		link: string;
+		label?: string;
+		icon: LucideIcon;
+	}[];
 }
 
-export default function Nav() {
+export function NavTest({ links, isCollapsed }: NavProps): JSX.Element {
+	const pathName = usePathname();
+	const isCurrentPath = (link: string) => {
+		if (pathName.startsWith(link)) {
+			return "default";
+		}
+		return "ghost";
+	};
 	return (
-		<div className="flex h-full flex-col -mt-1 -ml-2">
-			<Link
-				className="mb-2 flex  items-end justify-start rounded-md bg-blue-600 p-4 h-40"
-				href="/"
-			>
-				<div className="w-32 text-white md:w-40">Logo goes here</div>
-			</Link>
-			<div className="flex grow  justify-between flex-col space-x-0 space-y-2">
-				<NavLinks />
-				<div className="dark:bg-gray-950 h-auto w-full grow rounded-md bg-gray-50 block" />
+		<div
+			data-collapsed={true}
+			className="group flex flex-col gap-4 py-2 data-[collapsed=true]:py-2 h-screen"
+			style={{ justifyContent: "space-between" }}
+		>
+			<nav className="grid gap-1 px-2 group-[data-collapsed=true]:justify-center group-[data-collapsed=true]:px-2">
+				{links.map((link, index) =>
+					isCollapsed ? (
+						// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+						<Tooltip key={index} delayDuration={0}>
+							<TooltipTrigger asChild>
+								<Link
+									href={link.link}
+									className={cn(
+										buttonVariants({
+											variant: isCurrentPath(link.link),
+											size: "icon",
+										}),
+										"h-9 w-9",
+										isCurrentPath(link.link) === "default" &&
+											"dark:bg-muted dark:text-muted-foreground dark:hover:bg-muted dark:hover:text-white",
+									)}
+								>
+									<link.icon className="h-4 w-4" />
+									<span className="sr-only">{link.title}</span>
+								</Link>
+							</TooltipTrigger>
+							<TooltipContent side="right" className="flex items-center gap-4">
+								{link.title}
+								{link.label && (
+									<span className="ml-auto text-muted-foreground">
+										{link.label}
+									</span>
+								)}
+							</TooltipContent>
+						</Tooltip>
+					) : (
+						<Link
+							// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+							key={index}
+							href={link.link}
+							className={cn(
+								buttonVariants({
+									variant: isCurrentPath(link.link),
+									size: "sm",
+								}),
+								isCurrentPath(link.link) === "default" &&
+									"dark:bg-muted dark:text-white dark:hover:bg-muted dark:hover:text-white",
+								"justify-start",
+							)}
+						>
+							<link.icon className="mr-2 h-4 w-4" />
+							{link.title}
+							{link.label && (
+								<span
+									className={cn(
+										"ml-auto",
+										isCurrentPath(link.link) === "default" &&
+											"text-background dark:text-white",
+									)}
+								>
+									{link.label}
+								</span>
+							)}
+						</Link>
+					),
+				)}
+			</nav>
+
+			{/* Spacer div */}
+			<div style={{ flexGrow: 1 }} />
+			<div className="flex w-full py-2 px-2 gap-1">
+				{isCollapsed ? (
+					<Tooltip delayDuration={0}>
+						<TooltipTrigger asChild>
+							<Link
+								href="/settings"
+								className={cn(
+									buttonVariants({
+										variant: isCurrentPath("/settings"),
+										size: "icon",
+									}),
+									"h-9 w-9",
+									isCurrentPath("/settings") === "default" &&
+										"dark:bg-muted dark:text-muted-foreground dark:hover:bg-muted dark:hover:text-white",
+								)}
+							>
+								<Settings2 className="mr-2 h-4 w-4" />
+								<span className="sr-only">Settings</span>
+							</Link>
+						</TooltipTrigger>
+						<TooltipContent side="right" className="flex items-center gap-4">
+							Settings
+						</TooltipContent>
+					</Tooltip>
+				) : (
+					<Link
+						href="/settings"
+						className={cn(
+							buttonVariants({ variant: isCurrentPath("/settings") }),
+							isCurrentPath("/settings") === "default" &&
+								"dark:bg-muted dark:text-white dark:hover:bg-muted dark:hover:text-white",
+							"justify-start",
+							"w-full",
+						)}
+					>
+						<Settings2 className="mr-2 h-4 w-4" />
+						Settings
+					</Link>
+				)}
 			</div>
 		</div>
 	);
