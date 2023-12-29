@@ -44,8 +44,8 @@ export const useSettingsStore = create<
 				translation_command: "",
 			},
 			resizable_panel_state: {
-				home_default_sizes: [265, 440, 655],
-				home_nav_collapsed: false,
+				home_default_sizes: [4, 96],
+				home_nav_collapsed: true,
 				home_collapsed_size: 4,
 			},
 
@@ -88,7 +88,7 @@ export const useSettingsStore = create<
 		{
 			name: "settings_store",
 			storage: createJSONStorage(() => storage),
-			skipHydration: true,
+			// skipHydration: true,
 		},
 	),
 );

@@ -20,7 +20,7 @@ interface NavProps {
 	}[];
 }
 
-export function NavTest({ links, isCollapsed }: NavProps): JSX.Element {
+export function Nav({ links, isCollapsed }: NavProps): JSX.Element {
 	const pathName = usePathname();
 	const isCurrentPath = (link: string) => {
 		if (pathName.startsWith(link)) {
@@ -116,7 +116,7 @@ export function NavTest({ links, isCollapsed }: NavProps): JSX.Element {
 										"dark:bg-muted dark:text-muted-foreground dark:hover:bg-muted dark:hover:text-white",
 								)}
 							>
-								<Settings2 className="mr-2 h-4 w-4" />
+								<Settings2 className="h-4 w-4" />
 								<span className="sr-only">Settings</span>
 							</Link>
 						</TooltipTrigger>
@@ -135,7 +135,7 @@ export function NavTest({ links, isCollapsed }: NavProps): JSX.Element {
 							"w-full",
 						)}
 					>
-						<Settings2 className="mr-2 h-4 w-4" />
+						<Settings2 className="h-4 w-4" />
 						Settings
 					</Link>
 				)}

@@ -13,7 +13,8 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 } from "@/components/ui/popover";
-import { useSettingsStore, useTranslationStore } from "@/lib/stores";
+import { useSettingsStore } from "@/lib/stores/settings_store";
+import { useTranslationStore } from "@/lib/stores/translation_store";
 import { cn } from "@/lib/utils";
 import { ChevronUpDownIcon } from "@heroicons/react/24/outline";
 import { CheckIcon } from "@radix-ui/react-icons";

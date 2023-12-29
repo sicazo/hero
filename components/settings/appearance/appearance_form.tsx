@@ -10,7 +10,7 @@ import {
 	FormMessage,
 } from "@/components/ui/form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { useSettingsStore } from "@/lib/stores";
+import { useSettingsStore } from "@/lib/stores/settings_store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTheme } from "next-themes";
 import { useForm } from "react-hook-form";

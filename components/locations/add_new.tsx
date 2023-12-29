@@ -2,7 +2,6 @@
 import { Button } from "@/components/ui/button";
 import {
 	CardContent,
-	CardDescription,
 	CardFooter,
 	CardHeader,
 	CardTitle,
@@ -17,7 +16,6 @@ import {
 	FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { toast } from "@/components/ui/use-toast";
 import { useLocationStore } from "@/lib/stores/location_store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { open } from "@tauri-apps/api/dialog";
@@ -31,6 +29,9 @@ interface props {
 
 export default function AddNewLocation(props: props) {
 	const { locations, addLocation } = useLocationStore();
+	const getMyLoc = () => {
+		locations.find((location) => location.path === form.getValues("path"));
+	};
 	const addLocationFormSchema = z.object({
 		name: z
 			.string()
@@ -40,7 +41,11 @@ export default function AddNewLocation(props: props) {
 			.refine((name) => !locations.some((location) => location.name === name), {
 				message: "Location with this name already exists",
 			}),
-		path: z.string().default(""),
+		path: z
+			.string()
+			.refine((path) => !locations.some((location) => location.path === path), {
+				message: `Location with this path already exists under the name of ${getMyLoc}`,
+			}),
 	});
 	type LocationFormValues = z.infer<typeof addLocationFormSchema>;
 
