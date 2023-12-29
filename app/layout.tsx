@@ -28,12 +28,6 @@ export default function RootLayout({
 }) {
 	const { notifications_enabled, setNotifications } = useSettingsStore();
 	useEffect(() => {
-		useSettingsStore.persist.rehydrate();
-		useTranslationStore.persist.rehydrate();
-		useLocationStore.persist.rehydrate();
-		useStatisticsStore.persist.rehydrate();
-	}, []);
-	useEffect(() => {
 		if (notifications_enabled) {
 			isPermissionGranted().then((permission) => {
 				setNotifications(permission);

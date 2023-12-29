@@ -14,6 +14,7 @@ pub struct LocationStore {
 
 #[derive(Debug, Serialize, Deserialize, Clone, Type, Event)]
 pub struct LocationStoreState {
+    pub last_selected_location: Option<Location>,
     pub locations: Vec<Location>,
 }
 #[derive(Debug, Serialize, Deserialize, Clone, Type, Event)]
@@ -29,7 +30,9 @@ pub struct Location {
 impl Default for LocationStore {
     fn default() -> Self {
         Self {
-            state: LocationStoreState { locations: vec![] },
+            state: LocationStoreState {
+                last_selected_location: None,
+                locations: vec![] },
             version: 0.0,
         }
     }

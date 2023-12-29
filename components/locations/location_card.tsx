@@ -29,6 +29,9 @@ import { useLocationStore } from "@/lib/stores/location_store";
 
 export function LocationCard({ location }: { location: Location }) {
 	const { updateFavorite } = useLocationStore();
+
+	//Formatting the date string
+
 	return (
 		<Card className="m-5 my-2">
 			<CardHeader className="grid grid-cols-[1fr_85px] items-start gap-4 space-y-0">
@@ -65,7 +68,7 @@ export function LocationCard({ location }: { location: Location }) {
 				<div className="flex space-x-4 text-sm text-muted-foreground">
 					<div>Keys: {location.num_of_keys}</div>
 					<div>Untranslated Keys: {location.num_of_untranslated_keys}</div>
-					<div>Added: {location.added_at}</div>
+					<div>Added: {location.added_at.split(",")[0]}</div>
 				</div>
 			</CardContent>
 		</Card>

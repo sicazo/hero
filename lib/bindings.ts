@@ -28,7 +28,7 @@ locationStoreState: "plugin:tauri-specta:location-store-state"
 /** user-defined types **/
 
 export type Location = { name: string; path: string; is_favourite: boolean; num_of_keys: number; num_of_untranslated_keys: number; added_at: string }
-export type LocationStoreState = { locations: Location[] }
+export type LocationStoreState = { last_selected_location: Location | null; locations: Location[] }
 export type Notifications = { file_changes: boolean; finished_translation: boolean; finished_scan: boolean }
 export type ResizablePanelState = { home_default_sizes: number[]; home_nav_collapsed: boolean; home_collapsed_size: number }
 export type SettingsStoreState = { nav_open: boolean; theme: Theme; notifications_enabled: boolean; enabled_notification_types: Notifications; translation_settings: TranslationSettings; resizable_panel_state: ResizablePanelState }

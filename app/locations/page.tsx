@@ -58,7 +58,9 @@ export default function Page() {
 										onChange={(event) =>
 											setShownLocations(
 												locations.filter((loc) =>
-													loc.name.toLowerCase().includes(event.target.value),
+													loc.name
+														.toLowerCase()
+														.includes(event.target.value.toLowerCase()),
 												),
 											)
 										}

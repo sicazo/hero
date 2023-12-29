@@ -8,12 +8,14 @@ interface LocationStoreActions {
 	addLocation: (x: Location) => void;
 	removeLocation: (x: Location) => void;
 	updateFavorite: (x: Location) => void;
+	setLastSelectedLocation: (x: Location) => void;
 }
 export const useLocationStore = create<
 	LocationStoreState & LocationStoreActions
 >()(
 	persist(
 		immer((set, get) => ({
+			last_selected_location: null,
 			locations: [],
 			addLocation: (x: Location) => {
 				set((state) => {
@@ -35,11 +37,15 @@ export const useLocationStore = create<
 					});
 				});
 			},
+			setLastSelectedLocation: (x: Location) => {
+				set((state) => {
+					state.last_selected_location = x;
+				});
+			},
 		})),
 		{
 			name: "location_store",
 			storage: createJSONStorage(() => storage),
-			skipHydration: true,
 			version: 0.0,
 		},
 	),

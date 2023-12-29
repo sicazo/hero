@@ -8,7 +8,7 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { useLocationStore } from "@/lib/stores/location_store";
-import {Line, LineChart, ResponsiveContainer, Tooltip, YAxis} from "recharts";
+import { Line, LineChart, ResponsiveContainer, Tooltip, YAxis } from "recharts";
 
 export default function KeyStatisticsCard() {
 	const { locations } = useLocationStore();
@@ -21,15 +21,15 @@ export default function KeyStatisticsCard() {
 				</CardDescription>
 			</CardHeader>
 			<CardContent className="">
-				<div className="h-[200px]">
+				<div className="h-[150px]">
 					<ResponsiveContainer width="100%" height="100%">
 						<LineChart
 							data={locations}
 							margin={{
-								top: 5,
+								top: 10,
 								right: 10,
 								left: 10,
-								bottom: 5,
+								bottom: 10,
 							}}
 						>
 							<Tooltip

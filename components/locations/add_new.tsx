@@ -64,7 +64,7 @@ export default function AddNewLocation(props: props) {
 			is_favourite: false,
 			num_of_keys: response.data.num_of_keys,
 			num_of_untranslated_keys: 0,
-			added_at: new Date().toLocaleDateString(),
+			added_at: new Date().toLocaleString(),
 		});
 		props.setAddNew(false);
 	}
