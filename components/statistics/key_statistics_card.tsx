@@ -8,7 +8,7 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { useLocationStore } from "@/lib/stores/location_store";
-import { Line, LineChart, ResponsiveContainer, Tooltip } from "recharts";
+import {Line, LineChart, ResponsiveContainer, Tooltip, YAxis} from "recharts";
 
 export default function KeyStatisticsCard() {
 	const { locations } = useLocationStore();
@@ -20,7 +20,7 @@ export default function KeyStatisticsCard() {
 					The keys and untranslated keys of all locations
 				</CardDescription>
 			</CardHeader>
-			<CardContent className="pb-4">
+			<CardContent className="">
 				<div className="h-[200px]">
 					<ResponsiveContainer width="100%" height="100%">
 						<LineChart
@@ -76,7 +76,7 @@ export default function KeyStatisticsCard() {
 								type="monotone"
 								dataKey="num_of_untranslated_keys"
 								strokeWidth={2}
-								stroke="red"
+								stroke="#ff8080"
 								activeDot={{
 									r: 8,
 									style: { fill: "var(--theme-primary)" },
