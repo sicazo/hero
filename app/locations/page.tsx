@@ -1,14 +1,11 @@
 "use client";
 
 import AddNewLocation from "@/components/locations/add_new";
-import { LocationCard } from "@/components/locations/location_card";
 import LocationList from "@/components/locations/location_list";
-import NoLocations from "@/components/locations/no_locations";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Location as TranslationLocation } from "@/lib/bindings";
 import { useLocationStore } from "@/lib/stores/location_store";
 import { Search } from "lucide-react";
 import { useEffect, useState } from "react";
