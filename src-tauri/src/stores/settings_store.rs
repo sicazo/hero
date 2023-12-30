@@ -17,6 +17,7 @@ pub struct SettingsStoreState {
     pub nav_open: bool,
     pub theme: Theme,
     pub notifications_enabled: bool,
+    pub toast_rich_colors: bool,
     pub enabled_notification_types: Notifications,
     pub translation_settings: TranslationSettings,
     pub resizable_panel_state: ResizablePanelState,
@@ -77,6 +78,7 @@ impl Default for SettingsStore {
                 nav_open: true,
                 theme: Theme::default(),
                 notifications_enabled: false,
+                toast_rich_colors: true,
                 enabled_notification_types: Notifications {
                     file_changes: false,
                     finished_translation: false,

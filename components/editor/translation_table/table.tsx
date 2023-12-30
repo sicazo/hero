@@ -14,6 +14,7 @@ import {
 
 import { TranslationTableViewOptions } from "@/components/editor/translation_table/column_toggle";
 import { TranslationTablePagination } from "@/components/editor/translation_table/pagination";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
 	Table,
@@ -82,6 +83,8 @@ export default function TranslationTable<TData, TValue>({
 		return () => window.removeEventListener("resize", handleResize);
 	}, [table, pageSize]);
 
+	const rowsSelected = table.getIsSomeRowsSelected();
+
 	return (
 		<div>
 			<div className="flex items-center py-2 justify-between">
@@ -93,7 +96,24 @@ export default function TranslationTable<TData, TValue>({
 					}
 					className="max-w-sm"
 				/>
-				<TranslationTableViewOptions table={table} />
+				<div className="flex space-x-2 items-center">
+					<Button
+						className="h-auto"
+						variant={rowsSelected ? "destructive" : "default"}
+						onClick={
+							rowsSelected
+								? () => {
+										console.log("delete");
+								  }
+								: () => {
+										console.log("add");
+								  }
+						}
+					>
+						{rowsSelected ? "Delete Rows" : "Add"}
+					</Button>
+					<TranslationTableViewOptions table={table} />
+				</div>
 			</div>
 			<div className="rounded-md border">
 				<Table className="overflow-hidden">

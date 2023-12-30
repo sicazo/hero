@@ -22,6 +22,7 @@ interface SettingsStoreActions {
 	setDefaultLanguage: (x: string) => void;
 	setHomePanelSizes: (x: number[]) => void;
 	updateNavCollapsed: (x: boolean) => void;
+	setToastRichColors: (x: boolean) => void;
 }
 
 export const useSettingsStore = create<
@@ -32,6 +33,7 @@ export const useSettingsStore = create<
 			nav_open: true,
 			theme: "light",
 			notifications_enabled: false,
+			toast_rich_colors: true,
 			enabled_notification_types: {
 				file_changes: false,
 				finished_translation: false,
@@ -82,6 +84,11 @@ export const useSettingsStore = create<
 			updateNavCollapsed: (x) => {
 				set((state) => {
 					state.resizable_panel_state.home_nav_collapsed = x;
+				});
+			},
+			setToastRichColors: (x) => {
+				set((state) => {
+					state.toast_rich_colors = x;
 				});
 			},
 		})),

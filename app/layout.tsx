@@ -35,6 +35,7 @@ export default function RootLayout({
 		}
 	}, [notifications_enabled, setNotifications]);
 	const theme = useSettingsStore((state) => state.theme);
+	const { toast_rich_colors } = useSettingsStore();
 	const { home_default_sizes, home_nav_collapsed, home_collapsed_size } =
 		useSettingsStore((state) => state.resizable_panel_state);
 	const setHomePanelSizes = useSettingsStore(
@@ -107,7 +108,7 @@ export default function RootLayout({
 								</ResizablePanel>
 							</ResizablePanelGroup>
 						</TooltipProvider>
-						<Toaster />
+						<Toaster richColors={toast_rich_colors} />
 					</ThemeProvider>
 					{/*<ReactQueryDevtools />*/}
 				</QueryClientProvider>

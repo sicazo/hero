@@ -7,9 +7,13 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { TranslationEntry } from "@/lib/bindings";
 import { useLocationStore } from "@/lib/stores/location_store";
 import { useSettingsStore } from "@/lib/stores/settings_store";
+import { useTranslationStore } from "@/lib/stores/translation_store";
 import { DialogTrigger } from "@radix-ui/react-dialog";
+import { useMutation } from "@tanstack/react-query";
 import { ColumnDef } from "@tanstack/react-table";
+import axios from "axios";
 import { ArrowUpDown, Pencil, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 
 export const columns: ColumnDef<TranslationEntry>[] = [
 	{
@@ -88,24 +92,58 @@ export const columns: ColumnDef<TranslationEntry>[] = [
 	{
 		accessorKey: "actions",
 		header: "",
-		cell: ({ row }) => (
-			<div className="flex w-[40px]">
-				<Dialog>
-					<DialogTrigger asChild>
-						<Button variant="ghost" className="">
-							<Pencil className=" w-4" />
-						</Button>
-					</DialogTrigger>
-					<DialogContent className="w-[80vw]">
-						<EditTranslationDialog translation={row.original} />
-					</DialogContent>
-				</Dialog>
+		cell: ({ row }) => {
+			const { last_selected_location } = useLocationStore();
+			const { translation_entries, setTranslationEntries } =
+				useTranslationStore();
+			const deleteMutation = useMutation({
+				mutationKey: ["delete_translation", row.original.key],
+				mutationFn: async () => {
+					await axios.post("http://localhost:3001/translation/delete", {
+						translations: [
+							{
+								path: last_selected_location?.path,
+								ts_key: row.original.key,
+								json_key: row.original.value,
+							},
+						],
+					});
+				},
+				onSuccess: () => {
+					toast.success("Translation deleted");
+					setTranslationEntries(
+						translation_entries.filter(
+							(entry) => entry.key !== row.original.key,
+						),
+					);
+				},
+				onError: (e) => {
+					toast.error(<p>Failed to delete translation <br /><code>{e.message}</code></p>);
+				},
+			});
+			return (
+				<div className="flex w-[40px]">
+					<Dialog>
+						<DialogTrigger asChild>
+							<Button variant="ghost" className="">
+								<Pencil className=" w-4" />
+							</Button>
+						</DialogTrigger>
+						<DialogContent className="w-[80vw]">
+							<EditTranslationDialog translation={row.original} />
+						</DialogContent>
+					</Dialog>
 
-				<Button variant="ghost" className="">
-					<Trash2 className=" w-4" />
-				</Button>
-			</div>
-		),
+					<Button
+						variant="ghost"
+						className=""
+						onClick={() => deleteMutation.mutate()}
+					>
+						<Trash2 className=" w-4" />
+					</Button>
+				</div>
+			);
+		},
 		enableSorting: false,
 		enableHiding: false,
 		enableResizing: false,

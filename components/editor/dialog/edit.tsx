@@ -3,7 +3,6 @@
 import { Button } from "@/components/ui/button";
 import {
 	CardContent,
-	CardDescription,
 	CardFooter,
 	CardHeader,
 	CardTitle,
@@ -28,6 +27,7 @@ export default function EditTranslationDialog({
 		const orderedTranslations = Object.keys(translation.translations)
 			.sort()
 			.reduce((obj, key) => {
+				// @ts-ignore
 				obj[key] = translation.translations[key];
 				return obj;
 			}, {});
