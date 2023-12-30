@@ -3,38 +3,35 @@
          export const commands = {
 async greet() : Promise<string> {
 return await TAURI_INVOKE("plugin:tauri-specta|greet");
-},
-async removeStore(store: string) : Promise<null> {
-return await TAURI_INVOKE("plugin:tauri-specta|remove_store", { store });
-},
-async getStore(store: string) : Promise<string> {
-return await TAURI_INVOKE("plugin:tauri-specta|get_store", { store });
-},
-async updateStore(store: string, value: string) : Promise<null> {
-return await TAURI_INVOKE("plugin:tauri-specta|update_store", { store, value });
 }
 }
 
 export const events = __makeEvents__<{
 settingsStoreState: SettingsStoreState,
 translationStoreState: TranslationStoreState,
-locationStoreState: LocationStoreState
+locationStoreState: LocationStoreState,
+data: Data
 }>({
 settingsStoreState: "plugin:tauri-specta:settings-store-state",
 translationStoreState: "plugin:tauri-specta:translation-store-state",
-locationStoreState: "plugin:tauri-specta:location-store-state"
+locationStoreState: "plugin:tauri-specta:location-store-state",
+data: "plugin:tauri-specta:data"
 })
 
 /** user-defined types **/
 
+export type Data = { settings_store: SettingsStore; translation_store: TranslationStore; location_store: LocationStore }
 export type Location = { name: string; path: string; is_favourite: boolean; num_of_keys: number; num_of_untranslated_keys: number; added_at: string }
+export type LocationStore = { state: LocationStoreState; version: number }
 export type LocationStoreState = { last_selected_location: Location | null; locations: Location[] }
 export type Notifications = { file_changes: boolean; finished_translation: boolean; finished_scan: boolean }
 export type ResizablePanelState = { home_default_sizes: number[]; home_nav_collapsed: boolean; home_collapsed_size: number }
+export type SettingsStore = { state: SettingsStoreState; version: number }
 export type SettingsStoreState = { nav_open: boolean; theme: Theme; notifications_enabled: boolean; toast_rich_colors: boolean; enabled_notification_types: Notifications; translation_settings: TranslationSettings; resizable_panel_state: ResizablePanelState }
 export type Theme = "light" | "dark"
 export type TranslationEntry = { key: string; value: string; translations: { [key in string]: string }; in_use: boolean }
 export type TranslationSettings = { translate_new_strings: boolean; translate_updated_strings: boolean; default_language: string; translation_command: string }
+export type TranslationStore = { state: TranslationStoreState; version: number }
 export type TranslationStoreState = { languages: string[]; translation_entries: TranslationEntry[] }
 
 /** tauri-specta globals **/

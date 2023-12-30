@@ -69,8 +69,8 @@ dependencies:
     specifier: ^8.11.2
     version: 8.11.2(react-dom@18.2.0)(react@18.2.0)
   '@tauri-apps/api':
-    specifier: 1.5.1
-    version: 1.5.1
+    specifier: 1.5.3
+    version: 1.5.3
   axios:
     specifier: ^1.6.2
     version: 1.6.2
@@ -1630,6 +1630,11 @@ packages:
 
   /@tauri-apps/api@1.5.1:
     resolution: {integrity: sha512-6unsZDOdlXTmauU3NhWhn+Cx0rODV+rvNvTdvolE5Kls5ybA6cqndQENDt1+FS0tF7ozCP66jwWoH6a5h90BrA==}
+    engines: {node: '>= 14.6.0', npm: '>= 6.6.0', yarn: '>= 1.19.1'}
+    dev: false
+
+  /@tauri-apps/api@1.5.3:
+    resolution: {integrity: sha512-zxnDjHHKjOsrIzZm6nO5Xapb/BxqUq1tc7cGkFXsFkGTsSWgCPH1D8mm0XS9weJY2OaR73I3k3S+b7eSzJDfqA==}
     engines: {node: '>= 14.6.0', npm: '>= 6.6.0', yarn: '>= 1.19.1'}
     dev: false
 

@@ -32,20 +32,21 @@ export default function MonthlyLocationChangeCard() {
 	useEffect(() => {
 		const changes: Partial<Record<string, number>> = {};
 		let total = 0;
-		for (const location of locations) {
-			// convert date string to Date object
-			const date = convertToJSDate(location.added_at);
-			const monthKey = `${date.getFullYear()}-${date.getMonth() + 1}`;
-			total = total + 1;
-			changes[monthKey] = total;
+		if (locations.length > 0) {
+			for (const location of locations) {
+				// convert date string to Date object
+				const date = convertToJSDate(location.added_at);
+				const monthKey = `${date.getFullYear()}-${date.getMonth() + 1}`;
+				total = total + 1;
+				changes[monthKey] = total;
+			}
+			const result = Object.entries(changes).map(([date, total]) => ({
+				date,
+				total,
+			}));
+			setMonthlyChanges(result as MonthlyLocationChange[]);
 		}
-		const result = Object.entries(changes).map(([date, total]) => ({
-			date,
-			total,
-		}));
-		setMonthlyChanges(result as MonthlyLocationChange[]);
 	}, [locations]);
-	console.log(monthlyChanges);
 
 	let changeInTotal = 0;
 	let changeInTotalPercent = "";

@@ -1,6 +1,6 @@
-import { Location, LocationStoreState } from "@/lib/bindings";
+"use client";
 import storage from "@/lib/stores/local_storage_handler";
-import { useTranslationStore } from "@/lib/stores/translation_store";
+import { Location, LocationStoreState } from "@/lib/bindings";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
@@ -47,7 +47,6 @@ export const useLocationStore = create<
 		{
 			name: "location_store",
 			storage: createJSONStorage(() => storage),
-			version: 0.0,
 		},
 	),
 );
