@@ -36,10 +36,15 @@ pub async fn init() -> Result<(), Box<dyn std::error::Error>> {
 
     io.ns("/", on_connect);
     io.ns("/custom", on_connect);
-    let translation_router = Router::new().route(
-        "/keys",
-        post(handlers::translation_handler::get_number_of_keys),
-    );
+    let translation_router = Router::new()
+        .route(
+            "/keys",
+            post(handlers::translation_handler::get_number_of_keys),
+        )
+        .route(
+            "/translations",
+            post(handlers::translation_handler::get_translations),
+        );
 
     let app = axum::Router::new()
         .nest("/translation", translation_router)

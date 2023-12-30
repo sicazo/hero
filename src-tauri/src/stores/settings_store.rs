@@ -6,7 +6,6 @@ use std::fmt::Display;
 use std::str::FromStr;
 use tauri_specta::Event;
 
-
 #[derive(Debug, Serialize, Deserialize, Clone, Type, Event)]
 pub struct SettingsStore {
     pub state: SettingsStoreState,

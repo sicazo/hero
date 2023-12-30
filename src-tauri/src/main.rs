@@ -2,8 +2,8 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use local_storage::{create_storage, get_store, remove_store, update_store};
-use std::thread;
 use specta::ts::ExportConfig;
+use std::thread;
 use stores::location_store::LocationStoreState;
 use stores::settings_store::SettingsStoreState;
 use stores::translation_store::TranslationStoreState;

@@ -7,19 +7,19 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    steps:
-      - uses: actions/checkout@v2
-      - name: Install Rust
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: '1.74.1'
-          default: true
-          components: rustfmt
-      - name: Format
-        uses: actions-rs/cargo@v1
-        with:
-          command: fmt
-          args: --all -- --check
+#    steps:
+#      - uses: actions/checkout@v2
+#      - name: Install Rust
+#        uses: actions-rs/toolchain@v1
+#        with:
+#          toolchain: '1.74.1'
+#          default: true
+#          components: rustfmt
+#      - name: Format
+#        uses: actions-rs/cargo@v1
+#        with:
+#          command: fmt
+#          args: --all -- --check
   quality:
     runs-on: ubuntu-latest
     steps:

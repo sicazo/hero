@@ -32,7 +32,8 @@ impl Default for LocationStore {
         Self {
             state: LocationStoreState {
                 last_selected_location: None,
-                locations: vec![] },
+                locations: vec![],
+            },
             version: 0.0,
         }
     }

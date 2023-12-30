@@ -1,5 +1,6 @@
 import { Location, LocationStoreState } from "@/lib/bindings";
 import storage from "@/lib/stores/local_storage_handler";
+import { useTranslationStore } from "@/lib/stores/translation_store";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
