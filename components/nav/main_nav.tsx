@@ -1,3 +1,5 @@
+"use client";
+
 import { LucideIcon, Settings2 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -31,7 +33,7 @@ export function Nav({ links, isCollapsed }: NavProps): JSX.Element {
 	return (
 		<div
 			data-collapsed={true}
-			className="group flex flex-col gap-4 py-2 data-[collapsed=true]:py-2 h-full"
+			className="group flex h-full flex-col gap-4 py-2 data-[collapsed=true]:py-2"
 			style={{ justifyContent: "space-between" }}
 		>
 			<nav className="grid gap-1 px-2 group-[data-collapsed=true]:justify-center group-[data-collapsed=true]:px-2">
@@ -59,7 +61,7 @@ export function Nav({ links, isCollapsed }: NavProps): JSX.Element {
 							<TooltipContent side="right" className="flex items-center gap-4">
 								{link.title}
 								{link.label && (
-									<span className="ml-auto text-muted-foreground">
+									<span className="text-muted-foreground ml-auto">
 										{link.label}
 									</span>
 								)}
@@ -76,7 +78,7 @@ export function Nav({ links, isCollapsed }: NavProps): JSX.Element {
 									size: "sm",
 								}),
 								isCurrentPath(link.link) === "default" &&
-									"dark:bg-muted dark:text-white dark:hover:bg-muted dark:hover:text-white",
+									"dark:bg-muted dark:hover:bg-muted dark:text-white dark:hover:text-white",
 								"justify-start",
 							)}
 						>
@@ -100,7 +102,7 @@ export function Nav({ links, isCollapsed }: NavProps): JSX.Element {
 
 			{/* Spacer div */}
 			<div style={{ flexGrow: 1 }} />
-			<div className="flex w-full py-2 px-2 gap-1">
+			<div className="flex w-full gap-1 px-2 py-2">
 				{isCollapsed ? (
 					<Tooltip delayDuration={0}>
 						<TooltipTrigger asChild>
@@ -130,7 +132,7 @@ export function Nav({ links, isCollapsed }: NavProps): JSX.Element {
 						className={cn(
 							buttonVariants({ variant: isCurrentPath("/settings") }),
 							isCurrentPath("/settings") === "default" &&
-								"dark:bg-muted dark:text-white dark:hover:bg-muted dark:hover:text-white",
+								"dark:bg-muted dark:hover:bg-muted dark:text-white dark:hover:text-white",
 							"justify-start",
 							"w-full",
 						)}

@@ -1,3 +1,4 @@
+"use client";
 import {
 	ChevronLeftIcon,
 	ChevronRightIcon,
@@ -12,12 +13,12 @@ interface DataTablePaginationProps<TData> {
 	table: Table<TData>;
 }
 
-export function TranslationTablePagination<TData>({
+export default function TranslationTablePagination<TData>({
 	table,
 }: DataTablePaginationProps<TData>) {
 	return (
-		<div className="flex items-center justify-between  mb-2">
-			<div className="flex-1 text-sm text-muted-foreground">
+		<div className="mb-2 flex items-center  justify-between">
+			<div className="text-muted-foreground flex-1 text-sm">
 				{table.getFilteredSelectedRowModel().rows.length} of{" "}
 				{table.getFilteredRowModel().rows.length} row(s) selected.
 			</div>
@@ -29,12 +30,12 @@ export function TranslationTablePagination<TData>({
 				<div className="flex items-center space-x-2">
 					<Button
 						variant="outline"
-						className="h-8 w-8 p-0 flex"
+						className="flex h-8 w-8 p-0"
 						onClick={() => table.setPageIndex(0)}
 						disabled={!table.getCanPreviousPage()}
 					>
 						<span className="sr-only">Go to first page</span>
-						<DoubleArrowLeftIcon className="h-4 w-4" />
+						<DoubleArrowLeftIcon className="h-4 w-4"/>
 					</Button>
 					<Button
 						variant="outline"
@@ -43,7 +44,7 @@ export function TranslationTablePagination<TData>({
 						disabled={!table.getCanPreviousPage()}
 					>
 						<span className="sr-only">Go to previous page</span>
-						<ChevronLeftIcon className="h-4 w-4" />
+						<ChevronLeftIcon className="h-4 w-4"/>
 					</Button>
 					<Button
 						variant="outline"
@@ -52,16 +53,16 @@ export function TranslationTablePagination<TData>({
 						disabled={!table.getCanNextPage()}
 					>
 						<span className="sr-only">Go to next page</span>
-						<ChevronRightIcon className="h-4 w-4" />
+						<ChevronRightIcon className="h-4 w-4"/>
 					</Button>
 					<Button
 						variant="outline"
-						className="h-8 w-8 p-0 flex"
+						className="flex h-8 w-8 p-0"
 						onClick={() => table.setPageIndex(table.getPageCount() - 1)}
 						disabled={!table.getCanNextPage()}
 					>
 						<span className="sr-only">Go to last page</span>
-						<DoubleArrowRightIcon className="h-4 w-4" />
+						<DoubleArrowRightIcon className="h-4 w-4"/>
 					</Button>
 				</div>
 			</div>

@@ -13,7 +13,7 @@ import {
 } from "@tanstack/react-table";
 
 import { TranslationTableViewOptions } from "@/components/editor/translation_table/column_toggle";
-import { TranslationTablePagination } from "@/components/editor/translation_table/pagination";
+import  TranslationTablePagination  from "@/components/editor/translation_table/pagination";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
