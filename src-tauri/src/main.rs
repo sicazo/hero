@@ -7,6 +7,7 @@ use std::thread;
 use stores::location_store::LocationStoreState;
 use stores::settings_store::SettingsStoreState;
 use stores::translation_store::TranslationStoreState;
+use crate::local_storage::types::Data;
 
 mod local_storage;
 mod server;
@@ -24,14 +25,12 @@ fn main() {
         let specta_builder = tauri_specta::ts::builder()
             .commands(tauri_specta::collect_commands![
                 greet,
-                remove_store,
-                get_store,
-                update_store
             ])
             .events(tauri_specta::collect_events!(
                 SettingsStoreState,
                 TranslationStoreState,
-                LocationStoreState
+                LocationStoreState,
+                Data
             ));
         let specta_builder = specta_builder.path("../lib/bindings.ts");
 

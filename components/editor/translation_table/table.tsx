@@ -13,7 +13,7 @@ import {
 } from "@tanstack/react-table";
 
 import { TranslationTableViewOptions } from "@/components/editor/translation_table/column_toggle";
-import { TranslationTablePagination } from "@/components/editor/translation_table/pagination";
+import TranslationTablePagination from "@/components/editor/translation_table/pagination";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -37,7 +37,7 @@ export default function TranslationTable<TData, TValue>({
 }: TranslationTableProps<TData, TValue>) {
 	const [sorting, setSorting] = useState<SortingState>([]);
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-	const initialStatePageSize = Math.floor(window.innerHeight / 80);
+	const initialStatePageSize = Math.floor(720 / 80);
 	const [rowSelection, setRowSelection] = useState({});
 	const [columnVisibility, setColumnVisibility] = useState<
 		Record<string, boolean>

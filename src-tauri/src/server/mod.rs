@@ -46,8 +46,14 @@ pub async fn init() -> Result<(), Box<dyn std::error::Error>> {
             post(handlers::translation_handler::get_translations),
         );
 
+    let store_router = Router::new()
+        .route("/set", post(handlers::storage_handler::set_item))
+        .route("/get", post(handlers::storage_handler::get_item))
+        .route("/delete", post(handlers::storage_handler::delete_item));
+
     let app = axum::Router::new()
         .nest("/translation", translation_router)
+        .nest("/store", store_router)
         .route("/", get(|| async { "Hello, World!" }))
         .layer(cors)
         .layer(layer);
