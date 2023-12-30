@@ -8,8 +8,7 @@ use crate::stores::translation_store::TranslationStore;
 use std::io::Read;
 use tracing::info;
 
-#[tauri::command]
-#[specta::specta]
+
 pub fn remove_store(store: String) {
     let storage = get_settings_file().expect("Failed to open settings.json");
     let mut data: Data = read_json_file("settings.json", &storage).unwrap();
@@ -18,8 +17,7 @@ pub fn remove_store(store: String) {
     write_json_file::<Data>(&data).expect("Failed to write to file");
 }
 
-#[tauri::command]
-#[specta::specta]
+
 pub fn update_store(store: String, value: String) {
     info!("update_store {}", store);
     let store_type = StoreType::from_string(store);
@@ -27,8 +25,7 @@ pub fn update_store(store: String, value: String) {
     write_json_file::<Data>(&data).expect("Failed to write to file");
 }
 
-#[tauri::command]
-#[specta::specta]
+
 pub fn get_store(store: String) -> String {
     info!("get_store {}", store);
     let store_type = StoreType::from_string(store);

@@ -1,4 +1,5 @@
 "use client";
+import storage from "@/lib/stores/local_storage_handler";
 import {
 	Location,
 	LocationStoreState,
@@ -8,7 +9,6 @@ import {
 	TranslationStoreState,
 	commands,
 } from "@/lib/bindings";
-import storage from "@/lib/stores/local_storage_handler";
 import { create } from "zustand";
 import { StateStorage, createJSONStorage, persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";

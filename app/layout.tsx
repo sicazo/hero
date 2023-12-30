@@ -8,7 +8,9 @@ import {
 } from "@/components/ui/resizable";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { useLocationStore } from "@/lib/stores/location_store";
 import { useSettingsStore } from "@/lib/stores/settings_store";
+import { useTranslationStore } from "@/lib/stores/translation_store";
 import { cn } from "@/lib/utils";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
@@ -34,6 +36,7 @@ export default function RootLayout({
 			});
 		}
 	}, [notifications_enabled, setNotifications]);
+
 	const theme = useSettingsStore((state) => state.theme);
 	const { toast_rich_colors } = useSettingsStore();
 	const { home_default_sizes, home_nav_collapsed, home_collapsed_size } =

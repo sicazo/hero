@@ -3,7 +3,6 @@ use crate::translation_handler::TranslationHandler;
 use axum::http::StatusCode;
 use axum::Json;
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
 use tracing::info;
 
 #[derive(Deserialize)]
