@@ -31,7 +31,7 @@ export function Nav({ links, isCollapsed }: NavProps): JSX.Element {
 	return (
 		<div
 			data-collapsed={true}
-			className="group flex flex-col gap-4 py-2 data-[collapsed=true]:py-2 h-screen"
+			className="group flex flex-col gap-4 py-2 data-[collapsed=true]:py-2 h-full"
 			style={{ justifyContent: "space-between" }}
 		>
 			<nav className="grid gap-1 px-2 group-[data-collapsed=true]:justify-center group-[data-collapsed=true]:px-2">

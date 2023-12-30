@@ -106,38 +106,41 @@ impl TranslationHandler {
                                 translation_entries.push(trans_entry);
                             }
                         } else {
-                            let trans_entry = TranslationEntry {
-                                key: ts_key.clone(),
-                                value: json_key.clone(),
-                                translations: HashMap::new(),
-                                in_use: false,
-                            };
-                            translation_entries.push(trans_entry);
+                            if let Some(entry) = translation_entries
+                                .iter_mut()
+                                .find(|entry| entry.value == *json_key)
+                            {
+                                entry
+                                    .translations
+                                    .insert(file_stem.clone(), "".to_owned());
+                            } else {
+                                let mut translations = HashMap::new();
+                                translations.insert(file_stem.clone(), "".to_owned());
+                                let trans_entry = TranslationEntry {
+                                    key: ts_key.clone(),
+                                    value: json_key.clone(),
+                                    translations,
+                                    in_use: true,
+                                };
+                                translation_entries.push(trans_entry);
+                            }
                         }
                     }
                 }
                 Err(e) => println!("{:?}", e),
             }
         }
+        translation_entries.iter_mut().for_each(|entry| {
+            if entry.translations.iter().all(|(key, value)| value == &"".to_owned()) {
+                entry.in_use = false;
+            }
+        });
         translation_entries
     }
 
     pub async fn get_translations(path: &str) -> Vec<TranslationEntry> {
         let keys = Self::get_key_values_from_messages_ts(path).await;
-        let translation_entries = Self::read_lang_files_in_locales(path, keys.clone());
-
-        // Extract keys that have a TranslationEntry
-        let filled_keys: Vec<String> = translation_entries
-            .iter()
-            .map(|entry| entry.key.clone())
-            .collect();
-
-        // Print keys that don't have a TranslationEntry
-        for key in keys.keys() {
-            if !filled_keys.contains(key) {
-                info!("Key without a TranslationEntry: {}", key);
-            }
-        }
+        let translation_entries = Self::read_lang_files_in_locales(path, keys);
         translation_entries
     }
 }

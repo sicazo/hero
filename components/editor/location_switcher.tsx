@@ -13,8 +13,9 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 } from "@/components/ui/popover";
-import {Location, TranslationEntry} from "@/lib/bindings";
+import { Location, TranslationEntry } from "@/lib/bindings";
 import { useLocationStore } from "@/lib/stores/location_store";
+import { useTranslationStore } from "@/lib/stores/translation_store";
 import { cn } from "@/lib/utils";
 import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons";
 import { useMutation } from "@tanstack/react-query";
@@ -30,25 +31,25 @@ type LocationSwitcherProps = PopoverTriggerProps;
 export default function LocationSwitcher({ className }: LocationSwitcherProps) {
 	const { last_selected_location, setLastSelectedLocation, locations } =
 		useLocationStore();
+	const { setTranslationEntries } = useTranslationStore();
 	const [open, setOpen] = useState(false);
 	const [selectedLocation, setSelectedLocation] = useState<Location | null>(
 		last_selected_location,
 	);
 	const [searchTerm, setSearchTerm] = useState("");
-	const getData = useMutation<{keys:TranslationEntry[]}>({
+	const getData = useMutation<{ keys: TranslationEntry[] }>({
 		mutationKey: [`get_location${selectedLocation?.name}`],
 		mutationFn: async () => {
 			const response = await axios.post(
 				"http://localhost:3001/translation/translations",
 				{ path: selectedLocation?.path },
 			);
-			return response.data
+			return response.data;
 		},
 		onSuccess: (data) => {
-			console.log(data.keys);
+			setTranslationEntries(data.keys);
 		},
 	});
-
 
 	return (
 		<Popover open={open} onOpenChange={setOpen}>

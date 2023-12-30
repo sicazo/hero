@@ -61,12 +61,12 @@
 		"windows": [
 			{
 				"fullscreen": false,
-				"height": 700,
+				"height": 720,
 				"resizable": true,
 				"title": "hero",
 				"width": 800,
-				"minHeight": 700,
-				"minWidth": 700
+				"minHeight": 720,
+				"minWidth": 720
 			}
 		]
 	}

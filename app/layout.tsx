@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { isPermissionGranted } from "@tauri-apps/api/notification";
+import { clsx } from "clsx";
 import { Database, Home, PencilRuler } from "lucide-react";
 import { Inter } from "next/font/google";
 import { useEffect, useState } from "react";
@@ -46,7 +47,7 @@ export default function RootLayout({
 	const queryClient = new QueryClient();
 	return (
 		<html lang="en">
-			<body className={inter.className}>
+			<body className={clsx(inter.className, "flex h-screen w-screen")}>
 				<QueryClientProvider client={queryClient}>
 					<ThemeProvider defaultTheme={theme}>
 						<TooltipProvider delayDuration={0}>
@@ -55,7 +56,7 @@ export default function RootLayout({
 								onLayout={(sizes: number[]) => {
 									setHomePanelSizes(sizes);
 								}}
-								className="h-full max-h-[800px] items-stretch"
+								className="h-full items-stretch"
 							>
 								<ResizablePanel
 									defaultSize={home_default_sizes[0]}
@@ -108,7 +109,7 @@ export default function RootLayout({
 						</TooltipProvider>
 						<Toaster />
 					</ThemeProvider>
-					<ReactQueryDevtools />
+					{/*<ReactQueryDevtools />*/}
 				</QueryClientProvider>
 			</body>
 		</html>
