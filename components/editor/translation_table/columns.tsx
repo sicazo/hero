@@ -4,6 +4,17 @@ import EditTranslationDialog from "@/components/editor/dialog/edit";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { TranslationEntry } from "@/lib/bindings";
 import { useLocationStore } from "@/lib/stores/location_store";
 import { useSettingsStore } from "@/lib/stores/settings_store";
@@ -12,7 +23,7 @@ import { DialogTrigger } from "@radix-ui/react-dialog";
 import { useMutation } from "@tanstack/react-query";
 import { ColumnDef } from "@tanstack/react-table";
 import axios from "axios";
-import { ArrowUpDown, Pencil, Trash2 } from "lucide-react";
+import { ArrowUpDown, Info, MoreVertical } from "lucide-react";
 import { toast } from "sonner";
 
 export const columns: ColumnDef<TranslationEntry>[] = [
@@ -77,16 +88,33 @@ export const columns: ColumnDef<TranslationEntry>[] = [
 	{
 		accessorKey: "translations",
 		header: ({ column }) => {
+			// eslint-disable-next-line react-hooks/rules-of-hooks
 			const default_language = useSettingsStore(
 				(state) => state.translation_settings.default_language,
 			);
-			return <div>{default_language}</div>;
+			return (
+				<Tooltip>
+					<div className="flex space-x-2 items-center w-[70px]">
+						<div>{default_language}</div>
+						<TooltipTrigger asChild>
+							<Info className="h-4 w-4" />
+						</TooltipTrigger>
+					</div>
+					<TooltipContent side="bottom">
+						If you want to change the default language, go to settings -{">"}{" "}
+						translations.
+					</TooltipContent>
+				</Tooltip>
+			);
 		},
 		cell: ({ row }) => {
+			// eslint-disable-next-line react-hooks/rules-of-hooks
 			const default_language = useSettingsStore(
 				(state) => state.translation_settings.default_language,
 			);
-			return <div>{row.original.translations[default_language]}</div>;
+			return (
+				<div className="">{row.original.translations[default_language]}</div>
+			);
 		},
 	},
 	{
@@ -118,29 +146,52 @@ export const columns: ColumnDef<TranslationEntry>[] = [
 					);
 				},
 				onError: (e) => {
-					toast.error(<p>Failed to delete translation <br /><code>{e.message}</code></p>);
+					toast.error(
+						<p>
+							Failed to delete translation <br />
+							<code>{e.message}</code>
+						</p>,
+					);
 				},
 			});
 			return (
-				<div className="flex w-[40px]">
+				<div className="flex w-auto">
 					<Dialog>
-						<DialogTrigger asChild>
-							<Button variant="ghost" className="">
-								<Pencil className=" w-4" />
-							</Button>
-						</DialogTrigger>
+						<DropdownMenu>
+							<DropdownMenuTrigger asChild>
+								<Button variant="ghost" className="mx-2">
+									<MoreVertical className=" w-4" />
+								</Button>
+							</DropdownMenuTrigger>
+							<DropdownMenuContent className="mx-2">
+								<DialogTrigger asChild>
+									<DropdownMenuItem>Edit</DropdownMenuItem>
+								</DialogTrigger>
+								<DropdownMenuItem
+									onClick={() =>
+										toast.warning(
+											"Are you sure you want to delete this translation?",
+											{
+												action: {
+													label: "Yes",
+													onClick: () => deleteMutation.mutate(),
+												},
+												cancel: {
+													label: "No",
+												},
+												duration: 15000,
+											},
+										)
+									}
+								>
+									Delete
+								</DropdownMenuItem>
+							</DropdownMenuContent>
+						</DropdownMenu>
 						<DialogContent className="w-[80vw]">
 							<EditTranslationDialog translation={row.original} />
 						</DialogContent>
 					</Dialog>
-
-					<Button
-						variant="ghost"
-						className=""
-						onClick={() => deleteMutation.mutate()}
-					>
-						<Trash2 className=" w-4" />
-					</Button>
 				</div>
 			);
 		},
