@@ -37,7 +37,7 @@ export default function TranslationTable<TData, TValue>({
 }: TranslationTableProps<TData, TValue>) {
 	const [sorting, setSorting] = useState<SortingState>([]);
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-	const initialStatePageSize = Math.floor(window.innerHeight / 76);
+	const initialStatePageSize = Math.floor(window.innerHeight / 80);
 	const [rowSelection, setRowSelection] = useState({});
 	const [columnVisibility, setColumnVisibility] = useState<
 		Record<string, boolean>
@@ -71,7 +71,7 @@ export default function TranslationTable<TData, TValue>({
 	});
 	useEffect(() => {
 		const handleResize = () => {
-			const newPageSize = Math.floor(window.innerHeight / 76);
+			const newPageSize = Math.floor(window.innerHeight / 80);
 			if (newPageSize !== pageSize) {
 				table.setPageSize(newPageSize);
 				setPageSize(newPageSize);

@@ -64,9 +64,9 @@
 				"height": 720,
 				"resizable": true,
 				"title": "hero",
-				"width": 800,
+				"width": 900,
 				"minHeight": 720,
-				"minWidth": 720
+				"minWidth": 970
 			}
 		]
 	}
