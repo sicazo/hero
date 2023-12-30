@@ -10,7 +10,7 @@ export default function Page() {
 		<div className="p-5">
 			<h2 className="text-2xl font-semibold">Statistics</h2>
 			<Separator />
-			<div className=" w-full grid grid-cols-2">
+			<div className="w-full grid grid-cols-2">
 				<KeyStatisticsCard />
 				<MonthlyLocationChangeCard />
 			</div>

@@ -1,10 +1,13 @@
 "use client";
 
+import EditTranslationDialog from "@/components/editor/dialog/edit";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { TranslationEntry } from "@/lib/bindings";
 import { useLocationStore } from "@/lib/stores/location_store";
 import { useSettingsStore } from "@/lib/stores/settings_store";
+import { DialogTrigger } from "@radix-ui/react-dialog";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown, Pencil, Trash2 } from "lucide-react";
 
@@ -65,6 +68,7 @@ export const columns: ColumnDef<TranslationEntry>[] = [
 		cell: ({ row }) => <div className="ml-4">{row.original.key}</div>,
 		enableHiding: true,
 		enableSorting: true,
+		sortDescFirst: false,
 	},
 	{
 		accessorKey: "translations",
@@ -86,9 +90,17 @@ export const columns: ColumnDef<TranslationEntry>[] = [
 		header: "",
 		cell: ({ row }) => (
 			<div className="flex w-[40px]">
-				<Button variant="ghost" className="">
-					<Pencil className=" w-4" />
-				</Button>
+				<Dialog>
+					<DialogTrigger asChild>
+						<Button variant="ghost" className="">
+							<Pencil className=" w-4" />
+						</Button>
+					</DialogTrigger>
+					<DialogContent className="w-[80vw]">
+						<EditTranslationDialog translation={row.original} />
+					</DialogContent>
+				</Dialog>
+
 				<Button variant="ghost" className="">
 					<Trash2 className=" w-4" />
 				</Button>
