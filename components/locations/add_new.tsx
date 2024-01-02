@@ -18,6 +18,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useLocationStore } from "@/lib/stores/location_store";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { os } from "@tauri-apps/api";
 import { open } from "@tauri-apps/api/dialog";
 import axios from "axios";
 import { useForm } from "react-hook-form";
@@ -82,7 +83,11 @@ export default function AddNewLocation(props: props) {
 		});
 		if (path !== null) {
 			path = path as string;
-			const cleaned = path.replace("/messages.ts", "");
+			const os_type = await os.type();
+			const cleaned =
+				os_type === "Darwin" || os_type === "Linux"
+					? path.replace("/messages.ts", "")
+					: path.replace("\\messages.ts", ""); // windows specific path shit :(
 			form.setValue("path", cleaned);
 		}
 	}

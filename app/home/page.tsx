@@ -4,6 +4,7 @@ import KeyStatisticsCard from "@/components/statistics/key_statistics_card";
 import MonthlyLocationChangeCard from "@/components/statistics/monthly_location_change_card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
+import { os } from "@tauri-apps/api";
 
 export default function Page() {
 	return (

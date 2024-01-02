@@ -18,13 +18,53 @@ impl TranslationHandler {
     fn create_sub_path(path: String, path_type: PathType) -> String {
         match path_type {
             PathType::MessageTsFile => {
-                format!("{}/messages.ts", path)
+                match std::env::consts::OS {
+                    "macos" => {
+                        format!("{}/messages.ts", path)
+                    }
+                    "windows" => {
+                        format!("{}\\messages.ts", path)
+                    }
+                    "linux" => {
+                        format!("{}/messages.ts", path)
+                    }
+                    _ => {
+                        format!("{}/messages.ts", path)
+                    }
+                }
+
             }
             PathType::TranslationDirectory => {
-                format!("{}/locales", path)
+                match std::env::consts::OS {
+                    "macos" => {
+                        format!("{}/locales", path)
+                    }
+                    "windows" => {
+                        format!("{}\\locales", path)
+                    }
+                    "linux" => {
+                        format!("{}/locales", path)
+                    }
+                    _ => {
+                        format!("{}/locales", path)
+                    }
+                }
             }
             PathType::TranslationExportFile => {
-                format!("{}/locales/locales.ts", path)
+                match std::env::consts::OS {
+                    "macos" => {
+                        format!("{}/locales/locales.ts", path)
+                    }
+                    "windows" => {
+                        format!("{}\\locales\\locales.ts", path)
+                    }
+                    "linux" => {
+                        format!("{}/locales/locales.ts", path)
+                    }
+                    _ => {
+                        format!("{}/locales/locales.ts", path)
+                    }
+                }
             }
         }
     }

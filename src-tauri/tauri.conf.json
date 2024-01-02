@@ -20,6 +20,12 @@
 			},
 			"window": {
 				"all": true
+			},
+			"os": {
+				"all": true
+			},
+			"path": {
+				"all": true
 			}
 		},
 		"updater": {
