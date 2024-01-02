@@ -4,12 +4,14 @@ use crate::stores::settings_store::SettingsStore;
 use crate::stores::translation_store::TranslationStore;
 use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
+use serde_json::{to_value, Value};
+use std::error::Error;
 use std::fs::{File, OpenOptions};
 use std::io;
 use std::io::{Read, Write};
-use tracing::info;
+use tauri::api::path;
 
-#[derive(PartialEq)]
+#[derive(PartialEq, Clone, Copy)]
 pub enum StoreType {
     SettingsStore,
     TranslationStore,
@@ -25,70 +27,39 @@ impl StoreType {
             _ => unreachable!(),
         }
     }
-    pub(crate) fn to_default(&self) -> Data {
+    pub(crate) fn to_default<T: Default>(&self) -> T {
         match self {
-            StoreType::SettingsStore => Data {
-                settings_store: SettingsStore::default(),
-                ..Data::default()
-            },
-            StoreType::TranslationStore => Data {
-                translation_store: TranslationStore::default(),
-                ..Data::default()
-            },
-            StoreType::LocationStore => Data {
-                location_store: LocationStore::default(),
-                ..Data::default()
-            },
+            StoreType::SettingsStore => T::default(),
+            StoreType::TranslationStore => T::default(),
+            StoreType::LocationStore => T::default(),
         }
     }
 }
 
-pub fn update_data<T>(store_type: StoreType, value: String) -> Data
-where
-    T: DeserializeOwned + Default,
-{
-    let mut storage = get_settings_file().expect("Failed to open settings.json");
+pub fn update_data(store_type: StoreType, value: String) -> Result<Value, Box<dyn Error>> {
+    let mut storage = get_settings_file(store_type)?;
     let mut content = String::new();
-    storage
-        .read_to_string(&mut content)
-        .expect("Failed to read settings.json");
-    let mut data: Data = serde_json::from_str(&content).unwrap();
-    match store_type {
-        StoreType::SettingsStore => {
-            data.settings_store = serde_json::from_str(&value).unwrap();
-        }
-        StoreType::TranslationStore => {
-            data.translation_store = serde_json::from_str(&value).unwrap();
-        }
-        StoreType::LocationStore => {
-            data.location_store = serde_json::from_str(&value).unwrap();
-        }
-    };
-    data
+    storage.read_to_string(&mut content)?;
+    let new_data: Value = serde_json::from_str(&value)?;
+
+    Ok(new_data)
 }
 
 pub fn get_data<T>(store_type: StoreType) -> String
 where
     T: Serialize + Default,
 {
-    let storage = get_settings_file().expect("Failed to open settings.json");
-    let content: Data = read_json_file("settings.json", &storage).unwrap();
-    let result: String;
-    match store_type {
-        StoreType::SettingsStore => {
-            result = serde_json::to_string(&content.settings_store).unwrap();
-        }
-        StoreType::TranslationStore => {
-            result = serde_json::to_string(&content.translation_store).unwrap();
-        }
-        StoreType::LocationStore => {
-            result = serde_json::to_string(&content.location_store).unwrap();
-        }
+    let storage = get_settings_file(store_type).expect("Failed to open settings.json");
+    let content = match store_type {
+        StoreType::SettingsStore => to_value(read_json_file::<SettingsStore>(&storage).unwrap()).expect("Failed to convert to value"),
+        StoreType::TranslationStore => to_value(read_json_file::<TranslationStore>(&storage).unwrap()).expect("Failed to convert to value"),
+        StoreType::LocationStore => to_value(read_json_file::<LocationStore>(&storage).unwrap()).expect("Failed to convert to value"),
     };
+    let result = serde_json::to_string(&content).unwrap();
     result
 }
 
-pub fn read_json_file<T>(_file_path: &str, file: &File) -> Result<T, io::Error>
+pub fn read_json_file<T>(file: &File) -> Result<T, io::Error>
 where
     T: for<'de> Deserialize<'de>,
 {
@@ -99,14 +70,18 @@ where
     Ok(data)
 }
 
-pub fn write_json_file<T>(data: &T) -> Result<(), io::Error>
+pub fn write_json_file<T>(data: &T, store: StoreType) -> Result<(), io::Error>
 where
     T: Serialize,
 {
     let config_dir = dirs::config_dir()
         .ok_or_else(|| io::Error::new(io::ErrorKind::NotFound, "Config directory not found"))?;
     let folder_path = config_dir.join("translationHero");
-    let file_path = folder_path.join("settings.json");
+    let file_path = match store {
+        StoreType::SettingsStore => folder_path.join("settings.json"),
+        StoreType::TranslationStore => folder_path.join("translations.json"),
+        StoreType::LocationStore => folder_path.join("locations.json"),
+    };
     let mut file = OpenOptions::new()
         .write(true)
         .create(true)
@@ -117,11 +92,15 @@ where
     Ok(())
 }
 
-pub fn get_settings_file() -> Result<File, io::Error> {
-    let config_dir = dirs::config_dir()
+pub fn get_settings_file(store: StoreType) -> Result<File, io::Error> {
+    let config_dir = path::config_dir()
         .ok_or_else(|| io::Error::new(io::ErrorKind::NotFound, "Config directory not found"))?;
     let folder_path = config_dir.join("translationHero");
-    let file_path = folder_path.join("settings.json");
+    let file_path = match store {
+        StoreType::SettingsStore => folder_path.join("settings.json"),
+        StoreType::TranslationStore => folder_path.join("translations.json"),
+        StoreType::LocationStore => folder_path.join("locations.json"),
+    };
     if !folder_path.exists() {
         std::fs::create_dir_all(&folder_path)?;
     }

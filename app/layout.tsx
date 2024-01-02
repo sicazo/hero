@@ -36,7 +36,11 @@ export default function RootLayout({
 			});
 		}
 	}, [notifications_enabled, setNotifications]);
-
+	useEffect(() => {
+		useSettingsStore.persist.rehydrate();
+		useLocationStore.persist.rehydrate()
+		useTranslationStore.persist.rehydrate()
+	}, []);
 	const theme = useSettingsStore((state) => state.theme);
 	const { toast_rich_colors } = useSettingsStore();
 	const { home_default_sizes, home_nav_collapsed, home_collapsed_size } =
