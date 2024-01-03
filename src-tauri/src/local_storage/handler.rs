@@ -1,14 +1,15 @@
 use crate::local_storage::types::{Data, StoreUpgrade};
-use crate::local_storage::{get_data, get_settings_file, read_json_file, update_data, write_json_file, StoreType, helper};
+use crate::local_storage::{
+    get_data, get_settings_file, helper, read_json_file, update_data, write_json_file, StoreType,
+};
 use crate::stores::location_store::LocationStore;
 use crate::stores::settings_store::SettingsStore;
 use crate::stores::translation_store::TranslationStore;
+use serde_json::{to_value, Value};
 use std::io::Read;
-use serde_json::{Value, to_value};
 use tracing::info;
 
 const CURRENT_STORE_VERSION: f32 = 1.0;
-
 
 pub fn remove_store(store: String) {
     let store = StoreType::from_string(store);
@@ -18,7 +19,6 @@ pub fn remove_store(store: String) {
     write_json_file::<Data>(&data, store).expect("Failed to write to file");
 }
 
-
 pub fn update_store(store: String, value: String) {
     info!("update_store {}", store);
     let store_type = StoreType::from_string(store);
@@ -26,16 +26,14 @@ pub fn update_store(store: String, value: String) {
     write_json_file(&data, store_type).expect("Failed to write to file");
 }
 
-
 pub fn get_store(store: String) -> String {
     info!("get_store {}", store);
     let store_type = StoreType::from_string(store);
     match store_type {
         StoreType::SettingsStore => get_data::<SettingsStore>(store_type),
         StoreType::TranslationStore => get_data::<TranslationStore>(store_type),
-        StoreType::LocationStore => get_data::<LocationStore>(store_type)
+        StoreType::LocationStore => get_data::<LocationStore>(store_type),
     }
-
 }
 
 pub fn create_storage() -> Result<(), Box<dyn std::error::Error>> {
@@ -51,7 +49,7 @@ pub fn create_storage() -> Result<(), Box<dyn std::error::Error>> {
             .read_to_string(&mut contents)
             .expect("Failed to read settings.json");
         let data: Value = if contents.is_empty() {
-           match store {
+            match store {
                 StoreType::SettingsStore => to_value(&SettingsStore::default()).unwrap(),
                 StoreType::TranslationStore => to_value(&TranslationStore::default()).unwrap(),
                 StoreType::LocationStore => to_value(&LocationStore::default()).unwrap(),
@@ -61,21 +59,24 @@ pub fn create_storage() -> Result<(), Box<dyn std::error::Error>> {
                 StoreType::SettingsStore => {
                     let mut content: SettingsStore = serde_json::from_str(&contents)?;
                     if content.version < CURRENT_STORE_VERSION {
-                         SettingsStore::upgrade(&mut content, CURRENT_STORE_VERSION).expect("Failed to upgrade settings");
+                        SettingsStore::upgrade(&mut content, CURRENT_STORE_VERSION)
+                            .expect("Failed to upgrade settings");
                     }
                     to_value(&content).unwrap()
                 }
                 StoreType::TranslationStore => {
                     let mut content: TranslationStore = serde_json::from_str(&contents)?;
                     if content.version < CURRENT_STORE_VERSION {
-                        TranslationStore::upgrade(&mut content, CURRENT_STORE_VERSION).expect("Failed to upgrade translation");
+                        TranslationStore::upgrade(&mut content, CURRENT_STORE_VERSION)
+                            .expect("Failed to upgrade translation");
                     }
                     to_value(&content).unwrap()
                 }
                 StoreType::LocationStore => {
                     let mut content: LocationStore = serde_json::from_str(&contents)?;
                     if content.version < CURRENT_STORE_VERSION {
-                        LocationStore::upgrade(&mut content, CURRENT_STORE_VERSION).expect("Failed to upgrade location");
+                        LocationStore::upgrade(&mut content, CURRENT_STORE_VERSION)
+                            .expect("Failed to upgrade location");
                     }
                     to_value(&content).unwrap()
                 }
@@ -88,7 +89,6 @@ pub fn create_storage() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -97,4 +97,3 @@ mod tests {
         create_storage().expect("Failed to create storage");
     }
 }
-

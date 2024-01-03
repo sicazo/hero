@@ -1,3 +1,4 @@
+use super::TranslationHandler;
 use crate::stores::translation_store::TranslationEntry;
 use crate::translation_handler::PathType;
 use glob::glob;
@@ -6,11 +7,9 @@ use std::collections::HashMap;
 use std::fs;
 use std::fs::read_to_string;
 use tracing::info;
-use super::TranslationHandler;
-
 
 impl TranslationHandler {
-        fn extract_language_code(line: &str, language_code_regex: &regex::Regex) -> Option<String> {
+    fn extract_language_code(line: &str, language_code_regex: &regex::Regex) -> Option<String> {
         let captures = language_code_regex.captures(line)?;
         let language_code = captures.get(1)?;
         Some(language_code.as_str().to_string())
@@ -91,9 +90,7 @@ impl TranslationHandler {
                                 .iter_mut()
                                 .find(|entry| entry.value == *json_key)
                             {
-                                entry
-                                    .translations
-                                    .insert(file_stem.clone(), "".to_owned());
+                                entry.translations.insert(file_stem.clone(), "".to_owned());
                             } else {
                                 let mut translations = HashMap::new();
                                 translations.insert(file_stem.clone(), "".to_owned());
@@ -112,7 +109,11 @@ impl TranslationHandler {
             }
         }
         translation_entries.iter_mut().for_each(|entry| {
-            if entry.translations.iter().all(|(key, value)| value == &"".to_owned()) {
+            if entry
+                .translations
+                .iter()
+                .all(|(key, value)| value == &"".to_owned())
+            {
                 entry.in_use = false;
             }
         });
@@ -125,4 +126,3 @@ impl TranslationHandler {
         translation_entries
     }
 }
-

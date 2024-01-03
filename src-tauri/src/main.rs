@@ -1,12 +1,12 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+use crate::local_storage::types::Data;
 use local_storage::create_storage;
 use std::thread;
 use stores::location_store::LocationStoreState;
 use stores::settings_store::SettingsStoreState;
 use stores::translation_store::TranslationStoreState;
-use crate::local_storage::types::Data;
 
 mod local_storage;
 mod server;
@@ -22,9 +22,7 @@ fn greet() -> String {
 fn main() {
     let specta_builder = {
         let specta_builder = tauri_specta::ts::builder()
-            .commands(tauri_specta::collect_commands![
-                greet,
-            ])
+            .commands(tauri_specta::collect_commands![greet,])
             .events(tauri_specta::collect_events!(
                 SettingsStoreState,
                 TranslationStoreState,

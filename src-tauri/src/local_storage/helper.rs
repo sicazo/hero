@@ -51,9 +51,14 @@ where
 {
     let storage = get_settings_file(store_type).expect("Failed to open settings.json");
     let content = match store_type {
-        StoreType::SettingsStore => to_value(read_json_file::<SettingsStore>(&storage).unwrap()).expect("Failed to convert to value"),
-        StoreType::TranslationStore => to_value(read_json_file::<TranslationStore>(&storage).unwrap()).expect("Failed to convert to value"),
-        StoreType::LocationStore => to_value(read_json_file::<LocationStore>(&storage).unwrap()).expect("Failed to convert to value"),
+        StoreType::SettingsStore => to_value(read_json_file::<SettingsStore>(&storage).unwrap())
+            .expect("Failed to convert to value"),
+        StoreType::TranslationStore => {
+            to_value(read_json_file::<TranslationStore>(&storage).unwrap())
+                .expect("Failed to convert to value")
+        }
+        StoreType::LocationStore => to_value(read_json_file::<LocationStore>(&storage).unwrap())
+            .expect("Failed to convert to value"),
     };
     let result = serde_json::to_string(&content).unwrap();
     result
