@@ -38,8 +38,8 @@ export default function RootLayout({
 	}, [notifications_enabled, setNotifications]);
 	useEffect(() => {
 		useSettingsStore.persist.rehydrate();
-		useLocationStore.persist.rehydrate()
-		useTranslationStore.persist.rehydrate()
+		useLocationStore.persist.rehydrate();
+		useTranslationStore.persist.rehydrate();
 	}, []);
 	const theme = useSettingsStore((state) => state.theme);
 	const { toast_rich_colors } = useSettingsStore();

@@ -91,7 +91,7 @@ export const useSettingsStore = create<
 		{
 			name: "settings_store",
 			storage: createJSONStorage(() => storage),
-			skipHydration: true
+			skipHydration: true,
 		},
 	),
 );
