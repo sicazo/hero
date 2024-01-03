@@ -7,6 +7,7 @@ pub enum PathType {
     MessageTsFile,
     TranslationDirectory,
     TranslationExportFile,
+    EnGbFile,
 }
 
 impl PathType {
@@ -52,6 +53,20 @@ impl PathType {
                 }
                 _ => {
                     format!("{}/locales/locales.ts", path)
+                }
+            },
+            PathType::EnGbFile => match std::env::consts::OS {
+                "macos" => {
+                    format!("{}/locales/en-GB.json", path)
+                }
+                "windows" => {
+                    format!("{}\\locales\\en-GB.json", path)
+                }
+                "linux" => {
+                    format!("{}/locales/en-GB.json", path)
+                }
+                _ => {
+                    format!("{}/locales/en-GB.json", path)
                 }
             },
         }
