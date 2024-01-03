@@ -1,3 +1,5 @@
+use std::future::Future;
+use std::io::Error;
 use crate::stores::translation_store::TranslationEntry;
 use crate::translation_handler::TranslationHandler;
 use axum::http::StatusCode;
@@ -16,6 +18,13 @@ pub struct NumberOfKeysResponse {
 #[derive(Serialize)]
 pub struct TranslationsResponse {
     keys: Vec<TranslationEntry>,
+}
+#[derive(Deserialize)]
+pub struct AddNewKeyBody {
+    path: String,
+    ts_key: String,
+    json_key: String,
+    value: String,
 }
 pub async fn get_number_of_keys(
     Json(payload): Json<TranslationHandlerBody>,
@@ -45,4 +54,18 @@ pub async fn get_translations(
         StatusCode::OK,
         Json(TranslationsResponse { keys: key_value }),
     )
+}
+
+pub async fn add_new_key(Json(payload): Json<AddNewKeyBody>) -> (StatusCode) {
+    info!("Adding new key {} to {}",&payload.ts_key, &payload.path);
+    match TranslationHandler::add_new_key(
+        payload.path.clone(),
+        payload.ts_key.clone(),
+        payload.json_key.clone(),
+        payload.value.clone(),
+    ).await {
+        Ok(_) => (StatusCode::CREATED),
+        Err(_) => (StatusCode::INTERNAL_SERVER_ERROR)
+    }
+
 }

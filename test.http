@@ -1,3 +1,9 @@
+POST http://localhost:80/api/item
+Content-Type: application/json
+
+{}
+
+###
 POST http://localhost:3001/translation/keys
 Content-Type: application/json
 
@@ -7,10 +13,13 @@ Content-Type: application/json
 
 ###
 
-POST http://localhost:3001/translation/translations
+POST http://localhost:3001/translation/add
 Content-Type: application/json
 
 {
-  "path": "/Users/marius/Developer/Github/translation_hero/testfiles/"
+  "path": "/Users/marius/Developer/Github/translation_hero/testfiles/",
+  "ts_key": "testkey",
+  "json_key": "testkey",
+  "value": "testvalue"
 }
 

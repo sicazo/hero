@@ -36,6 +36,7 @@ pub async fn init() -> Result<(), Box<dyn std::error::Error>> {
 
     io.ns("/", on_connect);
     io.ns("/custom", on_connect);
+
     let translation_router = Router::new()
         .route(
             "/keys",
@@ -44,7 +45,8 @@ pub async fn init() -> Result<(), Box<dyn std::error::Error>> {
         .route(
             "/translations",
             post(handlers::translation_handler::get_translations),
-        );
+        )
+        .route("/add", post(handlers::translation_handler::add_new_key));
 
     let store_router = Router::new()
         .route("/set", post(handlers::storage_handler::set_item))

@@ -1,15 +1,15 @@
 use crate::stores::settings_store::SettingsStore;
 use crate::translation_handler::{PathType, TranslationHandler};
-use std::fs::{OpenOptions, read_to_string};
-use std::io::{Read, Write};
-use std::process::Command;
 use serde::Serialize;
 use serde_json::ser::PrettyFormatter;
 use serde_json::to_string_pretty;
+use std::fs::{read_to_string, OpenOptions};
+use std::io::{Read, Write};
+use std::process::Command;
 use tracing_subscriber::fmt::format;
 
 impl TranslationHandler {
-    pub fn add_new_key(
+    pub async fn add_new_key(
         path: String,
         ts_key: String,
         json_key: String,
@@ -30,24 +30,28 @@ impl TranslationHandler {
     }
 }
 fn run_translation_command(dir_path: &str, translation_command: String) {
-        let locales_path = PathType::TranslationDirectory.create_path(dir_path.to_string());
-        let program = if cfg!(target_os = "windows") { "powershell "} else {"bash"};
-        let command = format!("{} {}", translation_command, locales_path);
-        println!("{}", command);
-        let output = Command::new(program)
-            .current_dir(dir_path)
-            .args(&["-c", &command])
-            .output()
-            .expect("failed to execute mkdir");
-        println!("output: {:?}", output);
-
-
+    let locales_path = PathType::TranslationDirectory.create_path(dir_path.to_string());
+    let program = if cfg!(target_os = "windows") {
+        "powershell "
+    } else {
+        "bash"
+    };
+    let command = format!("{} {}", translation_command, locales_path);
+    println!("{}", command);
+    let output = Command::new(program)
+        .current_dir(dir_path)
+        .args(&["-c", &command])
+        .output()
+        .expect("failed to execute mkdir");
+    println!("output: {:?}", output);
 }
 
-fn add_key_to_messages_ts(path: String, ts_key: String, json_key: String) -> Result<(), std::io::Error> {
-    let mut file = OpenOptions::new()
-        .read(true)
-        .open(path.clone())?;
+fn add_key_to_messages_ts(
+    path: String,
+    ts_key: String,
+    json_key: String,
+) -> Result<(), std::io::Error> {
+    let mut file = OpenOptions::new().read(true).open(path.clone())?;
 
     let mut lines: Vec<String> = Vec::new();
     let mut check_line = 0;
@@ -76,11 +80,18 @@ fn add_key_to_messages_ts(path: String, ts_key: String, json_key: String) -> Res
 
     Ok(())
 }
-fn add_translation_to_default_language(path: String, json_key: String, en_gb_value: String) -> Result<(), std::io::Error> {
+fn add_translation_to_default_language(
+    path: String,
+    json_key: String,
+    en_gb_value: String,
+) -> Result<(), std::io::Error> {
     let en_gb_path = PathType::EnGbFile.create_path(path.clone());
     let content = read_to_string(en_gb_path.clone())?;
     let mut json_content: serde_json::Value = serde_json::from_str(&content)?;
-    json_content.as_object_mut().unwrap().insert(json_key, serde_json::Value::String(en_gb_value));
+    json_content
+        .as_object_mut()
+        .unwrap()
+        .insert(json_key, serde_json::Value::String(en_gb_value));
     let mut file = OpenOptions::new()
         .write(true)
         .truncate(true)
