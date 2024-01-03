@@ -1,8 +1,7 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use local_storage::{create_storage, get_store, remove_store, update_store};
-use specta::ts::ExportConfig;
+use local_storage::create_storage;
 use std::thread;
 use stores::location_store::LocationStoreState;
 use stores::settings_store::SettingsStoreState;

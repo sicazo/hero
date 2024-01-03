@@ -1,3 +1,4 @@
+use crate::local_storage::{get_data, StoreType};
 use crate::local_storage::types::StoreUpgrade;
 use serde::{Deserialize, Serialize};
 use specta::Type;
@@ -122,5 +123,12 @@ impl StoreUpgrade for SettingsStore {
             };
         }
         Ok(())
+    }
+}
+
+impl SettingsStore {
+    pub fn get_translation_values() -> TranslationSettings {
+       let data = serde_json::from_str::<SettingsStore>(&get_data::<SettingsStore>(StoreType::SettingsStore)).unwrap();
+        data.state.translation_settings
     }
 }
