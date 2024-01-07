@@ -1,11 +1,9 @@
-use std::future::Future;
-use std::io::Error;
-use crate::stores::translation_store::TranslationEntry;
-use crate::translation_handler::TranslationHandler;
+use translation_handler::TranslationHandler;
 use axum::http::StatusCode;
 use axum::Json;
 use serde::{Deserialize, Serialize};
 use tracing::info;
+use local_storage::stores::translation_store::TranslationEntry;
 
 #[derive(Deserialize)]
 pub struct TranslationHandlerBody {
@@ -56,7 +54,7 @@ pub async fn get_translations(
     )
 }
 
-pub async fn add_new_key(Json(payload): Json<AddNewKeyBody>) -> (StatusCode) {
+pub async fn add_new_key(Json(payload): Json<AddNewKeyBody>) -> StatusCode {
     info!("Adding new key {} to {}",&payload.ts_key, &payload.path);
     match TranslationHandler::add_new_key(
         payload.path.clone(),
@@ -64,8 +62,8 @@ pub async fn add_new_key(Json(payload): Json<AddNewKeyBody>) -> (StatusCode) {
         payload.json_key.clone(),
         payload.value.clone(),
     ).await {
-        Ok(_) => (StatusCode::CREATED),
-        Err(_) => (StatusCode::INTERNAL_SERVER_ERROR)
+        Ok(_) => StatusCode::CREATED,
+        Err(_) => StatusCode::INTERNAL_SERVER_ERROR
     }
 
 }

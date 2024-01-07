@@ -1,14 +1,12 @@
-mod handlers;
-use axum::routing::{get, post};
 use axum::Router;
+use axum::routing::{get, post};
 use serde_json::Value;
-use socketioxide::{
-    extract::{Bin, Data, SocketRef},
-    SocketIo,
-};
+use socketioxide::extract::{Bin, Data, SocketRef};
+use socketioxide::SocketIo;
 use tower_http::cors::{Any, CorsLayer};
 use tracing::info;
 use tracing_subscriber::FmtSubscriber;
+mod handlers;
 
 fn on_connect(socket: SocketRef, Data(data): Data<Value>) {
     info!("Socket.IO connected: {:?} {:?}", socket.ns(), socket.id);
@@ -22,7 +20,6 @@ fn on_connect(socket: SocketRef, Data(data): Data<Value>) {
         },
     );
 }
-
 #[tokio::main]
 pub async fn init() -> Result<(), Box<dyn std::error::Error>> {
     tracing::subscriber::set_global_default(FmtSubscriber::default())?;

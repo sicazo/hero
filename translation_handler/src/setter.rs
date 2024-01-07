@@ -1,12 +1,11 @@
-use crate::stores::settings_store::SettingsStore;
-use crate::translation_handler::{PathType, TranslationHandler};
-use serde::Serialize;
+
 use serde_json::ser::PrettyFormatter;
-use serde_json::to_string_pretty;
 use std::fs::{read_to_string, OpenOptions};
 use std::io::{Read, Write};
 use std::process::Command;
-use tracing_subscriber::fmt::format;
+use local_storage::stores::settings_store::SettingsStore;
+use crate::{PathType, TranslationHandler};
+use serde::Serialize;
 
 impl TranslationHandler {
     pub async fn add_new_key(

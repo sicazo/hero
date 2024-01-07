@@ -1,13 +1,11 @@
-use crate::local_storage::types::{Data, StoreUpgrade};
-use crate::local_storage::{
-    get_data, get_settings_file, helper, read_json_file, update_data, write_json_file, StoreType,
-};
+use std::io::Read;
+use serde_json::{to_value, Value};
+use tracing::info;
+use crate::{get_data, get_settings_file, read_json_file, StoreType, update_data, write_json_file};
 use crate::stores::location_store::LocationStore;
 use crate::stores::settings_store::SettingsStore;
 use crate::stores::translation_store::TranslationStore;
-use serde_json::{to_value, Value};
-use std::io::Read;
-use tracing::info;
+use crate::types::{Data, StoreUpgrade};
 
 const CURRENT_STORE_VERSION: f32 = 1.0;
 
@@ -30,17 +28,17 @@ pub fn get_store(store: String) -> String {
     info!("get_store {}", store);
     let store_type = StoreType::from_string(store);
     match store_type {
-        StoreType::SettingsStore => get_data::<SettingsStore>(store_type),
-        StoreType::TranslationStore => get_data::<TranslationStore>(store_type),
-        StoreType::LocationStore => get_data::<LocationStore>(store_type),
+        StoreType::SettingsStoreType => get_data::<SettingsStore>(store_type),
+        StoreType::TranslationStoreType => get_data::<TranslationStore>(store_type),
+        StoreType::LocationStoreType => get_data::<LocationStore>(store_type),
     }
 }
 
 pub fn create_storage() -> Result<(), Box<dyn std::error::Error>> {
     let stores = vec![
-        StoreType::SettingsStore,
-        StoreType::TranslationStore,
-        StoreType::LocationStore,
+        StoreType::SettingsStoreType,
+        StoreType::TranslationStoreType,
+        StoreType::LocationStoreType,
     ];
     for store in stores {
         let mut storage = get_settings_file(store)?;
@@ -50,13 +48,13 @@ pub fn create_storage() -> Result<(), Box<dyn std::error::Error>> {
             .expect("Failed to read settings.json");
         let data: Value = if contents.is_empty() {
             match store {
-                StoreType::SettingsStore => to_value(&SettingsStore::default()).unwrap(),
-                StoreType::TranslationStore => to_value(&TranslationStore::default()).unwrap(),
-                StoreType::LocationStore => to_value(&LocationStore::default()).unwrap(),
+                StoreType::SettingsStoreType => to_value(&SettingsStore::default()).unwrap(),
+                StoreType::TranslationStoreType => to_value(&TranslationStore::default()).unwrap(),
+                StoreType::LocationStoreType => to_value(&LocationStore::default()).unwrap(),
             }
         } else {
             match store {
-                StoreType::SettingsStore => {
+                StoreType::SettingsStoreType => {
                     let mut content: SettingsStore = serde_json::from_str(&contents)?;
                     if content.version < CURRENT_STORE_VERSION {
                         SettingsStore::upgrade(&mut content, CURRENT_STORE_VERSION)
@@ -64,7 +62,7 @@ pub fn create_storage() -> Result<(), Box<dyn std::error::Error>> {
                     }
                     to_value(&content).unwrap()
                 }
-                StoreType::TranslationStore => {
+                StoreType::TranslationStoreType => {
                     let mut content: TranslationStore = serde_json::from_str(&contents)?;
                     if content.version < CURRENT_STORE_VERSION {
                         TranslationStore::upgrade(&mut content, CURRENT_STORE_VERSION)
@@ -72,7 +70,7 @@ pub fn create_storage() -> Result<(), Box<dyn std::error::Error>> {
                     }
                     to_value(&content).unwrap()
                 }
-                StoreType::LocationStore => {
+                StoreType::LocationStoreType => {
                     let mut content: LocationStore = serde_json::from_str(&contents)?;
                     if content.version < CURRENT_STORE_VERSION {
                         LocationStore::upgrade(&mut content, CURRENT_STORE_VERSION)

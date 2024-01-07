@@ -1,6 +1,7 @@
 use axum::http::StatusCode;
 use axum::Json;
 use serde::Deserialize;
+use local_storage::{get_store, remove_store, update_store};
 
 #[derive(Deserialize)]
 pub struct SetStoreBody {
@@ -17,16 +18,16 @@ pub struct RemoveStoreBody {
 }
 
 pub async fn set_item(Json(payload): Json<SetStoreBody>) -> (StatusCode, Json<()>) {
-    crate::local_storage::handler::update_store(payload.name, payload.value);
+    update_store(payload.name, payload.value);
     (StatusCode::OK, Json(()))
 }
 
 pub async fn get_item(Json(payload): Json<GetStoreBody>) -> (StatusCode, Json<String>) {
-    let value = crate::local_storage::handler::get_store(payload.name);
+    let value = get_store(payload.name);
     (StatusCode::OK, Json(value))
 }
 
 pub async fn delete_item(Json(payload): Json<RemoveStoreBody>) -> (StatusCode, Json<()>) {
-    crate::local_storage::handler::remove_store(payload.name);
+    remove_store(payload.name);
     (StatusCode::OK, Json(()))
 }

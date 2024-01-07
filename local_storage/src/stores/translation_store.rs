@@ -1,10 +1,12 @@
-use crate::local_storage::types::StoreUpgrade;
 use serde::{Deserialize, Serialize};
 use specta::Type;
 use std::collections::HashMap;
 use std::error::Error;
 use std::str::FromStr;
 use tauri_specta::Event;
+use crate::stores::settings_store::{ResizablePanelState, SettingsStore};
+use crate::types::StoreUpgrade;
+
 const DEFAULT_LANGUAGES: [&str; 34] = [
     "de-DE", "de-AT", "de-CH", "de-LU", "nl-NL", "nl-BE", "en-GB", "en-US", "es-ES", "fr-FR",
     "fr-BE", "fr-CH", "it-IT", "it-CH", "pl-PL", "pt-PT", "hu-HU", "hr-HR", "sr-La", "sl-SI",
@@ -63,8 +65,7 @@ impl FromStr for TranslationStore {
 }
 
 impl StoreUpgrade for TranslationStore {
-    fn upgrade(&mut self, _current_data_version: f32) -> Result<(), Box<dyn Error>> {
-        // Upgrade logic for TranslationStore
+    fn upgrade(&mut self, current_data_version: f32) -> Result<(), Box<dyn Error>> {
         Ok(())
     }
 }

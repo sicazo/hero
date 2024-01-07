@@ -1,11 +1,11 @@
-use crate::local_storage::types::StoreUpgrade;
-use crate::local_storage::{get_data, StoreType};
 use serde::{Deserialize, Serialize};
 use specta::Type;
 use std::error::Error;
 use std::fmt::Display;
 use std::str::FromStr;
 use tauri_specta::Event;
+use crate::{get_data, StoreType};
+use crate::types::StoreUpgrade;
 
 #[derive(Debug, Serialize, Deserialize, Clone, Type, Event)]
 pub struct SettingsStore {
@@ -129,7 +129,7 @@ impl StoreUpgrade for SettingsStore {
 impl SettingsStore {
     pub fn get_translation_values() -> TranslationSettings {
         let data = serde_json::from_str::<SettingsStore>(&get_data::<SettingsStore>(
-            StoreType::SettingsStore,
+            StoreType::SettingsStoreType,
         ))
         .unwrap();
         data.state.translation_settings

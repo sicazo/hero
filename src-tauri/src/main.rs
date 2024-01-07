@@ -1,17 +1,15 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use crate::local_storage::types::Data;
-use local_storage::create_storage;
-use std::thread;
-use stores::location_store::LocationStoreState;
-use stores::settings_store::SettingsStoreState;
-use stores::translation_store::TranslationStoreState;
 
-mod local_storage;
-mod server;
-pub mod stores;
-mod translation_handler;
+use std::thread;
+use local_storage::create_storage;
+use local_storage::stores::location_store::LocationStoreState;
+use local_storage::stores::settings_store::SettingsStoreState;
+use local_storage::stores::translation_store::TranslationStoreState;
+use local_storage::types::Data;
+use server::init;
+
 
 #[tauri::command]
 #[specta::specta]
@@ -37,7 +35,7 @@ fn main() {
         .plugin(specta_builder)
         .setup(|app| {
             create_storage().expect("error while creating storage");
-            thread::spawn(move || server::init().unwrap());
+            thread::spawn(move || init().unwrap());
             Ok(())
         })
         .run(tauri::generate_context!())

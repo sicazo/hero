@@ -13,7 +13,6 @@ import { useSettingsStore } from "@/lib/stores/settings_store";
 import { useTranslationStore } from "@/lib/stores/translation_store";
 import { cn } from "@/lib/utils";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { isPermissionGranted } from "@tauri-apps/api/notification";
 import { clsx } from "clsx";
 import { Database, Home, PencilRuler } from "lucide-react";
@@ -36,11 +35,6 @@ export default function RootLayout({
 			});
 		}
 	}, [notifications_enabled, setNotifications]);
-	useEffect(() => {
-		useSettingsStore.persist.rehydrate();
-		useLocationStore.persist.rehydrate();
-		useTranslationStore.persist.rehydrate();
-	}, []);
 	const theme = useSettingsStore((state) => state.theme);
 	const { toast_rich_colors } = useSettingsStore();
 	const { home_default_sizes, home_nav_collapsed, home_collapsed_size } =
@@ -117,7 +111,6 @@ export default function RootLayout({
 						</TooltipProvider>
 						<Toaster richColors={toast_rich_colors} />
 					</ThemeProvider>
-					{/*<ReactQueryDevtools />*/}
 				</QueryClientProvider>
 			</body>
 		</html>

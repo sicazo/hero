@@ -1,10 +1,10 @@
-use crate::local_storage::types::StoreUpgrade;
+use std::error::Error;
 use serde::{Deserialize, Serialize};
 use specta::Type;
-use std::error::Error;
 use std::fmt::Display;
 use std::str::FromStr;
 use tauri_specta::Event;
+use crate::types::StoreUpgrade;
 
 #[derive(Debug, Serialize, Deserialize, Clone, Type, Event)]
 pub struct LocationStore {
@@ -47,8 +47,7 @@ impl FromStr for LocationStore {
 }
 
 impl StoreUpgrade for LocationStore {
-    fn upgrade(&mut self, _current_data_version: f32) -> Result<(), Box<dyn Error>> {
-        // Upgrade logic for SettingsStore
+    fn upgrade(&mut self, current_data_version: f32) -> Result<(), Box<dyn Error>> {
         Ok(())
     }
 }

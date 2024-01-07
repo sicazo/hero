@@ -9,15 +9,14 @@ import {
 } from "@/components/ui/card";
 import { DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import z from "zod";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 const formSchema = z.object({
-	ts_key: z.string().min(1),
-	json_key: z.string().min(1),
-	translation: z.string().min(1),
+	ts_key: z.string().min(1).max(255),
+	json_key: z.string().min(1).max(255),
+	translation: z.string().min(1).max(255),
 })
 export default function AddNewKeyDialog() {
 
@@ -72,15 +71,15 @@ export default function AddNewKeyDialog() {
 								<FormMessage />
 							</FormItem>
 						)}/>
-					</form>
-				</Form>
-			</CardContent>
-			<CardFooter className="justify-between space-x-2">
+						<CardFooter className="justify-between space-x-2">
 				<DialogTrigger>
 					<Button variant="ghost" type="button">Cancel</Button>
 				</DialogTrigger>
-					<Button>Submit</Button>
+					<Button type="submit">Submit</Button>
 			</CardFooter>
+					</form>
+				</Form>
+			</CardContent>
 		</>
 	);
 }
