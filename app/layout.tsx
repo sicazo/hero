@@ -19,6 +19,8 @@ import { Database, Home, PencilRuler } from "lucide-react";
 import { Inter } from "next/font/google";
 import { useEffect, useState } from "react";
 import "./globals.css";
+import {useRouter} from "next/navigation";
+
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -47,6 +49,16 @@ export default function RootLayout({
 	);
 	const [isCollapsed, setIsCollapsed] = useState(home_nav_collapsed);
 	const queryClient = new QueryClient();
+
+	const router = useRouter();
+	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+	useEffect(() => {
+		console.log("rehydrate");
+		useSettingsStore.persist.rehydrate();
+		useLocationStore.persist.rehydrate();
+		useTranslationStore.persist.rehydrate();
+		router.push("/home");
+	}, []);
 	return (
 		<html lang="en">
 			<body className={clsx(inter.className, "flex h-screen w-screen")}>
