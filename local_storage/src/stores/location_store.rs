@@ -1,4 +1,4 @@
-use crate::local_storage::types::StoreUpgrade;
+use crate::types::StoreUpgrade;
 use serde::{Deserialize, Serialize};
 use specta::Type;
 use std::error::Error;
@@ -14,16 +14,24 @@ pub struct LocationStore {
 
 #[derive(Debug, Serialize, Deserialize, Clone, Type, Event)]
 pub struct LocationStoreState {
+    #[serde(default)]
     pub last_selected_location: Option<Location>,
+    #[serde(default)]
     pub locations: Vec<Location>,
 }
 #[derive(Debug, Serialize, Deserialize, Clone, Type, Event)]
 pub struct Location {
+    #[serde(default)]
     pub name: String,
+    #[serde(default)]
     pub path: String,
+    #[serde(default)]
     pub is_favourite: bool,
+    #[serde(default)]
     pub num_of_keys: u32,
+    #[serde(default)]
     pub num_of_untranslated_keys: u32,
+    #[serde(default)]
     pub added_at: String,
 }
 
@@ -47,8 +55,7 @@ impl FromStr for LocationStore {
 }
 
 impl StoreUpgrade for LocationStore {
-    fn upgrade(&mut self, _current_data_version: f32) -> Result<(), Box<dyn Error>> {
-        // Upgrade logic for SettingsStore
+    fn upgrade(&mut self, current_data_version: f32) -> Result<(), Box<dyn Error>> {
         Ok(())
     }
 }

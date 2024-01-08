@@ -15,6 +15,7 @@ import {
 import { TranslationTableViewOptions } from "@/components/editor/translation_table/column_toggle";
 import TranslationTablePagination from "@/components/editor/translation_table/pagination";
 import { Button } from "@/components/ui/button";
+import { DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import {
 	Table,
@@ -97,22 +98,18 @@ export default function TranslationTable<TData, TValue>({
 					className="max-w-sm"
 				/>
 				<div className="flex space-x-2 items-center">
-					<Button
-						className="h-auto"
-						variant={rowsSelected ? "destructive" : "default"}
-						onClick={
-							rowsSelected
-								? () => {
-										console.log("delete");
-								  }
-								: () => {
-										console.log("add");
-								  }
-						}
-					>
-						{rowsSelected ? "Delete Rows" : "Add"}
+					<div>
+						<DialogTrigger>
+							<Button className="h-10" variant="default">
+								Add
+							</Button>
+						</DialogTrigger>
+					</div>
+					<Button disabled={!rowsSelected} className="h-10" variant="destructive">
+						Delete Selected Keys
 					</Button>
-					<TranslationTableViewOptions table={table} />
+
+					<TranslationTableViewOptions table={table}/>
 				</div>
 			</div>
 			<div className="rounded-md border">

@@ -47,7 +47,7 @@ export const useLocationStore = create<
 		{
 			name: "location_store",
 			storage: createJSONStorage(() => storage),
-			skipHydration: true
+			skipHydration: true,
 		},
 	),
 );

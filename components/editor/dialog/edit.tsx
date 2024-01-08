@@ -46,13 +46,13 @@ export default function EditTranslationDialog({
 				<div className="flex gap-2">
 					<div className="grid gap-2">
 						<Label htmlFor="subject">TS Key</Label>
-						<Input value={translation.key} placeholder="I need help with..." />
+						<Input value={translation.key} placeholder="I need help with..." autoComplete="off" autoCapitalize="off" spellCheck={false} />
 					</div>
 					<div className="grid gap-2">
 						<Label htmlFor="subject">Json Key</Label>
 						<Input
 							value={translation.value}
-							placeholder="I need help with..."
+							placeholder="I need help with..." autoComplete="off" autoCapitalize="off" spellCheck={false}
 						/>
 					</div>
 				</div>
@@ -66,7 +66,8 @@ export default function EditTranslationDialog({
 						placeholder="Please include all information relevant to your issue."
 						value={translationsJson}
 						onChange={(e) => setTranslationsJson(e.target.value)}
-						className="h-[300px]"
+						className="h-[300px] resize-none"
+						spellCheck={false}
 					/>
 				</div>
 			</CardContent>

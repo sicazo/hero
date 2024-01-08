@@ -21,7 +21,7 @@ export const useTranslationStore = create<
 		{
 			name: "translation_store",
 			storage: createJSONStorage(() => storage),
-			skipHydration: true
+			skipHydration: true,
 		},
 	),
 );

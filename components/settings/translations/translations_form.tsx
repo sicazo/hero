@@ -25,7 +25,7 @@ const translationFormSchema = z.object({
 	default_language: z.string().default("en-GB"),
 	translation_command: z
 		.string()
-		.refine((value) => value.startsWith("yarn translate") || value === "", {
+		.refine((value) => value.startsWith("yarn run translate") || value === "", {
 			message:
 				'The translation command has to be in the format "yarn translate <translation_key>", or an empty string if you don\'t want to use it.',
 		})
@@ -35,19 +35,20 @@ const translationFormSchema = z.object({
 export default function TranslationForm() {
 	const { updateTranslationSettings, translation_settings } =
 		useSettingsStore();
-	const defaultValues = {
-		...translation_settings,
-		translate_new_strings: translation_settings.translate_new_strings,
-		translate_updated_strings: translation_settings.translate_updated_strings,
-	};
 
 	const form = useForm<z.infer<typeof translationFormSchema>>({
 		resolver: zodResolver(translationFormSchema),
-		...defaultValues,
+		defaultValues: {
+			translation_command: translation_settings.translation_command,
+			translate_new_strings: translation_settings.translate_new_strings,
+			translate_updated_strings: translation_settings.translate_updated_strings,
+			default_language: translation_settings.default_language,
+		},
 	});
 	function onSubmit(values: z.infer<typeof translationFormSchema>) {
-		console.log(values);
+		updateTranslationSettings({ ...values });
 	}
+	console.log();
 	return (
 		<Form {...form}>
 			<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">

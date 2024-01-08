@@ -1,8 +1,7 @@
-use crate::local_storage::types::{Data, StoreUpgrade};
 use crate::stores::location_store::LocationStore;
 use crate::stores::settings_store::SettingsStore;
 use crate::stores::translation_store::TranslationStore;
-use serde::de::DeserializeOwned;
+use crate::types::{Data, StoreUpgrade};
 use serde::{Deserialize, Serialize};
 use serde_json::{to_value, Value};
 use std::error::Error;
@@ -13,25 +12,25 @@ use tauri::api::path;
 
 #[derive(PartialEq, Clone, Copy)]
 pub enum StoreType {
-    SettingsStore,
-    TranslationStore,
-    LocationStore,
+    SettingsStoreType,
+    TranslationStoreType,
+    LocationStoreType,
 }
 
 impl StoreType {
     pub(crate) fn from_string(s: String) -> Self {
         match s.as_str() {
-            "settings_store" => StoreType::SettingsStore,
-            "translation_store" => StoreType::TranslationStore,
-            "location_store" => StoreType::LocationStore,
+            "settings_store" => StoreType::SettingsStoreType,
+            "translation_store" => StoreType::TranslationStoreType,
+            "location_store" => StoreType::LocationStoreType,
             _ => unreachable!(),
         }
     }
     pub(crate) fn to_default<T: Default>(&self) -> T {
         match self {
-            StoreType::SettingsStore => T::default(),
-            StoreType::TranslationStore => T::default(),
-            StoreType::LocationStore => T::default(),
+            StoreType::SettingsStoreType => T::default(),
+            StoreType::TranslationStoreType => T::default(),
+            StoreType::LocationStoreType => T::default(),
         }
     }
 }
@@ -51,9 +50,18 @@ where
 {
     let storage = get_settings_file(store_type).expect("Failed to open settings.json");
     let content = match store_type {
-        StoreType::SettingsStore => to_value(read_json_file::<SettingsStore>(&storage).unwrap()).expect("Failed to convert to value"),
-        StoreType::TranslationStore => to_value(read_json_file::<TranslationStore>(&storage).unwrap()).expect("Failed to convert to value"),
-        StoreType::LocationStore => to_value(read_json_file::<LocationStore>(&storage).unwrap()).expect("Failed to convert to value"),
+        StoreType::SettingsStoreType => {
+            to_value(read_json_file::<SettingsStore>(&storage).unwrap())
+                .expect("Failed to convert to value")
+        }
+        StoreType::TranslationStoreType => {
+            to_value(read_json_file::<TranslationStore>(&storage).unwrap())
+                .expect("Failed to convert to value")
+        }
+        StoreType::LocationStoreType => {
+            to_value(read_json_file::<LocationStore>(&storage).unwrap())
+                .expect("Failed to convert to value")
+        }
     };
     let result = serde_json::to_string(&content).unwrap();
     result
@@ -78,9 +86,9 @@ where
         .ok_or_else(|| io::Error::new(io::ErrorKind::NotFound, "Config directory not found"))?;
     let folder_path = config_dir.join("translationHero");
     let file_path = match store {
-        StoreType::SettingsStore => folder_path.join("settings.json"),
-        StoreType::TranslationStore => folder_path.join("translations.json"),
-        StoreType::LocationStore => folder_path.join("locations.json"),
+        StoreType::SettingsStoreType => folder_path.join("settings.json"),
+        StoreType::TranslationStoreType => folder_path.join("translations.json"),
+        StoreType::LocationStoreType => folder_path.join("locations.json"),
     };
     let mut file = OpenOptions::new()
         .write(true)
@@ -97,9 +105,9 @@ pub fn get_settings_file(store: StoreType) -> Result<File, io::Error> {
         .ok_or_else(|| io::Error::new(io::ErrorKind::NotFound, "Config directory not found"))?;
     let folder_path = config_dir.join("translationHero");
     let file_path = match store {
-        StoreType::SettingsStore => folder_path.join("settings.json"),
-        StoreType::TranslationStore => folder_path.join("translations.json"),
-        StoreType::LocationStore => folder_path.join("locations.json"),
+        StoreType::SettingsStoreType => folder_path.join("settings.json"),
+        StoreType::TranslationStoreType => folder_path.join("translations.json"),
+        StoreType::LocationStoreType => folder_path.join("locations.json"),
     };
     if !folder_path.exists() {
         std::fs::create_dir_all(&folder_path)?;
