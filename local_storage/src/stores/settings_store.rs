@@ -1,11 +1,11 @@
+use crate::types::StoreUpgrade;
+use crate::{get_data, StoreType};
 use serde::{Deserialize, Serialize};
 use specta::Type;
 use std::error::Error;
 use std::fmt::Display;
 use std::str::FromStr;
 use tauri_specta::Event;
-use crate::{get_data, StoreType};
-use crate::types::StoreUpgrade;
 
 #[derive(Debug, Serialize, Deserialize, Clone, Type, Event)]
 pub struct SettingsStore {
@@ -15,9 +15,12 @@ pub struct SettingsStore {
 
 #[derive(Debug, Serialize, Deserialize, Clone, Type, Event)]
 pub struct SettingsStoreState {
+    #[serde(default)]
     pub nav_open: bool,
     pub theme: Theme,
+    #[serde(default)]
     pub notifications_enabled: bool,
+    #[serde(default)]
     pub toast_rich_colors: bool,
     pub enabled_notification_types: Notifications,
     pub translation_settings: TranslationSettings,
@@ -25,21 +28,31 @@ pub struct SettingsStoreState {
 }
 #[derive(Debug, Serialize, Deserialize, Clone, Type, Event)]
 pub struct Notifications {
+    #[serde(default)]
     file_changes: bool,
+    #[serde(default)]
     finished_translation: bool,
+    #[serde(default)]
     finished_scan: bool,
 }
 #[derive(Debug, Serialize, Deserialize, Clone, Type, Event)]
 pub struct ResizablePanelState {
+    #[serde(default)]
     pub home_default_sizes: Vec<f32>,
+    #[serde(default)]
     pub home_nav_collapsed: bool,
+    #[serde(default)]
     pub home_collapsed_size: i32,
 }
 #[derive(Debug, Serialize, Deserialize, Clone, Type, Event)]
 pub struct TranslationSettings {
+    #[serde(default)]
     pub translate_new_strings: bool,
+    #[serde(default)]
     pub translate_updated_strings: bool,
+    #[serde(default)]
     pub default_language: String,
+    #[serde(default)]
     pub translation_command: String,
 }
 
@@ -93,7 +106,7 @@ impl Default for SettingsStore {
                 },
                 resizable_panel_state: {
                     ResizablePanelState {
-                        home_default_sizes: vec![265.0, 400.0, 655.0],
+                        home_default_sizes: vec![265.0, 400.0],
                         home_nav_collapsed: false,
                         home_collapsed_size: 4,
                     }

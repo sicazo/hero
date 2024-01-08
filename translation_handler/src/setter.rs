@@ -1,11 +1,10 @@
-
+use crate::{PathType, TranslationHandler};
+use local_storage::stores::settings_store::SettingsStore;
+use serde::Serialize;
 use serde_json::ser::PrettyFormatter;
 use std::fs::{read_to_string, OpenOptions};
 use std::io::{Read, Write};
 use std::process::Command;
-use local_storage::stores::settings_store::SettingsStore;
-use crate::{PathType, TranslationHandler};
-use serde::Serialize;
 
 impl TranslationHandler {
     pub async fn add_new_key(
@@ -31,7 +30,7 @@ impl TranslationHandler {
 fn run_translation_command(dir_path: &str, translation_command: String) {
     let locales_path = PathType::TranslationDirectory.create_path(dir_path.to_string());
     let program = if cfg!(target_os = "windows") {
-        "powershell "
+        "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
     } else {
         "bash"
     };
@@ -112,10 +111,10 @@ mod tests {
 
     #[test]
     fn test_add_new_key() {
-        let path = String::from("/Users/marius/Developer/Github/translation_hero/testfiles");
+        let path = String::from(r"C:\\Users\\ihm1we\\Development\\LeadManagement\\app.dtp-admin.frontend\\src");
         let ts_key = String::from("test");
         let json_key = String::from("test");
         let en_gb_value = String::from("    test");
-        let result = TranslationHandler::add_new_key(path, ts_key, json_key, en_gb_value);
+        let result = TranslationHandler::add_new_key(path, ts_key, json_key, en_gb_value).unwrap();
     }
 }

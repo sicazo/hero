@@ -17,10 +17,9 @@ import { isPermissionGranted } from "@tauri-apps/api/notification";
 import { clsx } from "clsx";
 import { Database, Home, PencilRuler } from "lucide-react";
 import { Inter } from "next/font/google";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import "./globals.css";
-import {useRouter} from "next/navigation";
-
 
 const inter = Inter({ subsets: ["latin"] });
 

@@ -1,11 +1,10 @@
+use crate::types::StoreUpgrade;
 use serde::{Deserialize, Serialize};
 use specta::Type;
 use std::collections::HashMap;
 use std::error::Error;
 use std::str::FromStr;
 use tauri_specta::Event;
-use crate::stores::settings_store::{ResizablePanelState, SettingsStore};
-use crate::types::StoreUpgrade;
 
 const DEFAULT_LANGUAGES: [&str; 34] = [
     "de-DE", "de-AT", "de-CH", "de-LU", "nl-NL", "nl-BE", "en-GB", "en-US", "es-ES", "fr-FR",
@@ -22,15 +21,20 @@ pub struct TranslationStore {
 
 #[derive(Debug, Serialize, Deserialize, Clone, Type, Event)]
 pub struct TranslationStoreState {
+    #[serde(default)]
     pub languages: Vec<String>,
     pub translation_entries: Vec<TranslationEntry>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, Type, Event)]
 pub struct TranslationEntry {
+    #[serde(default)]
     pub key: String,
+    #[serde(default)]
     pub value: String,
+    #[serde(default)]
     pub translations: HashMap<String, String>,
+    #[serde(default)]
     pub in_use: bool,
 }
 

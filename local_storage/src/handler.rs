@@ -1,11 +1,11 @@
-use std::io::Read;
-use serde_json::{to_value, Value};
-use tracing::info;
-use crate::{get_data, get_settings_file, read_json_file, StoreType, update_data, write_json_file};
 use crate::stores::location_store::LocationStore;
 use crate::stores::settings_store::SettingsStore;
 use crate::stores::translation_store::TranslationStore;
 use crate::types::{Data, StoreUpgrade};
+use crate::{get_data, get_settings_file, read_json_file, update_data, write_json_file, StoreType};
+use serde_json::{to_value, Value};
+use std::io::Read;
+use tracing::info;
 
 const CURRENT_STORE_VERSION: f32 = 1.0;
 

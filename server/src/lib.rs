@@ -1,11 +1,14 @@
-use axum::Router;
 use axum::routing::{get, post};
+use axum::Router;
 use serde_json::Value;
 use socketioxide::extract::{Bin, Data, SocketRef};
 use socketioxide::SocketIo;
 use tower_http::cors::{Any, CorsLayer};
 use tracing::info;
 use tracing_subscriber::FmtSubscriber;
+use crate::handlers::storage_handler::store_router;
+use crate::handlers::translation_handler::translation_router;
+
 mod handlers;
 
 fn on_connect(socket: SocketRef, Data(data): Data<Value>) {
@@ -34,25 +37,11 @@ pub async fn init() -> Result<(), Box<dyn std::error::Error>> {
     io.ns("/", on_connect);
     io.ns("/custom", on_connect);
 
-    let translation_router = Router::new()
-        .route(
-            "/keys",
-            post(handlers::translation_handler::get_number_of_keys),
-        )
-        .route(
-            "/translations",
-            post(handlers::translation_handler::get_translations),
-        )
-        .route("/add", post(handlers::translation_handler::add_new_key));
 
-    let store_router = Router::new()
-        .route("/set", post(handlers::storage_handler::set_item))
-        .route("/get", post(handlers::storage_handler::get_item))
-        .route("/delete", post(handlers::storage_handler::delete_item));
 
     let app = axum::Router::new()
-        .nest("/translation", translation_router)
-        .nest("/store", store_router)
+        .nest("/translation", translation_router())
+        .nest("/store", store_router())
         .route("/", get(|| async { "Hello, World!" }))
         .layer(cors)
         .layer(layer);

@@ -33,21 +33,23 @@ export default function MonthlyLocationChangeCard() {
 		const changes: Partial<Record<string, number>> = {};
 		if (locations.length > 0) {
 			for (const location of locations) {
-				console.log(location)
+				console.log(location);
 				// convert date string to Date object
 				const date = convertToJSDate(location.added_at);
 				const monthKey = `${date.getFullYear()}-${date.getMonth() + 1}`;
 				// @ts-ignore
-				changes[monthKey] = changes[monthKey] ? (changes[monthKey] + 1) : 1;
+				changes[monthKey] = changes[monthKey] ? changes[monthKey] + 1 : 1;
 			}
 			const result = Object.entries(changes).map(([date, total]) => ({
 				date,
 				total,
 			}));
-        result.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+			result.sort(
+				(a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
+			);
 
-        setMonthlyChanges(result as MonthlyLocationChange[]);
-    }
+			setMonthlyChanges(result as MonthlyLocationChange[]);
+		}
 	}, [locations]);
 
 	let changeInTotal = 0;
@@ -60,7 +62,6 @@ export default function MonthlyLocationChangeCard() {
 		changeInTotalPercent = ((changeInTotal / previousTotal) * 100).toFixed(2);
 	}
 
-
 	return (
 		<Card className="m-5">
 			<CardHeader>
@@ -70,9 +71,7 @@ export default function MonthlyLocationChangeCard() {
 				</CardDescription>
 			</CardHeader>
 			<CardContent>
-				<div className="text-2xl font-bold">
-					{changeInTotal}
-				</div>
+				<div className="text-2xl font-bold">{changeInTotal}</div>
 				<p className="text-xs text-muted-foreground">
 					{changeInTotalPercent}% from last month
 				</p>

@@ -1,15 +1,13 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-
-use std::thread;
 use local_storage::create_storage;
 use local_storage::stores::location_store::LocationStoreState;
 use local_storage::stores::settings_store::SettingsStoreState;
 use local_storage::stores::translation_store::TranslationStoreState;
 use local_storage::types::Data;
 use server::init;
-
+use std::thread;
 
 #[tauri::command]
 #[specta::specta]

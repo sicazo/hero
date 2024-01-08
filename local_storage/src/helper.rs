@@ -1,3 +1,7 @@
+use crate::stores::location_store::LocationStore;
+use crate::stores::settings_store::SettingsStore;
+use crate::stores::translation_store::TranslationStore;
+use crate::types::{Data, StoreUpgrade};
 use serde::{Deserialize, Serialize};
 use serde_json::{to_value, Value};
 use std::error::Error;
@@ -5,10 +9,6 @@ use std::fs::{File, OpenOptions};
 use std::io;
 use std::io::{Read, Write};
 use tauri::api::path;
-use crate::stores::location_store::LocationStore;
-use crate::stores::settings_store::SettingsStore;
-use crate::stores::translation_store::TranslationStore;
-use crate::types::{Data, StoreUpgrade};
 
 #[derive(PartialEq, Clone, Copy)]
 pub enum StoreType {
@@ -50,14 +50,18 @@ where
 {
     let storage = get_settings_file(store_type).expect("Failed to open settings.json");
     let content = match store_type {
-        StoreType::SettingsStoreType => to_value(read_json_file::<SettingsStore>(&storage).unwrap())
-            .expect("Failed to convert to value"),
+        StoreType::SettingsStoreType => {
+            to_value(read_json_file::<SettingsStore>(&storage).unwrap())
+                .expect("Failed to convert to value")
+        }
         StoreType::TranslationStoreType => {
             to_value(read_json_file::<TranslationStore>(&storage).unwrap())
                 .expect("Failed to convert to value")
         }
-        StoreType::LocationStoreType => to_value(read_json_file::<LocationStore>(&storage).unwrap())
-            .expect("Failed to convert to value"),
+        StoreType::LocationStoreType => {
+            to_value(read_json_file::<LocationStore>(&storage).unwrap())
+                .expect("Failed to convert to value")
+        }
     };
     let result = serde_json::to_string(&content).unwrap();
     result

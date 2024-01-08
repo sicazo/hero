@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import {
 	Form,
 	FormControl,
@@ -16,6 +17,7 @@ import { useSettingsStore } from "@/lib/stores/settings_store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTheme } from "next-themes";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import * as z from "zod";
 
 const appearanceFormSchema = z.object({
@@ -48,35 +50,6 @@ export default function AppearanceForm() {
 	return (
 		<Form {...form}>
 			<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-				{/*<FormField*/}
-				{/*    control={form.control}*/}
-				{/*    name="font"*/}
-				{/*    render={({field}) => (*/}
-				{/*        <FormItem>*/}
-				{/*            <FormLabel>Font</FormLabel>*/}
-				{/*            <div className="relative w-max">*/}
-				{/*                <FormControl>*/}
-				{/*                    <select*/}
-				{/*                        className={cn(*/}
-				{/*                            buttonVariants({variant: "outline"}),*/}
-				{/*                            "w-[200px] appearance-none bg-transparent font-normal"*/}
-				{/*                        )}*/}
-				{/*                        {...field}*/}
-				{/*                    >*/}
-				{/*                        <option value="inter">Inter</option>*/}
-				{/*                        <option value="manrope">Manrope</option>*/}
-				{/*                        <option value="system">System</option>*/}
-				{/*                    </select>*/}
-				{/*                </FormControl>*/}
-				{/*                <ChevronDownIcon className="absolute right-3 top-2.5 h-4 w-4 opacity-50"/>*/}
-				{/*            </div>*/}
-				{/*            <FormDescription>*/}
-				{/*                Set the font you want to use in the dashboard.*/}
-				{/*            </FormDescription>*/}
-				{/*            <FormMessage/>*/}
-				{/*        </FormItem>*/}
-				{/*    )}*/}
-				{/*/>*/}
 				<FormField
 					control={form.control}
 					name="toast_rich_colors"
@@ -93,11 +66,15 @@ export default function AppearanceForm() {
 										id="toast_rich_color"
 										checked={settings.toast_rich_colors}
 										{...field}
-										onCheckedChange={(e) => settings.setToastRichColors(e)}
+										onCheckedChange={(e) => {
+											settings.setToastRichColors(e);
+										}}
 									/>
 									<Label htmlFor="toast_rich_color">Rich Color</Label>
 								</div>
 							</FormControl>
+
+							{/*<Button onClick={() => {toast.success("test")}}>Test</Button>*/}
 						</FormItem>
 					)}
 				/>

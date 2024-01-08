@@ -33,6 +33,7 @@ export default function AddNewLocation(props: props) {
 	const getMyLoc = () => {
 		locations.find((location) => location.path === form.getValues("path"));
 	};
+	// @ts-ignore
 	const addLocationFormSchema = z.object({
 		name: z
 			.string()
@@ -110,10 +111,10 @@ export default function AddNewLocation(props: props) {
 								<FormItem className="grid gap-2">
 									<FormLabel>Name</FormLabel>
 									<FormControl>
-										<Input placeholder="My Location" {...field} />
+										<Input placeholder="My Location" {...field} autoComplete="off" autoCapitalize="off" spellCheck={false} />
 									</FormControl>
 									<FormDescription>
-										The Name the location ges saved as.
+										The Name the location gets saved as.
 									</FormDescription>
 									<FormMessage />
 								</FormItem>

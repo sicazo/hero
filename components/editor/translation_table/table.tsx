@@ -98,20 +98,18 @@ export default function TranslationTable<TData, TValue>({
 					className="max-w-sm"
 				/>
 				<div className="flex space-x-2 items-center">
-					{rowsSelected ? (
-						<Button className="h-auto" variant="destructive">
-							Delete Selected Keys
-						</Button>
-					) : (
-						<div>
-							<DialogTrigger>
-								<Button className="h-auto" variant="default">
-									Add
-								</Button>
-							</DialogTrigger>
-						</div>
-					)}
-					<TranslationTableViewOptions table={table} />
+					<div>
+						<DialogTrigger>
+							<Button className="h-10" variant="default">
+								Add
+							</Button>
+						</DialogTrigger>
+					</div>
+					<Button disabled={!rowsSelected} className="h-10" variant="destructive">
+						Delete Selected Keys
+					</Button>
+
+					<TranslationTableViewOptions table={table}/>
 				</div>
 			</div>
 			<div className="rounded-md border">

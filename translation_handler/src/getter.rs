@@ -1,11 +1,11 @@
 use super::{PathType, TranslationHandler};
 use glob::glob;
+use local_storage::stores::translation_store::TranslationEntry;
 use serde_json::Value;
 use std::collections::HashMap;
 use std::fs;
 use std::fs::read_to_string;
 use tracing::info;
-use local_storage::stores::translation_store::TranslationEntry;
 
 impl TranslationHandler {
     fn extract_language_code(line: &str, language_code_regex: &regex::Regex) -> Option<String> {
