@@ -67,6 +67,7 @@ export default function EditTranslationDialog({
 						value={translationsJson}
 						onChange={(e) => setTranslationsJson(e.target.value)}
 						className="h-[300px]"
+						spellCheck={false}
 					/>
 				</div>
 			</CardContent>
