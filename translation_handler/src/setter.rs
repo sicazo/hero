@@ -3,7 +3,7 @@ use local_storage::stores::settings_store::SettingsStore;
 use serde::Serialize;
 use serde_json::ser::PrettyFormatter;
 use std::fs::{read_to_string, OpenOptions};
-use std::io::{Read, Write};
+use std::io::{Read, Seek, SeekFrom, Write};
 use std::process::Command;
 
 impl TranslationHandler {
@@ -84,24 +84,23 @@ fn add_translation_to_default_language(
     en_gb_value: String,
 ) -> Result<(), std::io::Error> {
     let en_gb_path = PathType::EnGbFile.create_path(path.clone());
-    let content = read_to_string(en_gb_path.clone())?;
-    let mut json_content: serde_json::Value = serde_json::from_str(&content)?;
-    json_content
-        .as_object_mut()
-        .unwrap()
-        .insert(json_key, serde_json::Value::String(en_gb_value));
+
     let mut file = OpenOptions::new()
         .write(true)
-        .truncate(true)
+        .read(true)
         .open(en_gb_path)?;
 
-    let formatter = PrettyFormatter::with_indent(b"\t");
-    let mut buffer = Vec::new();
-    let mut ser = serde_json::Serializer::with_formatter(&mut buffer, formatter);
-    json_content.serialize(&mut ser).unwrap();
+    let mut contents = String::new();
+    file.read_to_string(&mut contents)?;
 
-    let prettified = String::from_utf8(buffer).unwrap();
-    file.write_all(prettified.as_bytes())?;
+    if let Some(last_brace_position) = contents.rfind('}') {
+        file.seek(SeekFrom::Start(last_brace_position  as u64))?;
+        let new_translation_line = format!(r#"    "{}": "{}","#, json_key, en_gb_value);
+        let end = format!("{} \n }}", new_translation_line);
+        file.write_all(end.as_bytes())?;
+
+    }
+
     Ok(())
 }
 
@@ -109,12 +108,12 @@ fn add_translation_to_default_language(
 mod tests {
     use super::*;
 
-    #[test]
-    fn test_add_new_key() {
-        let path = String::from(r"C:\\Users\\ihm1we\\Development\\LeadManagement\\app.dtp-admin.frontend\\src");
+    #[tokio::test]
+    async fn test_add_new_key() {
+        let path = String::from("/Users/marius/Developer/Github/translation_hero/testfiles");
         let ts_key = String::from("test");
         let json_key = String::from("test");
-        let en_gb_value = String::from("    test");
-        let result = TranslationHandler::add_new_key(path, ts_key, json_key, en_gb_value).unwrap();
+        let en_gb_value = String::from("test");
+        let result = TranslationHandler::add_new_key(path, ts_key, json_key, en_gb_value).await.unwrap();
     }
 }

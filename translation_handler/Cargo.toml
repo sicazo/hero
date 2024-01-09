@@ -15,3 +15,4 @@ tracing = {workspace = true}
 regex = {workspace = true}
 local_storage = {path = "../local_storage"}
 serde = {workspace = true}
+tokio = {workspace = true}

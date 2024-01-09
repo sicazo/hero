@@ -4405,6 +4405,7 @@ dependencies = [
  "regex",
  "serde",
  "serde_json",
+ "tokio",
  "tracing",
 ]
 
