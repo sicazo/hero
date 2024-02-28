@@ -49,14 +49,11 @@ export default function RootLayout({
 	const [isCollapsed, setIsCollapsed] = useState(home_nav_collapsed);
 	const queryClient = new QueryClient();
 
-	const router = useRouter();
-	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	useEffect(() => {
 		console.log("rehydrate");
 		useSettingsStore.persist.rehydrate();
 		useLocationStore.persist.rehydrate();
 		useTranslationStore.persist.rehydrate();
-		router.push("/home");
 	}, []);
 	return (
 		<html lang="en">
@@ -72,6 +69,7 @@ export default function RootLayout({
 								className="h-full items-stretch"
 							>
 								<ResizablePanel
+									//@ts-ignore
 									defaultSize={home_default_sizes[0]}
 									collapsedSize={home_collapsed_size}
 									collapsible={true}
@@ -87,6 +85,7 @@ export default function RootLayout({
 									)}
 								>
 									<Nav
+										//@ts-expect-error
 										isCollapsed={isCollapsed}
 										links={[
 											{
@@ -112,6 +111,7 @@ export default function RootLayout({
 								</ResizablePanel>
 								<ResizableHandle />
 								<ResizablePanel
+									//@ts-ignore
 									defaultSize={home_default_sizes[1]}
 									minSize={30}
 									className="z-10"

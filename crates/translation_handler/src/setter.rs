@@ -85,20 +85,16 @@ fn add_translation_to_default_language(
 ) -> Result<(), std::io::Error> {
     let en_gb_path = PathType::EnGbFile.create_path(path.clone());
 
-    let mut file = OpenOptions::new()
-        .write(true)
-        .read(true)
-        .open(en_gb_path)?;
+    let mut file = OpenOptions::new().write(true).read(true).open(en_gb_path)?;
 
     let mut contents = String::new();
     file.read_to_string(&mut contents)?;
 
     if let Some(last_brace_position) = contents.rfind('}') {
-        file.seek(SeekFrom::Start(last_brace_position  as u64))?;
+        file.seek(SeekFrom::Start(last_brace_position as u64))?;
         let new_translation_line = format!(r#"    "{}": "{}","#, json_key, en_gb_value);
         let end = format!("{} \n }}", new_translation_line);
         file.write_all(end.as_bytes())?;
-
     }
 
     Ok(())
@@ -114,6 +110,8 @@ mod tests {
         let ts_key = String::from("test");
         let json_key = String::from("test");
         let en_gb_value = String::from("test");
-        let result = TranslationHandler::add_new_key(path, ts_key, json_key, en_gb_value).await.unwrap();
+        let result = TranslationHandler::add_new_key(path, ts_key, json_key, en_gb_value)
+            .await
+            .unwrap();
     }
 }

@@ -46,13 +46,22 @@ export default function EditTranslationDialog({
 				<div className="flex gap-2">
 					<div className="grid gap-2">
 						<Label htmlFor="subject">TS Key</Label>
-						<Input value={translation.key} placeholder="I need help with..." autoComplete="off" autoCapitalize="off" spellCheck={false} />
+						<Input
+							value={translation.key}
+							placeholder="I need help with..."
+							autoComplete="off"
+							autoCapitalize="off"
+							spellCheck={false}
+						/>
 					</div>
 					<div className="grid gap-2">
 						<Label htmlFor="subject">Json Key</Label>
 						<Input
 							value={translation.value}
-							placeholder="I need help with..." autoComplete="off" autoCapitalize="off" spellCheck={false}
+							placeholder="I need help with..."
+							autoComplete="off"
+							autoCapitalize="off"
+							spellCheck={false}
 						/>
 					</div>
 				</div>

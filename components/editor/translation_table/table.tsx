@@ -105,11 +105,16 @@ export default function TranslationTable<TData, TValue>({
 							</Button>
 						</DialogTrigger>
 					</div>
-					<Button disabled={!rowsSelected} className="h-10" variant="destructive">
+					<Button
+						disabled={!rowsSelected}
+						className="h-10"
+						variant="destructive"
+						onClick={() => console.log("testing the deletion feature")}
+					>
 						Delete Selected Keys
 					</Button>
 
-					<TranslationTableViewOptions table={table}/>
+					<TranslationTableViewOptions table={table} />
 				</div>
 			</div>
 			<div className="rounded-md border">

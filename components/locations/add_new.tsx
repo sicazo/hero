@@ -111,7 +111,13 @@ export default function AddNewLocation(props: props) {
 								<FormItem className="grid gap-2">
 									<FormLabel>Name</FormLabel>
 									<FormControl>
-										<Input placeholder="My Location" {...field} autoComplete="off" autoCapitalize="off" spellCheck={false} />
+										<Input
+											placeholder="My Location"
+											{...field}
+											autoComplete="off"
+											autoCapitalize="off"
+											spellCheck={false}
+										/>
 									</FormControl>
 									<FormDescription>
 										The Name the location gets saved as.

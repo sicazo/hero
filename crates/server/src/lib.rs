@@ -1,3 +1,5 @@
+use crate::handlers::storage_handler::store_router;
+use crate::handlers::translation_handler::translation_router;
 use axum::routing::{get, post};
 use axum::Router;
 use serde_json::Value;
@@ -6,8 +8,6 @@ use socketioxide::SocketIo;
 use tower_http::cors::{Any, CorsLayer};
 use tracing::info;
 use tracing_subscriber::FmtSubscriber;
-use crate::handlers::storage_handler::store_router;
-use crate::handlers::translation_handler::translation_router;
 
 mod handlers;
 
@@ -36,8 +36,6 @@ pub async fn init() -> Result<(), Box<dyn std::error::Error>> {
 
     io.ns("/", on_connect);
     io.ns("/custom", on_connect);
-
-
 
     let app = axum::Router::new()
         .nest("/translation", translation_router())

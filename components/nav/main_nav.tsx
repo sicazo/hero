@@ -4,6 +4,7 @@ import { LucideIcon, Settings2 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import Pulse from "@/components/miscelaneous/pulse";
 import { buttonVariants } from "@/components/ui/button";
 import {
 	Tooltip,
@@ -102,7 +103,11 @@ export function Nav({ links, isCollapsed }: NavProps): JSX.Element {
 
 			{/* Spacer div */}
 			<div style={{ flexGrow: 1 }} />
-			<div className="flex w-full gap-1 px-2 py-2">
+			<div className="flex w-full gap-1 items-center justify-center px-2">
+				<Pulse />
+			</div>
+
+			<div className="flex w-full gap-1 px-2 pb-2">
 				{isCollapsed ? (
 					<Tooltip delayDuration={0}>
 						<TooltipTrigger asChild>
