@@ -1,21 +1,21 @@
 use crate::{PathType, TranslationHandler};
 use std::fs::OpenOptions;
 use std::io::{Read, Write};
-
+use tracing::error;
 impl TranslationHandler {
     pub async fn remove_key(
         path: String,
-        ts_key: String,
-        json_key: String,
+        ts_keys: Vec<String>,
+        json_keys: Vec<String>,
     ) -> Result<(), std::io::Error> {
         let messages_ts_path = PathType::MessageTsFile.create_path(path.clone());
-        remove_key_from_messages_ts(messages_ts_path, ts_key.clone())?;
+        remove_key_from_messages_ts(messages_ts_path, ts_keys)?;
 
         Ok(())
     }
 }
 
-fn remove_key_from_messages_ts(path: String, key: String) -> Result<(), std::io::Error> {
+fn remove_key_from_messages_ts(path: String, keys: Vec<String>) -> Result<(), std::io::Error> {
     let mut file = OpenOptions::new().read(true).open(path.clone())?;
 
     let mut content = String::new();
@@ -26,7 +26,14 @@ fn remove_key_from_messages_ts(path: String, key: String) -> Result<(), std::io:
     let mut json_content: serde_json::Value = serde_json::from_str(&content)
         .map_err(|e| std::io::Error::new(std::io::ErrorKind::InvalidData, e))?;
 
-    json_content.as_object_mut().unwrap().remove(&key);
+    let mut json_content = json_content.as_object_mut().unwrap();
+    keys.iter().for_each(|key| {
+        if json_content.contains_key(key) {
+            json_content.remove(key);
+        } else {
+            error!(target: "translation_handler", "Could not find key {} in messages.ts in {}", key, path )
+        }
+    });
 
     let mut file = OpenOptions::new()
         .write(true)

@@ -18,14 +18,14 @@ pub fn remove_store(store: String) {
 }
 
 pub fn update_store(store: String, value: String) {
-    info!("update_store {}", store);
+    info!(target: "local_storage","update_store {}", store);
     let store_type = StoreType::from_string(store);
     let data = update_data(store_type, value).expect("Failed to update data");
     write_json_file(&data, store_type).expect("Failed to write to file");
 }
 
 pub fn get_store(store: String) -> String {
-    info!("get_store {}", store);
+    info!(target: "local_storage","get_store {}", store);
     let store_type = StoreType::from_string(store);
     match store_type {
         StoreType::SettingsStoreType => get_data::<SettingsStore>(store_type),

@@ -3,7 +3,7 @@ use axum::routing::post;
 use axum::{Json, Router};
 use local_storage::stores::translation_store::TranslationEntry;
 use serde::{Deserialize, Serialize};
-use tracing::info;
+use tracing::{error, info};
 use translation_handler::TranslationHandler;
 
 pub fn translation_router() -> Router {
@@ -12,10 +12,18 @@ pub fn translation_router() -> Router {
         .route("/translations", post(get_translations))
         .route("/add", post(add_new_key))
         .route("/languages", post(get_languages))
+        .route("/remove", post(remove_keys))
 }
 #[derive(Deserialize)]
 pub struct TranslationHandlerBody {
     path: String,
+}
+
+#[derive(Deserialize)]
+pub struct RemoveTranslationBody {
+    path: String,
+    ts_key: Vec<String>,
+    json_key: Vec<String>
 }
 #[derive(Serialize)]
 pub struct NumberOfKeysResponse {
@@ -38,10 +46,21 @@ pub struct GetLanguagesBody {
     path: String,
 }
 
+
+pub async fn remove_keys(Json(payload): Json<RemoveTranslationBody>) -> StatusCode {
+    info!(target: "server_action", "Removing keys from {}",&payload.path);
+    match TranslationHandler::remove_key(payload.path, payload.ts_key, payload.json_key).await {
+        Ok(_) => StatusCode::OK,
+        Err(_) => StatusCode::INTERNAL_SERVER_ERROR
+    }
+
+
+}
+
 pub async fn get_number_of_keys(
     Json(payload): Json<TranslationHandlerBody>,
 ) -> (StatusCode, Json<NumberOfKeysResponse>) {
-    info!("Getting number of keys for {}", &payload.path);
+    info!(target: "server_action", "Getting number of keys for {}", &payload.path);
     let key_value_len = TranslationHandler::get_key_values_from_messages_ts(&payload.path)
         .await
         .len() as u32;

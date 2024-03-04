@@ -8,8 +8,10 @@ use socketioxide::SocketIo;
 use tower_http::cors::{Any, CorsLayer};
 use tracing::info;
 use tracing_subscriber::FmtSubscriber;
+use axum::middleware::from_fn;
 
 mod handlers;
+mod own_middleware;
 
 fn on_connect(socket: SocketRef, Data(data): Data<Value>) {
     info!("Socket.IO connected: {:?} {:?}", socket.ns(), socket.id);
@@ -42,6 +44,7 @@ pub async fn init() -> Result<(), Box<dyn std::error::Error>> {
         .nest("/store", store_router())
         .route("/", get(|| async { "Hello, World!" }))
         .layer(cors)
+        .layer(from_fn(own_middleware::logger::logger_middleware))
         .layer(layer);
 
     info!("Starting server");
