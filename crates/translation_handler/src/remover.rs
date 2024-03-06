@@ -2,6 +2,7 @@ use crate::{PathType, TranslationHandler};
 use std::fs::OpenOptions;
 use std::io::{Read, Write};
 use tracing::error;
+
 impl TranslationHandler {
     pub async fn remove_key(
         path: String,
@@ -23,27 +24,44 @@ fn remove_key_from_messages_ts(path: String, keys: Vec<String>) -> Result<(), st
     file.read_to_string(&mut content)
         .expect("Failed to read file");
 
-    let mut json_content: serde_json::Value = serde_json::from_str(&content)
-        .map_err(|e| std::io::Error::new(std::io::ErrorKind::InvalidData, e))?;
+    let json_start = content.find("export default defineLocales(").unwrap() + "export default defineLocales(".len();
+    let json_end = content.find("locales,").unwrap();
+    let key_value_pairs = &content[json_start..json_end];
+    let mut new_entries: String = String::from("");
 
-    let mut json_content = json_content.as_object_mut().unwrap();
-    keys.iter().for_each(|key| {
-        if json_content.contains_key(key) {
-            json_content.remove(key);
-        } else {
-            error!(target: "translation_handler", "Could not find key {} in messages.ts in {}", key, path )
+    let newline = if std::env::consts::OS == "windows" {
+        "\r\n"
+    } else {
+        "\n"
+    };
+
+    key_value_pairs.lines().for_each(|line| {
+        let key_value_regex = regex::Regex::new(r#"(\w+): '(.*)'|"(\w+): "(.*)""#).unwrap();
+        match key_value_regex.captures(line) {
+            None => new_entries.push_str(&*(line.to_owned() + newline)),
+            Some(capture) => {
+                if !keys.iter().any(|key| &capture.get(1).unwrap().as_str().to_string() == key) {
+                    new_entries.push_str(&*(line.to_owned() + newline));
+                }
+            }
         }
     });
+
+    if new_entries.ends_with(newline) {
+        new_entries.pop();
+        if newline.len() > 1 {
+            new_entries.pop();
+        }
+    }
+
+    let new_file = (&content[0..json_start]).to_owned() + new_entries.as_str()  + &content[json_end..];
 
     let mut file = OpenOptions::new()
         .write(true)
         .truncate(true)
         .open(path.clone())?;
-    file.write_all(
-        serde_json::to_string_pretty(&json_content)
-            .unwrap()
-            .as_bytes(),
-    )?;
+
+    file.write_all(new_file.as_bytes())?;
 
     Ok(())
 }

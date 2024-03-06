@@ -10,7 +10,7 @@ export default function Page() {
 	return (
 		<div className="p-5">
 			<h2 className="text-2xl font-semibold ml-5 mb-2">Statistics</h2>
-			<Separator className="ml-5 w-[95%]"/>
+			<Separator className="ml-5 w-[95%]" />
 			<div className="w-full grid grid-cols-2">
 				<KeyStatisticsCard />
 				<MonthlyLocationChangeCard />

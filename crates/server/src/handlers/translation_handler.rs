@@ -23,7 +23,7 @@ pub struct TranslationHandlerBody {
 pub struct RemoveTranslationBody {
     path: String,
     ts_key: Vec<String>,
-    json_key: Vec<String>
+    json_key: Vec<String>,
 }
 #[derive(Serialize)]
 pub struct NumberOfKeysResponse {
@@ -46,15 +46,15 @@ pub struct GetLanguagesBody {
     path: String,
 }
 
-
 pub async fn remove_keys(Json(payload): Json<RemoveTranslationBody>) -> StatusCode {
     info!(target: "server_action", "Removing keys from {}",&payload.path);
     match TranslationHandler::remove_key(payload.path, payload.ts_key, payload.json_key).await {
         Ok(_) => StatusCode::OK,
-        Err(_) => StatusCode::INTERNAL_SERVER_ERROR
+        Err(e) => {
+            println!("{:?}", e);
+            StatusCode::INTERNAL_SERVER_ERROR
+        }
     }
-
-
 }
 
 pub async fn get_number_of_keys(
