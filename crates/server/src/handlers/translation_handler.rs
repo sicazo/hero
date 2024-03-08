@@ -46,13 +46,13 @@ pub struct GetLanguagesBody {
     path: String,
 }
 
-pub async fn remove_keys(Json(payload): Json<RemoveTranslationBody>) -> StatusCode {
+pub async fn remove_keys(Json(payload): Json<RemoveTranslationBody>) -> (StatusCode, Json<String>) {
     info!(target: "server_action", "Removing keys from {}",&payload.path);
     match TranslationHandler::remove_key(payload.path, payload.ts_key, payload.json_key).await {
-        Ok(_) => StatusCode::OK,
+        Ok(_) => (StatusCode::OK, Json(String::from("Success"))),
         Err(e) => {
             println!("{:?}", e);
-            StatusCode::INTERNAL_SERVER_ERROR
+            (StatusCode::BAD_REQUEST, Json(e.to_string()))
         }
     }
 }
@@ -87,7 +87,7 @@ pub async fn get_translations(
     )
 }
 
-pub async fn add_new_key(Json(payload): Json<AddNewKeyBody>) -> StatusCode {
+pub async fn add_new_key(Json(payload): Json<AddNewKeyBody>) -> (StatusCode, Json<String>) {
     info!("Adding new key {} to {}", &payload.ts_key, &payload.path);
     match TranslationHandler::add_new_key(
         payload.path.clone(),
@@ -97,8 +97,8 @@ pub async fn add_new_key(Json(payload): Json<AddNewKeyBody>) -> StatusCode {
     )
     .await
     {
-        Ok(_) => StatusCode::CREATED,
-        Err(_) => StatusCode::INTERNAL_SERVER_ERROR,
+        Ok(_) => (StatusCode::CREATED, Json(String::from("Success"))),
+        Err(e) => (StatusCode::BAD_REQUEST, Json(e.to_string())),
     }
 }
 

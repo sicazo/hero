@@ -50,7 +50,8 @@ fn remove_key_from_language_jsons(locales_path: String, keys: Vec<String>) -> Re
                     .write(true)
                     .truncate(true)
                     .open(path.clone())?;
-                file.write_all(new_content.as_bytes())?
+                file.write_all(new_content.as_bytes())?;
+                info!(target: "remover", "Removed keys from: {}" , path.display());
 
             }
             Err(e) => println!("{:?}", e),
