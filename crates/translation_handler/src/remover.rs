@@ -1,7 +1,12 @@
+use std::collections::HashMap;
+use std::fs;
 use crate::{PathType, TranslationHandler};
 use std::fs::OpenOptions;
 use std::io::{Read, Write};
-use tracing::error;
+use glob::glob;
+use serde_json::Value;
+use tracing::{error, info};
+use local_storage::stores::translation_store::TranslationEntry;
 
 impl TranslationHandler {
     pub async fn remove_key(
@@ -11,12 +16,51 @@ impl TranslationHandler {
     ) -> Result<(), std::io::Error> {
         let messages_ts_path = PathType::MessageTsFile.create_path(path.clone());
         remove_key_from_messages_ts(messages_ts_path, ts_keys)?;
+        let locales_path = PathType::TranslationDirectory.create_path(path.clone());
+        remove_key_from_language_jsons(locales_path, json_keys)?;
 
         Ok(())
     }
 }
 
+fn remove_key_from_language_jsons(locales_path: String, keys: Vec<String>) -> Result<(), std::io::Error> {
+    info!(target: "remover", "Removing keys from language jsons");
+    let json_files =
+        glob(format!("{}/*.json", locales_path).as_str()).expect("Failed to read glob pattern");
+    let newline = if std::env::consts::OS == "windows" {
+        "\r\n"
+    } else {
+        "\n"
+    };
+
+    for entry in json_files {
+        match entry {
+            Ok(path) => {
+                let file_content = fs::read_to_string(&path).expect("Unable to read file");
+                let mut new_content: String = String::new();
+                let regex = regex::Regex::new(r#""([^"]*)": "([^"]*)""#).expect("failed to create regex");
+                file_content.lines().for_each(|line| {
+                    if let Some(capture) = regex.captures(line) {
+                       if  !keys.clone().into_iter().any(|key| key == capture.get(1).unwrap().as_str() ) {
+                           new_content.push((line.to_owned() + newline).parse().unwrap())
+                       }
+                    }
+                });
+                let mut file = OpenOptions::new()
+                    .write(true)
+                    .truncate(true)
+                    .open(path.clone())?;
+                file.write_all(new_content.as_bytes())?
+
+            }
+            Err(e) => println!("{:?}", e),
+        }
+    }
+    Ok(())
+}
+
 fn remove_key_from_messages_ts(path: String, keys: Vec<String>) -> Result<(), std::io::Error> {
+    info!(target: "remover", "Removing keys from message.ts");
     let mut file = OpenOptions::new().read(true).open(path.clone())?;
 
     let mut content = String::new();
@@ -54,7 +98,7 @@ fn remove_key_from_messages_ts(path: String, keys: Vec<String>) -> Result<(), st
         }
     }
 
-    let new_file = (&content[0..json_start]).to_owned() + new_entries.as_str()  + &content[json_end..];
+    let new_file = (&content[0..json_start]).to_owned() + new_entries.as_str() + &content[json_end..];
 
     let mut file = OpenOptions::new()
         .write(true)
