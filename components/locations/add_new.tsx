@@ -18,10 +18,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { useLocationStore } from "@/lib/stores/location_store";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { open } from "@tauri-apps/api/dialog";
+
 import axios from "axios";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import {useEffect, useState} from "react";
 
 interface props {
 	setAddNew: (value: boolean) => void;
@@ -30,20 +31,21 @@ interface props {
 export default function AddNewLocation(props: props) {
 	const { locations, addLocation } = useLocationStore();
 	const getMyLoc = () => {
-		locations.find((location) => location.path === form.getValues("path"));
+		locations?.find((location) => location.path === form.getValues("path"));
 	};
+	// @ts-ignore
 	const addLocationFormSchema = z.object({
 		name: z
 			.string()
 			.min(1)
 			.max(255)
 			.default("")
-			.refine((name) => !locations.some((location) => location.name === name), {
+			.refine((name) => !locations?.some((location) => location.name === name), {
 				message: "Location with this name already exists",
 			}),
 		path: z
 			.string()
-			.refine((path) => !locations.some((location) => location.path === path), {
+			.refine((path) => !locations?.some((location) => location.path === path), {
 				message: `Location with this path already exists under the name of ${getMyLoc}`,
 			}),
 	});
@@ -69,8 +71,30 @@ export default function AddNewLocation(props: props) {
 		props.setAddNew(false);
 	}
 
+	const [tauriOs, setTauriOs] = useState({
+		type() {
+
+		}
+	})
+	const [tauriOpen, setTauriOpen] = useState({})
+
+	const setup = async () => {
+		const  os  = await import( "@tauri-apps/api")
+		const  open = await import("@tauri-apps/api/dialog")
+
+		// @ts-ignore
+		setTauriOs(os)
+		setTauriOpen(open)
+	}
+
+	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+	useEffect(() => {
+		setup()
+	}, [])
+
 	async function SelectPath() {
-		let path = await open({
+		// @ts-ignore
+		let path = await tauriOpen({
 			multiple: false,
 			directory: false,
 			filters: [
@@ -82,7 +106,12 @@ export default function AddNewLocation(props: props) {
 		});
 		if (path !== null) {
 			path = path as string;
-			const cleaned = path.replace("/messages.ts", "");
+			const os_type = await tauriOs.type();
+			const cleaned =
+				// @ts-ignore
+				os_type === "Darwin" || os_type === "Linux"
+					? path.replace("/messages.ts", "")
+					: path.replace("\\messages.ts", ""); // windows specific path shit :(
 			form.setValue("path", cleaned);
 		}
 	}
@@ -105,10 +134,16 @@ export default function AddNewLocation(props: props) {
 								<FormItem className="grid gap-2">
 									<FormLabel>Name</FormLabel>
 									<FormControl>
-										<Input placeholder="My Location" {...field} />
+										<Input
+											placeholder="My Location"
+											{...field}
+											autoComplete="off"
+											autoCapitalize="off"
+											spellCheck={false}
+										/>
 									</FormControl>
 									<FormDescription>
-										The Name the location ges saved as.
+										The Name the location gets saved as.
 									</FormDescription>
 									<FormMessage />
 								</FormItem>

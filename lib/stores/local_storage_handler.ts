@@ -1,34 +1,24 @@
 "use client";
-import { commands } from "@/lib/bindings";
-import { StateStorage } from "zustand/middleware";
 import axios from "axios";
-// const storage: StateStorage = {
-// 	getItem: async (name): Promise<string> => {
-// 		return await commands.getStore(name);
-// 	},
-// 	setItem: async (name, value): Promise<void> => {
-// 		await commands.updateStore(name, value);
-// 	},
-// 	removeItem: async (name): Promise<void> => {
-// 		await commands.removeStore(name);
-// 	},
-// };
+import { StateStorage } from "zustand/middleware";
+
 const storage: StateStorage = {
 	getItem: async (name): Promise<string> => {
-		return (await axios.post("http://localhost:3001/store/get", {
-			name: name
-		})).data
-
+		return (
+			await axios.post("http://localhost:3001/store/get", {
+				name: name,
+			})
+		).data;
 	},
 	setItem: async (name, value): Promise<void> => {
 		return await axios.post("http://localhost:3001/store/set", {
 			name: name,
-			value: value
+			value: value,
 		});
 	},
 	removeItem: async (name): Promise<void> => {
 		return await axios.post("http://localhost:3001/store/remove", {
-			name: name
+			name: name,
 		});
 	},
 };

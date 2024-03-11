@@ -1,10 +1,10 @@
 "use client";
-import storage from "@/lib/stores/local_storage_handler";
 import {
 	Notifications,
 	SettingsStoreState,
 	TranslationSettings,
 } from "@/lib/bindings";
+import storage from "@/lib/stores/local_storage_handler";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
@@ -91,6 +91,7 @@ export const useSettingsStore = create<
 		{
 			name: "settings_store",
 			storage: createJSONStorage(() => storage),
+			skipHydration: true,
 		},
 	),
 );

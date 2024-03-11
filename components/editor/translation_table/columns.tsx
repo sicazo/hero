@@ -113,6 +113,7 @@ export const columns: ColumnDef<TranslationEntry>[] = [
 				(state) => state.translation_settings.default_language,
 			);
 			return (
+				//@ts-expect-error
 				<div className="">{row.original.translations[default_language]}</div>
 			);
 		},
@@ -122,8 +123,7 @@ export const columns: ColumnDef<TranslationEntry>[] = [
 		header: "",
 		cell: ({ row }) => {
 			const { last_selected_location } = useLocationStore();
-			const { translation_entries, setTranslationEntries } =
-				useTranslationStore();
+			const { removeKeysFromTranslationEntries } = useTranslationStore();
 			const deleteMutation = useMutation({
 				mutationKey: ["delete_translation", row.original.key],
 				mutationFn: async () => {
@@ -131,19 +131,15 @@ export const columns: ColumnDef<TranslationEntry>[] = [
 						translations: [
 							{
 								path: last_selected_location?.path,
-								ts_key: row.original.key,
-								json_key: row.original.value,
+								ts_key: [row.original.key],
+								json_key: [row.original.value],
 							},
 						],
 					});
 				},
 				onSuccess: () => {
-					toast.success("Translation deleted");
-					setTranslationEntries(
-						translation_entries.filter(
-							(entry) => entry.key !== row.original.key,
-						),
-					);
+					toast.success("The Entry got successfully removed");
+					removeKeysFromTranslationEntries([row.original.key as string]);
 				},
 				onError: (e) => {
 					toast.error(
@@ -154,6 +150,7 @@ export const columns: ColumnDef<TranslationEntry>[] = [
 					);
 				},
 			});
+
 			return (
 				<div className="flex w-auto">
 					<Dialog>

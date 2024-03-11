@@ -13,11 +13,11 @@ import { useSettingsStore } from "@/lib/stores/settings_store";
 import { useTranslationStore } from "@/lib/stores/translation_store";
 import { cn } from "@/lib/utils";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { isPermissionGranted } from "@tauri-apps/api/notification";
 import { clsx } from "clsx";
 import { Database, Home, PencilRuler } from "lucide-react";
 import { Inter } from "next/font/google";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import "./globals.css";
 
@@ -36,7 +36,6 @@ export default function RootLayout({
 			});
 		}
 	}, [notifications_enabled, setNotifications]);
-
 	const theme = useSettingsStore((state) => state.theme);
 	const { toast_rich_colors } = useSettingsStore();
 	const { home_default_sizes, home_nav_collapsed, home_collapsed_size } =
@@ -49,6 +48,13 @@ export default function RootLayout({
 	);
 	const [isCollapsed, setIsCollapsed] = useState(home_nav_collapsed);
 	const queryClient = new QueryClient();
+
+	useEffect(() => {
+		console.log("rehydrate");
+		useSettingsStore.persist.rehydrate();
+		useLocationStore.persist.rehydrate();
+		useTranslationStore.persist.rehydrate();
+	}, []);
 	return (
 		<html lang="en">
 			<body className={clsx(inter.className, "flex h-screen w-screen")}>
@@ -63,6 +69,7 @@ export default function RootLayout({
 								className="h-full items-stretch"
 							>
 								<ResizablePanel
+									//@ts-ignore
 									defaultSize={home_default_sizes[0]}
 									collapsedSize={home_collapsed_size}
 									collapsible={true}
@@ -78,6 +85,7 @@ export default function RootLayout({
 									)}
 								>
 									<Nav
+										//@ts-expect-error
 										isCollapsed={isCollapsed}
 										links={[
 											{
@@ -103,6 +111,7 @@ export default function RootLayout({
 								</ResizablePanel>
 								<ResizableHandle />
 								<ResizablePanel
+									//@ts-ignore
 									defaultSize={home_default_sizes[1]}
 									minSize={30}
 									className="z-10"
@@ -113,7 +122,6 @@ export default function RootLayout({
 						</TooltipProvider>
 						<Toaster richColors={toast_rich_colors} />
 					</ThemeProvider>
-					{/*<ReactQueryDevtools />*/}
 				</QueryClientProvider>
 			</body>
 		</html>

@@ -1,3 +1,22 @@
 [workspace]
 resolver = "2"
-members = ["src-tauri"]
+members = ["src-tauri", "crates/server", "crates/translation_handler", "crates/local_storage"]
+
+
+
+[workspace.dependencies]
+serde_json = "1.0.108"
+serde = { version = "1.0", features = ["derive"] }
+specta = "2.0.0-rc.7"
+tauri-specta = { version = "2.0.0-rc.4", features = ["javascript", "typescript"] }
+tokio = { version = "1.35.0", features = ["rt", "rt-multi-thread", "macros"] }
+dirs = "5.0.1"
+tracing = "0.1.40"
+tracing-subscriber = "0.3.18"
+axum = "0.7.2"
+socketioxide = "0.9.0"
+glob = "0.3.1"
+regex = "1.10.2"
+tower-http = { version = "0.5.0", features = ["cors"] }
+tauri = { version = "1.5.3", features = [ "path-all", "os-all", "updater", "window-all", "dialog-all", "notification-all"] }
+

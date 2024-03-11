@@ -57,9 +57,8 @@ export default function Page() {
 										className="pl-8"
 										onChange={(event) =>
 											setShownLocations(
-												locations.filter((loc) =>
-													loc.name
-														.toLowerCase()
+												locations?.filter((loc) =>
+													loc?.name?.toLowerCase()
 														.includes(event.target.value.toLowerCase()),
 												),
 											)
@@ -71,11 +70,11 @@ export default function Page() {
 						</div>
 
 						<TabsContent value="all" className="m-0 h-full">
-							<LocationList locations={shownLocations} />
+							<LocationList locations={shownLocations ?? []} />
 						</TabsContent>
 						<TabsContent value="favorites" className="m-0 h-full">
 							<LocationList
-								locations={shownLocations.filter((item) => item.is_favourite)}
+								locations={shownLocations?.filter((item) => item.is_favourite) ?? []}
 							/>
 						</TabsContent>
 					</>

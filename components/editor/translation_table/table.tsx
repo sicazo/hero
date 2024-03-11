@@ -15,6 +15,7 @@ import {
 import { TranslationTableViewOptions } from "@/components/editor/translation_table/column_toggle";
 import TranslationTablePagination from "@/components/editor/translation_table/pagination";
 import { Button } from "@/components/ui/button";
+import { DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import {
 	Table,
@@ -24,7 +25,12 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
+import { useLocationStore } from "@/lib/stores/location_store";
+import { useTranslationStore } from "@/lib/stores/translation_store";
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 interface TranslationTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[];
@@ -84,6 +90,42 @@ export default function TranslationTable<TData, TValue>({
 	}, [table, pageSize]);
 
 	const rowsSelected = table.getIsSomeRowsSelected();
+	const { last_selected_location } = useLocationStore();
+	const { removeKeysFromTranslationEntries } = useTranslationStore();
+
+	const removeKeyMutation = useMutation({
+		mutationKey: ["remove_keys"],
+		mutationFn: async ({
+			ts_keys,
+			json_keys,
+		}: { ts_keys: string[]; json_keys: string[] }) => {
+			const response = await axios.post(
+				"http://localhost:3001/translation/remove",
+				{
+					path: last_selected_location?.path,
+					ts_key: ts_keys,
+					json_key: json_keys,
+				},
+			);
+			return response.data;
+		},
+		onSuccess: (_, variables) => {
+			toast.success("The Entries got successfully removed");
+			removeKeysFromTranslationEntries(variables.ts_keys);
+		},
+	});
+	const test = () => {
+		const ts_keys: string[] = [];
+		const json_keys: string[] = [];
+		const selectedRowData = table.getSelectedRowModel();
+		for (const row of selectedRowData.rows) {
+			//@ts-expect-error
+			ts_keys.push(row.original.key);
+			//@ts-expect-error
+			json_keys.push(row.original.value);
+		}
+		removeKeyMutation.mutate({ ts_keys, json_keys });
+	};
 
 	return (
 		<div>
@@ -97,21 +139,22 @@ export default function TranslationTable<TData, TValue>({
 					className="max-w-sm"
 				/>
 				<div className="flex space-x-2 items-center">
+					<div>
+						<DialogTrigger>
+							<Button className="h-10" variant="default">
+								Add
+							</Button>
+						</DialogTrigger>
+					</div>
 					<Button
-						className="h-auto"
-						variant={rowsSelected ? "destructive" : "default"}
-						onClick={
-							rowsSelected
-								? () => {
-										console.log("delete");
-								  }
-								: () => {
-										console.log("add");
-								  }
-						}
+						disabled={!rowsSelected}
+						className="h-10"
+						variant="destructive"
+						onClick={test}
 					>
-						{rowsSelected ? "Delete Rows" : "Add"}
+						{removeKeyMutation.isPending ? "..." : "Delete Selected Keys"}
 					</Button>
+
 					<TranslationTableViewOptions table={table} />
 				</div>
 			</div>

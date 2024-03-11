@@ -12,7 +12,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { TranslationEntry } from "@/lib/bindings";
+import { useLocationStore } from "@/lib/stores/location_store";
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 interface EditTranslationDialogProps {
 	translation: TranslationEntry;
@@ -22,8 +26,10 @@ export default function EditTranslationDialog({
 	translation,
 }: EditTranslationDialogProps) {
 	const [translationsJson, setTranslationsJson] = useState("");
+	const { last_selected_location } = useLocationStore();
 
 	useEffect(() => {
+		// @ts-ignore
 		const orderedTranslations = Object.keys(translation.translations)
 			.sort()
 			.reduce((obj, key) => {
@@ -35,6 +41,22 @@ export default function EditTranslationDialog({
 		setTranslationsJson(JSON.stringify(orderedTranslations, null, 2));
 	}, [translation]);
 
+	const updateMutation = useMutation({
+		mutationKey: ["update_translation", translation.key],
+		mutationFn: async () => {
+			const result = axios.post("http://localhost:3001/translation/update", {
+				path: last_selected_location?.path,
+				key: {
+					ts_key: translation.key,
+					json_key: translation.value,
+					translation_values: translationsJson,
+				},
+			});
+		},
+		onSuccess: () => {
+			toast.success("Entry got updated successfully");
+		},
+	});
 	return (
 		<>
 			<CardHeader>
@@ -46,13 +68,22 @@ export default function EditTranslationDialog({
 				<div className="flex gap-2">
 					<div className="grid gap-2">
 						<Label htmlFor="subject">TS Key</Label>
-						<Input value={translation.key} placeholder="I need help with..." />
+						<Input
+							value={translation.key}
+							placeholder="I need help with..."
+							autoComplete="off"
+							autoCapitalize="off"
+							spellCheck={false}
+						/>
 					</div>
 					<div className="grid gap-2">
 						<Label htmlFor="subject">Json Key</Label>
 						<Input
 							value={translation.value}
 							placeholder="I need help with..."
+							autoComplete="off"
+							autoCapitalize="off"
+							spellCheck={false}
 						/>
 					</div>
 				</div>
@@ -66,7 +97,8 @@ export default function EditTranslationDialog({
 						placeholder="Please include all information relevant to your issue."
 						value={translationsJson}
 						onChange={(e) => setTranslationsJson(e.target.value)}
-						className="h-[300px]"
+						className="h-[300px] resize-none"
+						spellCheck={false}
 					/>
 				</div>
 			</CardContent>
@@ -75,7 +107,7 @@ export default function EditTranslationDialog({
 					<Button variant="ghost">Cancel</Button>
 				</DialogTrigger>
 
-				<Button>Submit</Button>
+				<Button onClick={() => updateMutation.mutate()}>Submit</Button>
 			</CardFooter>
 		</>
 	);

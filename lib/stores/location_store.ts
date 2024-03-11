@@ -1,6 +1,6 @@
 "use client";
-import storage from "@/lib/stores/local_storage_handler";
 import { Location, LocationStoreState } from "@/lib/bindings";
+import storage from "@/lib/stores/local_storage_handler";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
@@ -20,17 +20,17 @@ export const useLocationStore = create<
 			locations: [],
 			addLocation: (x: Location) => {
 				set((state) => {
-					state.locations.push(x);
+					state.locations?.push(x);
 				});
 			},
 			removeLocation: (x: Location) => {
 				set((state) => {
-					state.locations = state.locations.filter((y) => y.name !== x.name);
+					state.locations = state.locations?.filter((y) => y.name !== x.name);
 				});
 			},
 			updateFavorite: (x: Location) => {
 				set((state) => {
-					state.locations = state.locations.map((y) => {
+					state.locations = state.locations?.map((y) => {
 						if (y.name === x.name) {
 							y.is_favourite = !y.is_favourite;
 						}
@@ -47,6 +47,7 @@ export const useLocationStore = create<
 		{
 			name: "location_store",
 			storage: createJSONStorage(() => storage),
+			skipHydration: true,
 		},
 	),
 );

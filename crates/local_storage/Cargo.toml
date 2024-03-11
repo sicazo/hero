@@ -1,0 +1,19 @@
+[package]
+name = "local_storage"
+version = "0.1.0"
+authors = ["you"]
+license = ""
+repository = ""
+edition = "2021"
+
+
+
+[dependencies]
+tracing = {workspace = true}
+serde_json = {workspace = true}
+serde = {workspace = true}
+tauri = {workspace = true}
+dirs = {workspace = true}
+specta = {workspace = true}
+tauri-specta = {workspace = true}
+

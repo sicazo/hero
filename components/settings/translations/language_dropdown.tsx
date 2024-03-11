@@ -49,7 +49,7 @@ export default function TranslationLanguageDropdown() {
 					<CommandInput placeholder="Search language.." />
 					<CommandEmpty>No Language found</CommandEmpty>
 					<CommandGroup className="max-h-[150px] overflow-y-scroll">
-						{languages.map((language) => (
+						{languages?.map((language) => (
 							<CommandItem
 								key={language}
 								value={language}
