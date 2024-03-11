@@ -12,11 +12,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { TranslationEntry } from "@/lib/bindings";
-import { useEffect, useState } from "react";
-import {useMutation} from "@tanstack/react-query";
+import { useLocationStore } from "@/lib/stores/location_store";
+import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
-import {useLocationStore} from "@/lib/stores/location_store";
-import {toast} from "sonner";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 interface EditTranslationDialogProps {
 	translation: TranslationEntry;
@@ -26,7 +26,7 @@ export default function EditTranslationDialog({
 	translation,
 }: EditTranslationDialogProps) {
 	const [translationsJson, setTranslationsJson] = useState("");
-	const {last_selected_location} = useLocationStore()
+	const { last_selected_location } = useLocationStore();
 
 	useEffect(() => {
 		// @ts-ignore
@@ -42,21 +42,21 @@ export default function EditTranslationDialog({
 	}, [translation]);
 
 	const updateMutation = useMutation({
-		mutationKey: ['update_translation', translation.key],
+		mutationKey: ["update_translation", translation.key],
 		mutationFn: async () => {
 			const result = axios.post("http://localhost:3001/translation/update", {
 				path: last_selected_location?.path,
 				key: {
 					ts_key: translation.key,
 					json_key: translation.value,
-					translation_values: translationsJson
-				}
-			})
+					translation_values: translationsJson,
+				},
+			});
 		},
 		onSuccess: () => {
-			toast.success("Entry got updated successfully")
-		}
-	})
+			toast.success("Entry got updated successfully");
+		},
+	});
 	return (
 		<>
 			<CardHeader>

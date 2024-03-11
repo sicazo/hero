@@ -34,7 +34,7 @@ export default function LocationSwitcher({ className }: LocationSwitcherProps) {
 	const { setTranslationEntries } = useTranslationStore();
 	const [open, setOpen] = useState(false);
 	const [selectedLocation, setSelectedLocation] = useState<Location | null>(
-		last_selected_location,
+		last_selected_location as Location | null,
 	);
 	const [searchTerm, setSearchTerm] = useState("");
 	const getData = useMutation<{ keys: TranslationEntry[] }>({
@@ -73,10 +73,8 @@ export default function LocationSwitcher({ className }: LocationSwitcherProps) {
 							onInput={(e) => setSearchTerm(e.currentTarget.value)}
 						/>
 						<CommandEmpty>No Location found</CommandEmpty>
-						{locations
-							.filter((location) =>
-								location.name
-									.toLowerCase()
+						{locations?.filter((location) =>
+								location.name?.toLowerCase()
 									.startsWith(searchTerm.toLowerCase()),
 							)
 							.map((location) => (

@@ -123,8 +123,7 @@ export const columns: ColumnDef<TranslationEntry>[] = [
 		header: "",
 		cell: ({ row }) => {
 			const { last_selected_location } = useLocationStore();
-			const { removeKeysFromTranslationEntries } =
-				useTranslationStore();
+			const { removeKeysFromTranslationEntries } = useTranslationStore();
 			const deleteMutation = useMutation({
 				mutationKey: ["delete_translation", row.original.key],
 				mutationFn: async () => {
@@ -133,14 +132,14 @@ export const columns: ColumnDef<TranslationEntry>[] = [
 							{
 								path: last_selected_location?.path,
 								ts_key: [row.original.key],
-								json_key:[row.original.value],
+								json_key: [row.original.value],
 							},
 						],
 					});
 				},
 				onSuccess: () => {
-					toast.success("The Entry got successfully removed")
-					removeKeysFromTranslationEntries([row.original.key as string])
+					toast.success("The Entry got successfully removed");
+					removeKeysFromTranslationEntries([row.original.key as string]);
 				},
 				onError: (e) => {
 					toast.error(
@@ -151,7 +150,6 @@ export const columns: ColumnDef<TranslationEntry>[] = [
 					);
 				},
 			});
-
 
 			return (
 				<div className="flex w-auto">
