@@ -37,15 +37,17 @@ fn remove_key_from_language_jsons(locales_path: String, keys: Vec<String>) -> Re
         match entry {
             Ok(path) => {
                 let file_content = fs::read_to_string(&path).expect("Unable to read file");
-                let mut new_content: String = String::new();
+                let first_line = format!("{{{}", newline);
+                let mut new_content: String = String::from(first_line);
                 let regex = regex::Regex::new(r#""([^"]*)": "([^"]*)""#).expect("failed to create regex");
                 file_content.lines().for_each(|line| {
                     if let Some(capture) = regex.captures(line) {
                        if  !keys.clone().into_iter().any(|key| key == capture.get(1).unwrap().as_str() ) {
-                           new_content.push((line.to_owned() + newline).parse().unwrap())
+                           new_content.push_str(&*(line.to_owned() + newline))
                        }
                     }
                 });
+                new_content.push_str("}");
                 let mut file = OpenOptions::new()
                     .write(true)
                     .truncate(true)
