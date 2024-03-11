@@ -13,22 +13,22 @@ import {
 	FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useLocationStore } from "@/lib/stores/location_store";
 import { useSettingsStore } from "@/lib/stores/settings_store";
 import { useTranslationStore } from "@/lib/stores/translation_store";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import z from "zod";
-import {useMutation} from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
-import {useLocationStore} from "@/lib/stores/location_store";
-import {toast} from "sonner";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import z from "zod";
 
 export default function AddNewKeyDialog() {
 	const { translation_entries } = useTranslationStore();
 	const { default_language } = useSettingsStore(
 		(state) => state.translation_settings,
 	);
-	const {last_selected_location} = useLocationStore()
+	const { last_selected_location } = useLocationStore();
 
 	const formSchema = z.object({
 		ts_key: z
@@ -46,7 +46,7 @@ export default function AddNewKeyDialog() {
 			.max(255)
 			.default("")
 			.refine(
-				(key) => !translation_entries.some((entry) => entry["value"] === key),
+				(key) => !translation_entries.some((entry) => entry.value === key),
 				"A Json Key with that value is already existing.",
 			),
 		translation: z
@@ -71,20 +71,20 @@ export default function AddNewKeyDialog() {
 	const addNewMutation = useMutation({
 		mutationKey: ["Add New Key"],
 		mutationFn: async (values: z.infer<typeof formSchema>) => {
-			let result = await axios.post("http://localhost:3001/translation/add", {
+			const result = await axios.post("http://localhost:3001/translation/add", {
 				path: last_selected_location?.path,
 				ts_key: values.ts_key,
 				json_key: values.json_key,
 				value: values.translation,
-			})
-			return result.data
+			});
+			return result.data;
 		},
 		onSuccess: (data) => {
-			toast.success(data)
-		}
-	})
+			toast.success(data);
+		},
+	});
 	function onSubmit(values: z.infer<typeof formSchema>) {
-		addNewMutation.mutate(values)
+		addNewMutation.mutate(values);
 	}
 
 	return (
@@ -100,7 +100,12 @@ export default function AddNewKeyDialog() {
 								<FormItem className="grid gap-2">
 									<FormLabel>TS_Key</FormLabel>
 									<FormControl>
-										<Input placeholder="ts key" {...field} autoComplete="off" autoCapitalize="off" />
+										<Input
+											placeholder="ts key"
+											{...field}
+											autoComplete="off"
+											autoCapitalize="off"
+										/>
 									</FormControl>
 									<FormMessage />
 								</FormItem>
@@ -114,7 +119,12 @@ export default function AddNewKeyDialog() {
 								<FormItem className="grid gap-2">
 									<FormLabel>Json_Key</FormLabel>
 									<FormControl>
-										<Input placeholder="json key" {...field} autoComplete="off" autoCapitalize="off" />
+										<Input
+											placeholder="json key"
+											{...field}
+											autoComplete="off"
+											autoCapitalize="off"
+										/>
 									</FormControl>
 									<FormMessage />
 								</FormItem>
@@ -127,7 +137,12 @@ export default function AddNewKeyDialog() {
 								<FormItem className="grid gap-2">
 									<FormLabel>Translation</FormLabel>
 									<FormControl>
-										<Input placeholder="translation.." {...field} autoComplete="off" autoCapitalize="off" />
+										<Input
+											placeholder="translation.."
+											{...field}
+											autoComplete="off"
+											autoCapitalize="off"
+										/>
 									</FormControl>
 									<FormDescription>
 										The Name the location gets saved as.
@@ -145,7 +160,7 @@ export default function AddNewKeyDialog() {
 						</DialogTrigger>
 
 						<DialogTrigger>
-						<Button type="submit">Submit</Button>
+							<Button type="submit">Submit</Button>
 						</DialogTrigger>
 					</CardFooter>
 				</form>

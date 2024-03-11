@@ -13,5 +13,6 @@ glob = {workspace = true}
 serde_json = {workspace = true}
 tracing = {workspace = true}
 regex = {workspace = true}
-local_storage = {path = "../local_storage"}
+local_storage = {path = "../local_storage" }
 serde = {workspace = true}
+tokio = {workspace = true}

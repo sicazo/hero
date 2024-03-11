@@ -1,3 +1,6 @@
+use crate::handlers::storage_handler::store_router;
+use crate::handlers::translation_handler::translation_router;
+use axum::middleware::from_fn;
 use axum::routing::{get, post};
 use axum::Router;
 use serde_json::Value;
@@ -6,10 +9,9 @@ use socketioxide::SocketIo;
 use tower_http::cors::{Any, CorsLayer};
 use tracing::info;
 use tracing_subscriber::FmtSubscriber;
-use crate::handlers::storage_handler::store_router;
-use crate::handlers::translation_handler::translation_router;
 
 mod handlers;
+mod own_middleware;
 
 fn on_connect(socket: SocketRef, Data(data): Data<Value>) {
     info!("Socket.IO connected: {:?} {:?}", socket.ns(), socket.id);
@@ -37,13 +39,12 @@ pub async fn init() -> Result<(), Box<dyn std::error::Error>> {
     io.ns("/", on_connect);
     io.ns("/custom", on_connect);
 
-
-
     let app = axum::Router::new()
         .nest("/translation", translation_router())
         .nest("/store", store_router())
         .route("/", get(|| async { "Hello, World!" }))
         .layer(cors)
+        .layer(from_fn(own_middleware::logger::logger_middleware))
         .layer(layer);
 
     info!("Starting server");

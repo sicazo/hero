@@ -36,7 +36,7 @@ impl TranslationHandler {
             .expect(format!("Failed to read messages.ts file in {}", sub_path).as_str());
         let mut mappings = HashMap::new();
         info!("Reading messages.ts file in {}", sub_path);
-        let key_value_regex = regex::Regex::new(r#"(\w+): '(.*)'"#).unwrap();
+        let key_value_regex = regex::Regex::new(r#"(\w+): '(.*)'|"(\w+): "(.*)""#).unwrap();
         for capture in key_value_regex.captures_iter(&file_content) {
             let key = capture.get(1).unwrap().as_str().to_string();
             let value = capture.get(2).unwrap().as_str().to_string();

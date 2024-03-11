@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["src-tauri", "server",  "translation_handler", "local_storage"]
+members = ["src-tauri", "crates/server", "crates/translation_handler", "crates/local_storage"]
 
 
 
