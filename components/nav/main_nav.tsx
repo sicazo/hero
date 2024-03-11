@@ -104,7 +104,7 @@ export function Nav({ links, isCollapsed }: NavProps): JSX.Element {
 			{/* Spacer div */}
 			<div style={{ flexGrow: 1 }} />
 			<div className="flex w-full gap-1 items-center justify-center px-2">
-				<Pulse />
+				{/*<Pulse />*/}
 			</div>
 
 			<div className="flex w-full gap-1 px-2 pb-2">

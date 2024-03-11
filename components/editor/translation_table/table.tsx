@@ -30,6 +30,7 @@ import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import {toast} from "sonner";
+import {useTranslationStore} from "@/lib/stores/translation_store";
 
 interface TranslationTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[];
@@ -90,6 +91,7 @@ export default function TranslationTable<TData, TValue>({
 
 	const rowsSelected = table.getIsSomeRowsSelected();
 	const { last_selected_location } = useLocationStore();
+	const {removeKeysFromTranslationEntries} = useTranslationStore();
 
 	const removeKeyMutation = useMutation({
 		mutationKey: ["remove_keys"],
@@ -107,8 +109,9 @@ export default function TranslationTable<TData, TValue>({
 			);
 			return response.data;
 		},
-		onSuccess: () => {
+		onSuccess: (_, variables) => {
 			toast.success("The Entries got successfully removed")
+			removeKeysFromTranslationEntries(variables.ts_keys)
 		}
 	});
 	const test = () => {
