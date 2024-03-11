@@ -1,6 +1,7 @@
 pub mod getter;
 pub mod remover;
 pub mod setter;
+pub mod updater;
 
 pub struct TranslationHandler;
 
