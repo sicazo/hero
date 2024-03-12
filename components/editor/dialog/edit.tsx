@@ -74,6 +74,7 @@ export default function EditTranslationDialog({
 							autoComplete="off"
 							autoCapitalize="off"
 							spellCheck={false}
+							disabled
 						/>
 					</div>
 					<div className="grid gap-2">
@@ -84,6 +85,7 @@ export default function EditTranslationDialog({
 							autoComplete="off"
 							autoCapitalize="off"
 							spellCheck={false}
+							disabled
 						/>
 					</div>
 				</div>

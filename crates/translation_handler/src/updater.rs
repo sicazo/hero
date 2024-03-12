@@ -71,7 +71,6 @@ async fn update_translation_file(
     if !found {
         error!("Key not found")
     } else {
-        // if key was found and replaced, write the updated content back to file
         let mut file = OpenOptions::new().write(true).truncate(true).open(path)?;
 
         for line in lines {
