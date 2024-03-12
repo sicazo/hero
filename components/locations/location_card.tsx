@@ -68,7 +68,7 @@ export function LocationCard({ location }: { location: Location }) {
 				<div className="flex space-x-4 text-sm text-muted-foreground">
 					<div>Keys: {location.num_of_keys}</div>
 					<div>Untranslated Keys: {location.num_of_untranslated_keys}</div>
-					<div>Added: {location.added_at.split(",")[0]}</div>
+					<div>Added: {location.added_at?.split(",")[0]}</div>
 				</div>
 			</CardContent>
 		</Card>

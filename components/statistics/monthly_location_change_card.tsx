@@ -10,6 +10,7 @@ import {
 import { useLocationStore } from "@/lib/stores/location_store";
 import { useEffect, useState } from "react";
 import { Line, LineChart, ResponsiveContainer, Tooltip } from "recharts";
+import { Location } from "@/lib/bindings";
 
 interface MonthlyLocationChange {
 	total: number;
@@ -31,11 +32,11 @@ export default function MonthlyLocationChangeCard() {
 
 	useEffect(() => {
 		const changes: Partial<Record<string, number>> = {};
-		if (locations.length > 0) {
-			for (const location of locations) {
-				console.log(location);
+		const length = locations?.length as number;
+		if (length > 0) {
+			for (const location of locations as Location[]) {
 				// convert date string to Date object
-				const date = convertToJSDate(location.added_at);
+				const date = convertToJSDate(location.added_at as string);
 				const monthKey = `${date.getFullYear()}-${date.getMonth() + 1}`;
 				// @ts-ignore
 				changes[monthKey] = changes[monthKey] ? changes[monthKey] + 1 : 1;

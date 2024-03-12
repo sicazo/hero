@@ -26,11 +26,11 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import { useLocationStore } from "@/lib/stores/location_store";
+import { useTranslationStore } from "@/lib/stores/translation_store";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import {toast} from "sonner";
-import {useTranslationStore} from "@/lib/stores/translation_store";
+import { toast } from "sonner";
 
 interface TranslationTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[];
@@ -91,7 +91,7 @@ export default function TranslationTable<TData, TValue>({
 
 	const rowsSelected = table.getIsSomeRowsSelected();
 	const { last_selected_location } = useLocationStore();
-	const {removeKeysFromTranslationEntries} = useTranslationStore();
+	const { removeKeysFromTranslationEntries } = useTranslationStore();
 
 	const removeKeyMutation = useMutation({
 		mutationKey: ["remove_keys"],
@@ -110,21 +110,21 @@ export default function TranslationTable<TData, TValue>({
 			return response.data;
 		},
 		onSuccess: (_, variables) => {
-			toast.success("The Entries got successfully removed")
-			removeKeysFromTranslationEntries(variables.ts_keys)
-		}
+			toast.success("The Entries got successfully removed");
+			removeKeysFromTranslationEntries(variables.ts_keys);
+		},
 	});
 	const test = () => {
-        let ts_keys: string[] = []
-        let json_keys :string[] = []
+		const ts_keys: string[] = [];
+		const json_keys: string[] = [];
 		const selectedRowData = table.getSelectedRowModel();
-		selectedRowData.rows.forEach((row) => {
-            //@ts-expect-error
-            ts_keys.push(row.original.key)
-            //@ts-expect-error
-            json_keys.push(row.original.value)
-        })
-        removeKeyMutation.mutate({ts_keys, json_keys})
+		for (const row of selectedRowData.rows) {
+			//@ts-expect-error
+			ts_keys.push(row.original.key);
+			//@ts-expect-error
+			json_keys.push(row.original.value);
+		}
+		removeKeyMutation.mutate({ ts_keys, json_keys });
 	};
 
 	return (
