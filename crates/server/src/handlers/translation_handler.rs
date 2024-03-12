@@ -4,8 +4,8 @@ use axum::{Json, Router};
 use local_storage::stores::translation_store::TranslationEntry;
 use serde::{Deserialize, Serialize};
 use tracing::{error, info};
-use translation_handler::TranslationHandler;
 use translation_handler::updater::UpdatedKeyValues;
+use translation_handler::TranslationHandler;
 
 pub fn translation_router() -> Router {
     Router::new()
@@ -118,7 +118,7 @@ pub async fn add_new_key(Json(payload): Json<AddNewKeyBody>) -> (StatusCode, Jso
         payload.json_key.clone(),
         payload.value.clone(),
     )
-        .await
+    .await
     {
         Ok(_) => (StatusCode::CREATED, Json(String::from("Success"))),
         Err(e) => (StatusCode::BAD_REQUEST, Json(e.to_string())),
