@@ -31,6 +31,7 @@ import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { TranslationEntry } from "@/lib/bindings";
 
 interface TranslationTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[];
@@ -41,6 +42,7 @@ export default function TranslationTable<TData, TValue>({
 	columns,
 	data,
 }: TranslationTableProps<TData, TValue>) {
+	// States
 	const [sorting, setSorting] = useState<SortingState>([]);
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 	const initialStatePageSize = Math.floor(720 / 80);
@@ -48,8 +50,78 @@ export default function TranslationTable<TData, TValue>({
 	const [columnVisibility, setColumnVisibility] = useState<
 		Record<string, boolean>
 	>({ value: false });
-
 	const [pageSize, setPageSize] = useState(initialStatePageSize);
+	const { last_selected_location } = useLocationStore();
+	const { removeKeysFromTranslationEntries, translation_entries, setTranslationEntries } = useTranslationStore();
+
+	// Requests
+	const removeKeyMutation = useMutation({
+		mutationKey: ["remove_keys"],
+		mutationFn: async ({
+			ts_keys,
+			json_keys,
+		}: { ts_keys: string[]; json_keys: string[] }) => {
+			const response = await axios.post(
+				"http://localhost:3001/translation/remove",
+				{
+					path: last_selected_location?.path,
+					ts_key: ts_keys,
+					json_key: json_keys,
+				},
+			);
+			return response.data;
+		},
+		onSuccess: (_, variables) => {
+			toast.success("The Entries got successfully removed");
+			removeKeysFromTranslationEntries(variables.ts_keys);
+		},
+	});
+
+	const checkLocationMutation = useMutation<{ keys: TranslationEntry[] }>({
+		mutationKey: ["check-location"],
+		mutationFn: async () => {
+			const response = await axios.post(
+				"http://localhost:3001/translation/check",
+				{
+					path: last_selected_location?.path,
+				},
+			);
+			return response.data;
+		},
+		onSuccess: (data) => {
+			updatePossibleLocationChanges(data.keys);
+		},
+	});
+
+	// Functions
+
+	const updatePossibleLocationChanges = (keys: TranslationEntry[]) => {
+		const newTranslationEntries = [...translation_entries];
+		for (const key of keys) {
+			const existingEntryIndex = newTranslationEntries.findIndex(
+				(entry) => entry.key === key.key
+			);
+			if (existingEntryIndex !== -1) {
+				if (JSON.stringify(newTranslationEntries[existingEntryIndex].translations) !== JSON.stringify(key.translations)) {
+					console.info("The translations inside of the keys differ");
+				}
+				newTranslationEntries[existingEntryIndex] = key;
+			}
+		}
+		setTranslationEntries(newTranslationEntries);
+	};
+	const removeSelectedKeys = () => {
+		const ts_keys: string[] = [];
+		const json_keys: string[] = [];
+		const selectedRowData = table.getSelectedRowModel();
+		for (const row of selectedRowData.rows) {
+			//@ts-expect-error
+			ts_keys.push(row.original.key);
+			//@ts-expect-error
+			json_keys.push(row.original.value);
+		}
+		removeKeyMutation.mutate({ ts_keys, json_keys });
+	};
 
 	const table = useReactTable({
 		data,
@@ -75,6 +147,8 @@ export default function TranslationTable<TData, TValue>({
 			},
 		},
 	});
+
+	// Setup
 	useEffect(() => {
 		const handleResize = () => {
 			const newPageSize = Math.floor(window.innerHeight / 80);
@@ -89,43 +163,11 @@ export default function TranslationTable<TData, TValue>({
 		return () => window.removeEventListener("resize", handleResize);
 	}, [table, pageSize]);
 
-	const rowsSelected = table.getIsSomeRowsSelected();
-	const { last_selected_location } = useLocationStore();
-	const { removeKeysFromTranslationEntries } = useTranslationStore();
+	useEffect(() => {}, []);
 
-	const removeKeyMutation = useMutation({
-		mutationKey: ["remove_keys"],
-		mutationFn: async ({
-			ts_keys,
-			json_keys,
-		}: { ts_keys: string[]; json_keys: string[] }) => {
-			const response = await axios.post(
-				"http://localhost:3001/translation/remove",
-				{
-					path: last_selected_location?.path,
-					ts_key: ts_keys,
-					json_key: json_keys,
-				},
-			);
-			return response.data;
-		},
-		onSuccess: (_, variables) => {
-			toast.success("The Entries got successfully removed");
-			removeKeysFromTranslationEntries(variables.ts_keys);
-		},
-	});
-	const test = () => {
-		const ts_keys: string[] = [];
-		const json_keys: string[] = [];
-		const selectedRowData = table.getSelectedRowModel();
-		for (const row of selectedRowData.rows) {
-			//@ts-expect-error
-			ts_keys.push(row.original.key);
-			//@ts-expect-error
-			json_keys.push(row.original.value);
-		}
-		removeKeyMutation.mutate({ ts_keys, json_keys });
-	};
+	// Misc
+
+	const rowsSelected = table.getIsSomeRowsSelected();
 
 	return (
 		<div>
@@ -150,7 +192,7 @@ export default function TranslationTable<TData, TValue>({
 						disabled={!rowsSelected}
 						className="h-10"
 						variant="destructive"
-						onClick={test}
+						onClick={removeSelectedKeys}
 					>
 						{removeKeyMutation.isPending ? "..." : "Delete Selected Keys"}
 					</Button>
