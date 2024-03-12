@@ -1,3 +1,4 @@
+use axum::extract::Path;
 use axum::http::StatusCode;
 use axum::routing::post;
 use axum::{Json, Router};
@@ -15,10 +16,11 @@ pub fn translation_router() -> Router {
         .route("/languages", post(get_languages))
         .route("/remove", post(remove_keys))
         .route("/update", post(update_keys))
+        .route("/check", post(get_translations))
 }
 
 #[derive(Deserialize)]
-pub struct TranslationHandlerBody {
+pub struct PathBody {
     path: String,
 }
 
@@ -48,15 +50,12 @@ pub struct AddNewKeyBody {
 }
 
 #[derive(Deserialize)]
-pub struct GetLanguagesBody {
-    path: String,
-}
-
-#[derive(Deserialize)]
 pub struct UpdateKeysBody {
     path: String,
     key: UpdatedKeyValues,
 }
+
+
 
 pub async fn remove_keys(Json(payload): Json<RemoveTranslationBody>) -> (StatusCode, Json<String>) {
     info!(target: "server_action", "Removing keys from {}",&payload.path);
@@ -80,7 +79,7 @@ pub async fn update_keys(Json(payload): Json<UpdateKeysBody>) -> (StatusCode, Js
 }
 
 pub async fn get_number_of_keys(
-    Json(payload): Json<TranslationHandlerBody>,
+    Json(payload): Json<PathBody>,
 ) -> (StatusCode, Json<NumberOfKeysResponse>) {
     info!(target: "server_action", "Getting number of keys for {}", &payload.path);
     let key_value_len = TranslationHandler::get_key_values_from_messages_ts(&payload.path)
@@ -99,7 +98,7 @@ pub async fn get_number_of_keys(
 }
 
 pub async fn get_translations(
-    Json(payload): Json<TranslationHandlerBody>,
+    Json(payload): Json<PathBody>,
 ) -> (StatusCode, Json<TranslationsResponse>) {
     info!("Getting keys from {}", &payload.path);
     let key_value = TranslationHandler::get_translations(&payload.path).await;
@@ -125,9 +124,7 @@ pub async fn add_new_key(Json(payload): Json<AddNewKeyBody>) -> (StatusCode, Jso
     }
 }
 
-pub async fn get_languages(
-    Json(payload): Json<GetLanguagesBody>,
-) -> (StatusCode, Json<Vec<String>>) {
+pub async fn get_languages(Json(payload): Json<PathBody>) -> (StatusCode, Json<Vec<String>>) {
     info!("Getting language codes from {}", &payload.path);
     let languages = TranslationHandler::extract_language_codes_from_locales(payload.path);
     (StatusCode::OK, Json(languages))
