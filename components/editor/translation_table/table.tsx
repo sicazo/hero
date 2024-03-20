@@ -25,13 +25,13 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
+import { TranslationEntry } from "@/lib/bindings";
 import { useLocationStore } from "@/lib/stores/location_store";
 import { useTranslationStore } from "@/lib/stores/translation_store";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { TranslationEntry } from "@/lib/bindings";
 
 interface TranslationTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[];
@@ -52,7 +52,11 @@ export default function TranslationTable<TData, TValue>({
 	>({ value: false });
 	const [pageSize, setPageSize] = useState(initialStatePageSize);
 	const { last_selected_location } = useLocationStore();
-	const { removeKeysFromTranslationEntries, translation_entries, setTranslationEntries } = useTranslationStore();
+	const {
+		removeKeysFromTranslationEntries,
+		translation_entries,
+		setTranslationEntries,
+	} = useTranslationStore();
 
 	// Requests
 	const removeKeyMutation = useMutation({
@@ -99,10 +103,14 @@ export default function TranslationTable<TData, TValue>({
 		const newTranslationEntries = [...translation_entries];
 		for (const key of keys) {
 			const existingEntryIndex = newTranslationEntries.findIndex(
-				(entry) => entry.key === key.key
+				(entry) => entry.key === key.key,
 			);
 			if (existingEntryIndex !== -1) {
-				if (JSON.stringify(newTranslationEntries[existingEntryIndex].translations) !== JSON.stringify(key.translations)) {
+				if (
+					JSON.stringify(
+						newTranslationEntries[existingEntryIndex].translations,
+					) !== JSON.stringify(key.translations)
+				) {
 					console.info("The translations inside of the keys differ");
 				}
 				newTranslationEntries[existingEntryIndex] = key;

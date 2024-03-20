@@ -1,7 +1,7 @@
 {
 	"$schema": "../node_modules/@tauri-apps/cli/schema.json",
 	"build": {
-		"beforeBuildCommand": "pnpm run build",
+		"beforeBuildCommand": "turbo build",
 		"beforeDevCommand": "pnpm run dev",
 		"devPath": "http://localhost:3000",
 		"distDir": "../out"
@@ -37,7 +37,7 @@
 			"pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDE3OUQ0NDBENjU4QUU4NDgKUldSSTZJcGxEVVNkRnljVnFBYWdMaGhiM21OdmdaenNVYmQ5RVVSdFdYM1NPQlhPSzc3RVZ3KzIK"
 		},
 		"bundle": {
-			"active": true,
+			"active": false,
 			"category": "DeveloperTool",
 			"copyright": "",
 			"deb": {
@@ -77,7 +77,7 @@
 				"fullscreen": false,
 				"height": 720,
 				"resizable": true,
-				"title": "hero",
+				"title": "Hero",
 				"width": 900,
 				"minHeight": 720,
 				"minWidth": 970

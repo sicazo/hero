@@ -73,8 +73,10 @@ export default function LocationSwitcher({ className }: LocationSwitcherProps) {
 							onInput={(e) => setSearchTerm(e.currentTarget.value)}
 						/>
 						<CommandEmpty>No Location found</CommandEmpty>
-						{locations?.filter((location) =>
-								location.name?.toLowerCase()
+						{locations
+							?.filter((location) =>
+								location.name
+									?.toLowerCase()
 									.startsWith(searchTerm.toLowerCase()),
 							)
 							.map((location) => (

@@ -46,9 +46,13 @@ export default function TranslationForm() {
 		},
 	});
 	function onSubmit(values: z.infer<typeof translationFormSchema>) {
-		updateTranslationSettings({ ...values });
+		updateTranslationSettings({
+			translate_new_strings: values.translate_new_strings as boolean,
+			translate_updated_strings: values.translate_updated_strings as boolean,
+			default_language: values.default_language,
+			translation_command: values.translation_command,
+		});
 	}
-	console.log();
 	return (
 		<Form {...form}>
 			<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">

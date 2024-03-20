@@ -7,10 +7,10 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
+import { Location } from "@/lib/bindings";
 import { useLocationStore } from "@/lib/stores/location_store";
 import { useEffect, useState } from "react";
 import { Line, LineChart, ResponsiveContainer, Tooltip } from "recharts";
-import { Location } from "@/lib/bindings";
 
 interface MonthlyLocationChange {
 	total: number;
