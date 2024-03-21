@@ -18,6 +18,7 @@ tokio = { workspace = true }
 serde = { workspace = true }
 local_storage = { path = "../local_storage" }
 translation_handler = { path = "../translation_handler" }
-futures = {workspace = true}
-sea-orm = {workspace= true}
-sea-orm-migration = {workspace = true}
+futures = { workspace = true }
+sea-orm = { workspace = true }
+sea-orm-migration = { workspace = true }
+tauri = { workspace = true }

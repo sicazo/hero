@@ -1,23 +1,13 @@
-use axum::extract::Path;
 use axum::http::StatusCode;
 use axum::routing::post;
 use axum::{Json, Router};
 use local_storage::stores::translation_store::TranslationEntry;
 use serde::{Deserialize, Serialize};
-use tracing::{error, info};
+use tracing::info;
 use translation_handler::updater::UpdatedKeyValues;
 use translation_handler::TranslationHandler;
 
-pub fn translation_router() -> Router {
-    Router::new()
-        .route("/keys", post(get_number_of_keys))
-        .route("/translations", post(get_translations))
-        .route("/add", post(add_new_key))
-        .route("/languages", post(get_languages))
-        .route("/remove", post(remove_keys))
-        .route("/update", post(update_keys))
-        .route("/check", post(get_translations))
-}
+use crate::state::ServerState;
 
 #[derive(Deserialize)]
 pub struct PathBody {
@@ -55,7 +45,16 @@ pub struct UpdateKeysBody {
     key: UpdatedKeyValues,
 }
 
-
+pub fn make_translation_router() -> Router<ServerState> {
+    Router::new()
+        .route("/keys", post(get_number_of_keys))
+        .route("/translations", post(get_translations))
+        .route("/add", post(add_new_key))
+        .route("/languages", post(get_languages))
+        .route("/remove", post(remove_keys))
+        .route("/update", post(update_keys))
+        .route("/check", post(get_translations))
+}
 
 pub async fn remove_keys(Json(payload): Json<RemoveTranslationBody>) -> (StatusCode, Json<String>) {
     info!(target: "server_action", "Removing keys from {}",&payload.path);

@@ -1,21 +1,23 @@
-use crate::handlers::storage_handler::store_router;
-use crate::handlers::translation_handler::translation_router;
+use crate::handlers::storage_handler::make_storage_router;
+use crate::migrator::Migrator;
+use crate::state::ServerState;
 use axum::middleware::from_fn;
-use axum::routing::{get, post};
+use axum::routing::get;
 use axum::Router;
+use handlers::translation_handler::*;
+use sea_orm::Database;
+use sea_orm_migration::prelude::*;
 use serde_json::Value;
 use socketioxide::extract::{Bin, Data, SocketRef};
 use socketioxide::SocketIo;
 use tower_http::cors::{Any, CorsLayer};
 use tracing::info;
 use tracing_subscriber::FmtSubscriber;
-use sea_orm::{Database};
-use sea_orm_migration::prelude::*;
-use crate::migrator::{Migrator, MigrationTrait};
 
 mod handlers;
-mod own_middleware;
 mod migrator;
+mod own_middleware;
+mod state;
 
 fn on_connect(socket: SocketRef, Data(data): Data<Value>) {
     info!("Socket.IO connected: {:?} {:?}", socket.ns(), socket.id);
@@ -33,8 +35,19 @@ fn on_connect(socket: SocketRef, Data(data): Data<Value>) {
 pub async fn init() -> Result<(), Box<dyn std::error::Error>> {
     tracing::subscriber::set_global_default(FmtSubscriber::default())?;
 
-    let db = Database::connect("sqlite:/C:/Users/ihm1we/Documents/hero/db.sqlite?mode=rwc").await.expect("failed to connect to db");
+    // Database Setup
+    let config_dir = tauri::api::path::config_dir().ok_or_else(|| {
+        std::io::Error::new(std::io::ErrorKind::NotFound, "Config directory not found")
+    })?;
+    let folder_path = config_dir.join("translationHero");
+    let url = folder_path.join("hero.sqlite?mode=rwc");
+    let db_url = format!("sqlite:{}", url.display());
+    let db = Database::connect(db_url)
+        .await
+        .expect("failed to connect to db");
     Migrator::up(&db, None).await.expect("failed to migrate db");
+
+    // CORS Setup
 
     let (layer, io) = SocketIo::new_layer();
     let cors = CorsLayer::new()
@@ -46,13 +59,17 @@ pub async fn init() -> Result<(), Box<dyn std::error::Error>> {
     io.ns("/", on_connect);
     io.ns("/custom", on_connect);
 
-    let app = axum::Router::new()
-        .nest("/translation", translation_router())
-        .nest("/store", store_router())
+    let state = ServerState { db: db };
+
+    let app = Router::new()
+        //.nest("/translation", translation_router())
+        .nest("/store", make_storage_router())
+        .nest("/translation", make_translation_router())
         .route("/", get(|| async { "Hello, World!" }))
         .layer(cors)
         .layer(from_fn(own_middleware::logger::logger_middleware))
-        .layer(layer);
+        .layer(layer)
+        .with_state(state);
 
     info!("Starting server");
 

@@ -1,4 +1,6 @@
-target/
+target
 .idea
 .turbo
 .vscode
+.next
+node_modules
