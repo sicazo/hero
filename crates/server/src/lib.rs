@@ -11,10 +11,11 @@ use tracing::info;
 use tracing_subscriber::FmtSubscriber;
 use sea_orm::{Database};
 use sea_orm_migration::prelude::*;
-use migration::{Migrator, MigrationTrait};
+use crate::migrator::{Migrator, MigrationTrait};
 
 mod handlers;
 mod own_middleware;
+mod migrator;
 
 fn on_connect(socket: SocketRef, Data(data): Data<Value>) {
     info!("Socket.IO connected: {:?} {:?}", socket.ns(), socket.id);
