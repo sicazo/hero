@@ -9,6 +9,9 @@ use socketioxide::SocketIo;
 use tower_http::cors::{Any, CorsLayer};
 use tracing::info;
 use tracing_subscriber::FmtSubscriber;
+use sea_orm::{Database};
+use sea_orm_migration::prelude::*;
+use migration::{Migrator, MigrationTrait};
 
 mod handlers;
 mod own_middleware;
@@ -28,6 +31,9 @@ fn on_connect(socket: SocketRef, Data(data): Data<Value>) {
 #[tokio::main]
 pub async fn init() -> Result<(), Box<dyn std::error::Error>> {
     tracing::subscriber::set_global_default(FmtSubscriber::default())?;
+
+    let db = Database::connect("sqlite:/C:/Users/ihm1we/Documents/hero/db.sqlite?mode=rwc").await.expect("failed to connect to db");
+    Migrator::up(&db, None).await.expect("failed to migrate db");
 
     let (layer, io) = SocketIo::new_layer();
     let cors = CorsLayer::new()
