@@ -41,4 +41,9 @@ sea-orm = { version = "0.12.15", features = [
   "macros",
 ] }
 futures = "0.3.28"
-sea-orm-migration = { version = "0.12.15" , features = ["runtime-tokio-native-tls", "sqlx-sqlite"]}
+sea-orm-migration = { version = "0.12.15", features = [
+  "runtime-tokio-native-tls",
+  "sqlx-sqlite",
+] }
+async-graphql-axum = "7.0.3"
+async-graphql = { version = "7.0.3", features = ["graphiql", "playground"] }

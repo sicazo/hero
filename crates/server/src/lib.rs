@@ -2,8 +2,8 @@ use crate::entities::application_data;
 use crate::handlers::storage_handler::make_storage_router;
 use crate::migrator::Migrator;
 use crate::state::ServerState;
+use async_graphql_axum::GraphQLWebSocket;
 use axum::middleware::from_fn;
-use axum::routing::get;
 use axum::Router;
 use entities::application_data::Entity as ApplicationData;
 use handlers::translation_handler::*;
@@ -73,14 +73,12 @@ pub async fn init() -> Result<(), Box<dyn std::error::Error>> {
         .allow_credentials(false);
 
     io.ns("/", on_connect);
-    io.ns("/custom", on_connect);
 
     let state = ServerState { db: db };
 
     let app = Router::new()
         .nest("/store", make_storage_router())
         .nest("/translation", make_translation_router())
-        .route("/", get(|| async { "Hello, World!" }))
         .layer(cors)
         .layer(from_fn(own_middleware::logger::logger_middleware))
         .layer(layer)

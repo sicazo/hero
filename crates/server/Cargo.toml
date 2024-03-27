@@ -22,3 +22,5 @@ futures = { workspace = true }
 sea-orm = { workspace = true }
 sea-orm-migration = { workspace = true }
 tauri = { workspace = true }
+async-graphql-axum = { workspace = true }
+async-graphql = { workspace = true }
