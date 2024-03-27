@@ -115,10 +115,10 @@ pub async fn init() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-async fn graphql() -> impl IntoResponse {
+async fn graphiql() -> impl IntoResponse {
     response::Html(GraphiQLSource::build().endpoint("/graphql").finish())
 }
-async fn graphiql() -> impl IntoResponse {
+async fn graphql() -> impl IntoResponse {
     response::Html(playground_source(GraphQLPlaygroundConfig::new("/graphql")))
 }
 async fn graphql_ws_handler(

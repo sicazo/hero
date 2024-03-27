@@ -1,6 +1,6 @@
 use crate::{
     entities::application_data::Entity as ApplicationDataEntity,
-    entities::application_data::Model as ApplicationData, state::ServerState,
+    entities::application_data::Model as ApplicationData,
 };
 use async_graphql::*;
 use sea_orm::{DatabaseConnection, EntityTrait};

@@ -55,17 +55,17 @@ impl MigrationTrait for Migration {
                             .default(false),
                     )
                     .col(
-                      ColumnDef::new(ApplicationData::ResizablePanelState).json().not_null().default("{home_collapsed_size: 4, home_default_sizes: [96], home_nav_collapsed: true}")
+                      ColumnDef::new(ApplicationData::ResizablePanelState).json().not_null().default(r#"{"home_collapsed_size": 4, "home_default_sizes": [4, 96], "home_nav_collapsed": true}"#)
                     )
                     .col(
                       ColumnDef::new(ApplicationData::Theme).enumeration(Alias::new("Theme"), Theme::iter())
                             .not_null(),
                     )
                     .col(ColumnDef::new(ApplicationData::ToastRichColors).boolean().not_null().default(true))
-                    .col(ColumnDef::new(ApplicationData::TranslationDefaultLanguage).string().default("en-GB"))
-                    .col(ColumnDef::new(ApplicationData::TranslateNewStrings).boolean().default(false))
-                    .col(ColumnDef::new(ApplicationData::TranslateUpdatedStrings).boolean().default(false))
-                    .col(ColumnDef::new(ApplicationData::TranslationCommand).string())
+                    .col(ColumnDef::new(ApplicationData::TranslationDefaultLanguage).string().not_null().default("en-GB"))
+                    .col(ColumnDef::new(ApplicationData::TranslateNewStrings).boolean().not_null().default(false))
+                    .col(ColumnDef::new(ApplicationData::TranslateUpdatedStrings).boolean().not_null().default(false))
+                    .col(ColumnDef::new(ApplicationData::TranslationCommand).string().not_null())
                     .to_owned(),
 
             )

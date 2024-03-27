@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "biome check --apply app && biome check --apply components && biome check --apply lib"
+    "lint": "biome check --apply app && biome check --apply components && biome check --apply lib",
+    "generate_entities": "sea-orm-cli generate entity --database-url 'sqlite:/Users/marius/Library/Application Support/translationHero/hero.sqlite' -o ../crates/server/src/entities --model-extra-derives 'SimpleObject'"
   },
   "dependencies": {
     "@heroicons/react": "^2.0.18",
