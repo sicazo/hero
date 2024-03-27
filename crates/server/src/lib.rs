@@ -1,11 +1,13 @@
+use crate::entities::application_data;
 use crate::handlers::storage_handler::make_storage_router;
 use crate::migrator::Migrator;
 use crate::state::ServerState;
 use axum::middleware::from_fn;
 use axum::routing::get;
 use axum::Router;
+use entities::application_data::Entity as ApplicationData;
 use handlers::translation_handler::*;
-use sea_orm::Database;
+use sea_orm::{ConnectOptions, Database, EntityTrait, Set};
 use sea_orm_migration::prelude::*;
 use serde_json::Value;
 use socketioxide::extract::{Bin, Data, SocketRef};
@@ -14,6 +16,7 @@ use tower_http::cors::{Any, CorsLayer};
 use tracing::info;
 use tracing_subscriber::FmtSubscriber;
 
+mod entities;
 mod handlers;
 mod migrator;
 mod own_middleware;
@@ -42,10 +45,23 @@ pub async fn init() -> Result<(), Box<dyn std::error::Error>> {
     let folder_path = config_dir.join("translationHero");
     let url = folder_path.join("hero.sqlite?mode=rwc");
     let db_url = format!("sqlite:{}", url.display());
-    let db = Database::connect(db_url)
+    let mut db_options = ConnectOptions::new(db_url);
+    db_options.sqlx_logging(false);
+    let db = Database::connect(db_options)
         .await
         .expect("failed to connect to db");
     Migrator::up(&db, None).await.expect("failed to migrate db");
+
+    match ApplicationData::find_by_id(1).one(&db).await.unwrap() {
+        Some(_) => println!("Not first start"),
+        None => {
+            let data = application_data::ActiveModel {
+                theme: Set("Light".to_owned()),
+                ..Default::default()
+            };
+            let _ = ApplicationData::insert(data).exec(&db).await;
+        }
+    }
 
     // CORS Setup
 
@@ -62,7 +78,6 @@ pub async fn init() -> Result<(), Box<dyn std::error::Error>> {
     let state = ServerState { db: db };
 
     let app = Router::new()
-        //.nest("/translation", translation_router())
         .nest("/store", make_storage_router())
         .nest("/translation", make_translation_router())
         .route("/", get(|| async { "Hello, World!" }))
