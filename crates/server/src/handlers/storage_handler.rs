@@ -1,6 +1,7 @@
 use axum::routing::post;
 use axum::{http::StatusCode};
 use axum::{Json, Router};
+use axum::extract::State;
 use local_storage::{get_store, remove_store, update_store};
 use serde::Deserialize;
 use crate::state::ServerState;
@@ -26,7 +27,10 @@ pub struct RemoveStoreBody {
     name: String,
 }
 
-pub async fn set_item(Json(payload): Json<SetStoreBody>) -> (StatusCode, Json<()>) {
+pub async fn set_item(
+    State(state): State<ServerState>,
+    Json(payload): Json<SetStoreBody>
+) -> (StatusCode, Json<()>) {
     update_store(payload.name, payload.value);
     (StatusCode::OK, Json(()))
 }
