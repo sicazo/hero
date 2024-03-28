@@ -6,9 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "biome check --apply app && biome check --apply components && biome check --apply lib"
+    "lint": "biome check --apply app && biome check --apply components && biome check --apply lib",
+    "generate_entities": "sea-orm-cli generate entity --database-url 'sqlite:/Users/marius/Library/Application Support/translationHero/hero.sqlite' -o ../crates/server/src/entities --model-extra-derives 'SimpleObject'"
   },
   "dependencies": {
+    "@apollo/client": "^3.9.9",
     "@heroicons/react": "^2.0.18",
     "@hookform/resolvers": "^3.3.2",
     "@radix-ui/react-avatar": "^1.0.4",
@@ -35,6 +37,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
     "cmdk": "^0.2.0",
+    "graphql": "^16.8.1",
     "immer": "^10.0.3",
     "lucide-react": "^0.303.0",
     "next": "14.0.4",

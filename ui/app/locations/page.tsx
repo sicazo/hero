@@ -58,7 +58,8 @@ export default function Page() {
 										onChange={(event) =>
 											setShownLocations(
 												locations?.filter((loc) =>
-													loc?.name?.toLowerCase()
+													loc?.name
+														?.toLowerCase()
 														.includes(event.target.value.toLowerCase()),
 												),
 											)
@@ -74,7 +75,9 @@ export default function Page() {
 						</TabsContent>
 						<TabsContent value="favorites" className="m-0 h-full">
 							<LocationList
-								locations={shownLocations?.filter((item) => item.is_favourite) ?? []}
+								locations={
+									shownLocations?.filter((item) => item.is_favourite) ?? []
+								}
 							/>
 						</TabsContent>
 					</>

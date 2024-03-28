@@ -7,17 +7,20 @@ repository = ""
 edition = "2021"
 
 
-
 [dependencies]
-axum = {workspace = true}
-serde_json = {workspace = true}
-socketioxide = {workspace = true}
-tower-http = {workspace = true}
-tracing = {workspace = true}
-tracing-subscriber = {workspace = true}
-tokio = {workspace = true}
-serde = {workspace = true}
-local_storage = {path = "../local_storage" }
-translation_handler = {path = "../translation_handler" }
-
-
+axum = { workspace = true }
+serde_json = { workspace = true }
+socketioxide = { workspace = true }
+tower-http = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+tokio = { workspace = true }
+serde = { workspace = true }
+local_storage = { path = "../local_storage" }
+translation_handler = { path = "../translation_handler" }
+futures = { workspace = true }
+sea-orm = { workspace = true }
+sea-orm-migration = { workspace = true }
+tauri = { workspace = true }
+async-graphql-axum = { workspace = true }
+async-graphql = { workspace = true }

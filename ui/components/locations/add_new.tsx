@@ -23,6 +23,8 @@ import axios from "axios";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import {useEffect, useState} from "react";
+import {dialog} from "@tauri-apps/api"
+import {type} from "@tauri-apps/api/os"
 
 interface props {
 	setAddNew: (value: boolean) => void;
@@ -71,19 +73,12 @@ export default function AddNewLocation(props: props) {
 		props.setAddNew(false);
 	}
 
-	const [tauriOs, setTauriOs] = useState({
-		type() {
-
-		}
-	})
-	const [tauriOpen, setTauriOpen] = useState({})
+	const [tauriOpen, setTauriOpen] = useState<typeof dialog>()
 
 	const setup = async () => {
-		const  os  = await import( "@tauri-apps/api")
 		const  open = await import("@tauri-apps/api/dialog")
 
-		// @ts-ignore
-		setTauriOs(os)
+
 		setTauriOpen(open)
 	}
 
@@ -94,8 +89,9 @@ export default function AddNewLocation(props: props) {
 
 	async function SelectPath() {
 		// @ts-ignore
-		let path = await tauriOpen({
+		let path = await tauriOpen?.open({
 			multiple: false,
+			defaultPath: ".",
 			directory: false,
 			filters: [
 				{
@@ -106,12 +102,7 @@ export default function AddNewLocation(props: props) {
 		});
 		if (path !== null) {
 			path = path as string;
-			const os_type = await tauriOs.type();
-			const cleaned =
-				// @ts-ignore
-				os_type === "Darwin" || os_type === "Linux"
-					? path.replace("/messages.ts", "")
-					: path.replace("\\messages.ts", ""); // windows specific path shit :(
+			const cleaned = path.replace("\\messages.ts", ""); // windows specific path shit :(
 			form.setValue("path", cleaned);
 		}
 	}

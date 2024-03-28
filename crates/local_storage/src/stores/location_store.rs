@@ -2,7 +2,6 @@ use crate::types::StoreUpgrade;
 use serde::{Deserialize, Serialize};
 use specta::Type;
 use std::error::Error;
-use std::fmt::Display;
 use std::str::FromStr;
 use tauri_specta::Event;
 
