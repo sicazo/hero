@@ -35,6 +35,7 @@ const translationFormSchema = z.object({
 export default function TranslationForm() {
 	const { updateTranslationSettings, translation_settings } =
 		useSettingsStore();
+	console.log(translation_settings)
 
 	const form = useForm<z.infer<typeof translationFormSchema>>({
 		resolver: zodResolver(translationFormSchema),
@@ -47,9 +48,7 @@ export default function TranslationForm() {
 	});
 	function onSubmit(values: z.infer<typeof translationFormSchema>) {
 		updateTranslationSettings({
-			translate_new_strings: values.translate_new_strings as boolean,
-			translate_updated_strings: values.translate_updated_strings as boolean,
-			default_language: values.default_language,
+			...translation_settings,
 			translation_command: values.translation_command,
 		});
 	}
