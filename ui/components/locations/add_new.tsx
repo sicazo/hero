@@ -20,7 +20,6 @@ import { useLocationStore } from "@/lib/stores/location_store";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { dialog } from "@tauri-apps/api";
-import { type } from "@tauri-apps/api/os";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -64,13 +63,15 @@ export default function AddNewLocation(props: props) {
 		mode: "onChange",
 	});
 	async function onSubmit(data: LocationFormValues) {
+		let path = data.path.replace("/messages.ts", "");
+		let new_path = path.replace("\\messages.ts", "");
 		const response = await axios.post(
 			"http://localhost:3001/translation/scan",
-			{ path: data.path },
+			{ path: new_path },
 		);
 		addLocation({
 			name: data.name,
-			path: data.path,
+			path: new_path,
 			is_favourite: false,
 			num_of_keys: response.data.keys,
 			num_of_untranslated_keys: response.data.untranslated_keys,

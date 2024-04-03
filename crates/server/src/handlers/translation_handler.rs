@@ -63,13 +63,20 @@ pub fn make_translation_router() -> Router<ServerState> {
 }
 
 pub async fn add_location(Json(payload): Json<PathBody>) -> (StatusCode, Json<ScanResponse>) {
-    let keys = TranslationHandler::get_key_values_from_messages_ts(&payload.path).await;
+    let path = payload.path.replace("/messages.ts", "");
+    let keys = TranslationHandler::get_key_values_from_messages_ts(&path).await;
 
-    let key_value = TranslationHandler::get_translations(&payload.path).await;
+    let key_value = TranslationHandler::get_translations(&path).await;
 
-    let untranslated_keys = key_value.into_iter().filter(|entry|
-    entry.translations.iter().all(|(k, v)| k == "en-GB" || v.trim().is_empty())).count();
-
+    let untranslated_keys = key_value
+        .into_iter()
+        .filter(|entry| {
+            entry
+                .translations
+                .iter()
+                .all(|(k, v)| k == "en-GB" || v.trim().is_empty())
+        })
+        .count();
 
     (
         StatusCode::OK,
