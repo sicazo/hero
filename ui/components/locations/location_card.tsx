@@ -10,18 +10,13 @@ import { Button } from "@/components/ui/button";
 import {
 	Card,
 	CardContent,
-	CardDescription,
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
-	DropdownMenuGroup,
 	DropdownMenuItem,
-	DropdownMenuLabel,
-	DropdownMenuSeparator,
-	DropdownMenuShortcut,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Location } from "@/lib/bindings";
@@ -29,8 +24,6 @@ import { useLocationStore } from "@/lib/stores/location_store";
 
 export function LocationCard({ location }: { location: Location }) {
 	const { updateFavorite } = useLocationStore();
-
-	//Formatting the date string
 
 	return (
 		<Card className="m-5 my-2">
@@ -58,8 +51,9 @@ export function LocationCard({ location }: { location: Location }) {
 						</DropdownMenuTrigger>
 						<DropdownMenuContent className="w-42 mx-5">
 							{/*TODO: make work*/}
-							<DropdownMenuItem>Edit</DropdownMenuItem>
-							<DropdownMenuItem>Delete</DropdownMenuItem>
+							<DropdownMenuItem disabled>Edit</DropdownMenuItem>
+							<DropdownMenuItem disabled>Rescan</DropdownMenuItem>
+							<DropdownMenuItem disabled>Delete</DropdownMenuItem>
 						</DropdownMenuContent>
 					</DropdownMenu>
 				</div>
