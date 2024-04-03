@@ -8,18 +8,18 @@ import {
 } from "@/components/ui/resizable";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { useLocationStore } from "@/lib/stores/location_store";
 import { useSettingsStore } from "@/lib/stores/settings_store";
-import { useTranslationStore } from "@/lib/stores/translation_store";
 import { cn } from "@/lib/utils";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { isPermissionGranted } from "@tauri-apps/api/notification";
 import { clsx } from "clsx";
 import { Database, Home, PencilRuler } from "lucide-react";
 import { Inter } from "next/font/google";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import "./globals.css";
+import { useLocationStore } from "@/lib/stores/location_store";
+import { useTranslationStore } from "@/lib/stores/translation_store";
+import { rspc, client, queryClient } from "@/lib/rspc";
+
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -47,7 +47,6 @@ export default function RootLayout({
 		(state) => state.updateNavCollapsed,
 	);
 	const [isCollapsed, setIsCollapsed] = useState(home_nav_collapsed);
-	const queryClient = new QueryClient();
 
 	useEffect(() => {
 		console.log("rehydrate");
@@ -55,17 +54,21 @@ export default function RootLayout({
 		useLocationStore.persist.rehydrate();
 		useTranslationStore.persist.rehydrate();
 	}, []);
+
+
 	return (
+
 		<html lang="en">
 			<body className={clsx(inter.className, "flex h-screen w-screen")}>
-				<QueryClientProvider client={queryClient}>
+				<rspc.Provider client={client} queryClient={queryClient}>
 					<ThemeProvider defaultTheme={theme}>
 						<TooltipProvider delayDuration={0}>
 							<ResizablePanelGroup
 								direction="horizontal"
-								onLayout={(sizes: number[]) => {
-									setHomePanelSizes(sizes);
-								}}
+								//TODO: why is this breaking with rerenders?
+								// onLayout={(sizes: number[]) => {
+								// 	setHomePanelSizes(sizes);
+								// }}
 								className="h-full items-stretch"
 							>
 								<ResizablePanel
@@ -81,7 +84,7 @@ export default function RootLayout({
 									}}
 									className={cn(
 										isCollapsed &&
-											"min-w-[50px] transition-all duration-300 ease-in-out z-50",
+										"min-w-[50px] transition-all duration-300 ease-in-out z-50",
 									)}
 								>
 									<Nav
@@ -122,8 +125,8 @@ export default function RootLayout({
 						</TooltipProvider>
 						<Toaster richColors={toast_rich_colors} />
 					</ThemeProvider>
-				</QueryClientProvider>
+				</rspc.Provider >
 			</body>
-		</html>
+		</html >
 	);
 }

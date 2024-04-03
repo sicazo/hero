@@ -6,6 +6,8 @@ use local_storage::stores::location_store::LocationStoreState;
 use local_storage::stores::settings_store::SettingsStoreState;
 use local_storage::stores::translation_store::TranslationStoreState;
 use local_storage::types::Data;
+use rspc::{Config, Router};
+use server::get_router;
 use server::init;
 use std::thread;
 
@@ -15,7 +17,8 @@ fn greet() -> String {
     "Hello World!".to_string()
 }
 
-fn main() {
+#[tokio::main]
+async fn main() {
     let specta_builder = {
         let specta_builder = tauri_specta::ts::builder()
             .commands(tauri_specta::collect_commands![greet,])
@@ -29,9 +32,13 @@ fn main() {
 
         specta_builder.into_plugin()
     };
+
+    let router = get_router();
+
     tauri::Builder::default()
         .plugin(specta_builder)
-        .setup(|app| {
+        .plugin(rspc_tauri::plugin(router.arced(), |_app_handle| ()))
+        .setup(|_app| {
             create_storage().expect("error while creating storage");
             thread::spawn(move || init().unwrap());
             Ok(())

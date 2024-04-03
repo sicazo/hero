@@ -47,3 +47,5 @@ sea-orm-migration = { version = "0.12.15", features = [
 ] }
 async-graphql-axum = "7.0.3"
 async-graphql = { version = "7.0.3", features = ["graphiql", "playground"] }
+rspc = "0.2.0"
+rspc-tauri = "0.0.1"
