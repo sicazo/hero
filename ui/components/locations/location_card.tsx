@@ -7,12 +7,7 @@ import {
 } from "@radix-ui/react-icons";
 
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -21,9 +16,15 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Location } from "@/lib/bindings";
 import { useLocationStore } from "@/lib/stores/location_store";
+import { toast } from "sonner";
 
 export function LocationCard({ location }: { location: Location }) {
-	const { updateFavorite } = useLocationStore();
+	const { updateFavorite, removeLocation } = useLocationStore();
+
+	const removeLocationFromList = () => {
+		removeLocation(location);
+		toast.success("Removed location");
+	};
 
 	return (
 		<Card className="m-5 my-2">
@@ -53,7 +54,9 @@ export function LocationCard({ location }: { location: Location }) {
 							{/*TODO: make work*/}
 							<DropdownMenuItem disabled>Edit</DropdownMenuItem>
 							<DropdownMenuItem disabled>Rescan</DropdownMenuItem>
-							<DropdownMenuItem disabled>Delete</DropdownMenuItem>
+							<DropdownMenuItem onClick={removeLocationFromList}>
+								Delete
+							</DropdownMenuItem>
 						</DropdownMenuContent>
 					</DropdownMenu>
 				</div>

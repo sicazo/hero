@@ -8,10 +8,13 @@ import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useLocationStore } from "@/lib/stores/location_store";
 import { Search } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function Page() {
-	const [addNew, setAddNew] = useState(false);
+	const params = useSearchParams();
+	const add = params.get("add") as unknown as boolean;
+	const [addNew, setAddNew] = useState(add);
 	const preLocations = useLocationStore((state) => state.locations);
 	const [locations, setLocations] = useState(preLocations);
 	const [shownLocations, setShownLocations] = useState(locations);

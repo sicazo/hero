@@ -45,6 +45,12 @@ pub struct UpdateKeysBody {
     key: UpdatedKeyValues,
 }
 
+#[derive(Deserialize)]
+pub struct ScanResponse {
+    keys: usize,
+    untranslated_keys: usize,
+}
+
 pub fn make_translation_router() -> Router<ServerState> {
     Router::new()
         .route("/keys", post(get_number_of_keys))
@@ -54,6 +60,12 @@ pub fn make_translation_router() -> Router<ServerState> {
         .route("/remove", post(remove_keys))
         .route("/update", post(update_keys))
         .route("/check", post(get_translations))
+        .route("/scan", post(add_location))
+}
+
+pub async fn add_location() -> (StatusCode, Json<ScanResponse>){
+
+    (StatusCode::OK, Json(ScanResponse {keys: 0, untranslated_keys: 0}))
 }
 
 pub async fn remove_keys(Json(payload): Json<RemoveTranslationBody>) -> (StatusCode, Json<String>) {
@@ -108,7 +120,7 @@ pub async fn get_translations(
     )
 }
 
-pub async fn add_new_key(Json(payload): Json<AddNewKeyBody>) -> (StatusCode, Json<String>) {
+pub async fn add_new_key(Json(payload): Json<AddNewKeyBody>) -> (StatusCode, Json<TranslationsResponse>) {
     info!("Adding new key {} to {}", &payload.ts_key, &payload.path);
     match TranslationHandler::add_new_key(
         payload.path.clone(),
@@ -118,8 +130,8 @@ pub async fn add_new_key(Json(payload): Json<AddNewKeyBody>) -> (StatusCode, Jso
     )
     .await
     {
-        Ok(_) => (StatusCode::CREATED, Json(String::from("Success"))),
-        Err(e) => (StatusCode::BAD_REQUEST, Json(e.to_string())),
+        Ok(translations) => (StatusCode::CREATED, Json(TranslationsResponse {keys: translations})),
+        Err(e) => (StatusCode::BAD_REQUEST, Json(TranslationsResponse {keys: Vec::new()})),
     }
 }
 

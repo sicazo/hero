@@ -35,7 +35,7 @@ const translationFormSchema = z.object({
 export default function TranslationForm() {
 	const { updateTranslationSettings, translation_settings } =
 		useSettingsStore();
-	console.log(translation_settings)
+	console.log(translation_settings);
 
 	const form = useForm<z.infer<typeof translationFormSchema>>({
 		resolver: zodResolver(translationFormSchema),

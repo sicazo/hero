@@ -19,12 +19,12 @@ import { Input } from "@/components/ui/input";
 import { useLocationStore } from "@/lib/stores/location_store";
 import { zodResolver } from "@hookform/resolvers/zod";
 
+import { dialog } from "@tauri-apps/api";
+import { type } from "@tauri-apps/api/os";
 import axios from "axios";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import {useEffect, useState} from "react";
-import {dialog} from "@tauri-apps/api"
-import {type} from "@tauri-apps/api/os"
 
 interface props {
 	setAddNew: (value: boolean) => void;
@@ -42,14 +42,20 @@ export default function AddNewLocation(props: props) {
 			.min(1)
 			.max(255)
 			.default("")
-			.refine((name) => !locations?.some((location) => location.name === name), {
-				message: "Location with this name already exists",
-			}),
+			.refine(
+				(name) => !locations?.some((location) => location.name === name),
+				{
+					message: "Location with this name already exists",
+				},
+			),
 		path: z
 			.string()
-			.refine((path) => !locations?.some((location) => location.path === path), {
-				message: `Location with this path already exists under the name of ${getMyLoc}`,
-			}),
+			.refine(
+				(path) => !locations?.some((location) => location.path === path),
+				{
+					message: `Location with this path already exists under the name of ${getMyLoc}`,
+				},
+			),
 	});
 	type LocationFormValues = z.infer<typeof addLocationFormSchema>;
 
@@ -59,33 +65,32 @@ export default function AddNewLocation(props: props) {
 	});
 	async function onSubmit(data: LocationFormValues) {
 		const response = await axios.post(
-			"http://localhost:3001/translation/keys",
+			"http://localhost:3001/translation/scan",
 			{ path: data.path },
 		);
 		addLocation({
 			name: data.name,
 			path: data.path,
 			is_favourite: false,
-			num_of_keys: response.data.num_of_keys,
-			num_of_untranslated_keys: 0,
+			num_of_keys: response.data.keys,
+			num_of_untranslated_keys: response.data.untranslated_keys,
 			added_at: new Date().toLocaleString(),
 		});
 		props.setAddNew(false);
 	}
 
-	const [tauriOpen, setTauriOpen] = useState<typeof dialog>()
+	const [tauriOpen, setTauriOpen] = useState<typeof dialog>();
 
 	const setup = async () => {
-		const  open = await import("@tauri-apps/api/dialog")
+		const open = await import("@tauri-apps/api/dialog");
 
-
-		setTauriOpen(open)
-	}
+		setTauriOpen(open);
+	};
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	useEffect(() => {
-		setup()
-	}, [])
+		setup();
+	}, []);
 
 	async function SelectPath() {
 		// @ts-ignore
