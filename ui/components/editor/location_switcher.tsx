@@ -20,7 +20,7 @@ import { cn } from "@/lib/utils";
 import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 type PopoverTriggerProps = React.ComponentPropsWithoutRef<
 	typeof PopoverTrigger
@@ -31,12 +31,17 @@ type LocationSwitcherProps = PopoverTriggerProps;
 export default function LocationSwitcher({ className }: LocationSwitcherProps) {
 	const { last_selected_location, setLastSelectedLocation, locations } =
 		useLocationStore();
+	if (!last_selected_location && locations) {
+		setLastSelectedLocation(locations[0]);
+	}
 	const { setTranslationEntries } = useTranslationStore();
 	const [open, setOpen] = useState(false);
-	const [selectedLocation, setSelectedLocation] = useState<Location | null>(
-		last_selected_location as Location | null,
+	const [selectedLocation, setSelectedLocation] = useState<Location>(
+		//@ts-expect-error
+		(last_selected_location || locations[0]) as Location,
 	);
 	const [searchTerm, setSearchTerm] = useState("");
+
 	const getData = useMutation<{ keys: TranslationEntry[] }>({
 		mutationKey: [`get_location${selectedLocation?.name}`],
 		mutationFn: async () => {
@@ -50,6 +55,10 @@ export default function LocationSwitcher({ className }: LocationSwitcherProps) {
 			setTranslationEntries(data.keys);
 		},
 	});
+	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+	useEffect(() => {
+		getData.mutate();
+	}, []);
 
 	return (
 		<Popover open={open} onOpenChange={setOpen}>
@@ -91,10 +100,11 @@ export default function LocationSwitcher({ className }: LocationSwitcherProps) {
 									className="text-sm"
 								>
 									{location.name}
+									{/*TODO: make this to id instead of name after db merge	*/}
 									<CheckIcon
 										className={cn(
 											"ml-auto h-4 w-4",
-											selectedLocation === location
+											selectedLocation.name === location.name
 												? "opacity-100"
 												: "opacity-0",
 										)}

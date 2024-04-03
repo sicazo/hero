@@ -5,6 +5,7 @@ use serde_json::ser::PrettyFormatter;
 use std::fs::{read_to_string, OpenOptions};
 use std::io::{Read, Seek, SeekFrom, Write};
 use std::process::Command;
+use local_storage::stores::translation_store::TranslationEntry;
 
 impl TranslationHandler {
     pub async fn add_new_key(
@@ -12,7 +13,7 @@ impl TranslationHandler {
         ts_key: String,
         json_key: String,
         en_gb_value: String,
-    ) -> Result<(), std::io::Error> {
+    ) -> Result<Vec<TranslationEntry>, std::io::Error> {
         let settings = SettingsStore::get_translation_values();
         let messages_ts_path = PathType::MessageTsFile.create_path(path.clone());
 
@@ -24,7 +25,9 @@ impl TranslationHandler {
             run_translation_command(&path.clone(), settings.translation_command);
         }
 
-        Ok(())
+        let translations = TranslationHandler::get_translations(path.clone().as_str()).await;
+
+        Ok(translations)
     }
 }
 fn run_translation_command(dir_path: &str, translation_command: String) {
@@ -56,6 +59,7 @@ fn add_key_to_messages_ts(
     let mut content = String::new();
     file.read_to_string(&mut content)
         .expect("Failed to read file");
+
     content.lines().enumerate().for_each(|(index, line)| {
         if line.contains("},") {
             check_line = index - 1;
@@ -68,6 +72,8 @@ fn add_key_to_messages_ts(
     } else {
         lines[check_line].clone()
     };
+
+
 
     let lines_content: String = lines.join("\n");
     let mut file = OpenOptions::new()
@@ -85,17 +91,36 @@ fn add_translation_to_default_language(
 ) -> Result<(), std::io::Error> {
     let en_gb_path = PathType::EnGbFile.create_path(path.clone());
 
-    let mut file = OpenOptions::new().write(true).read(true).open(en_gb_path)?;
+    let mut file = OpenOptions::new().write(true).read(true).open(en_gb_path.clone())?;
 
-    let mut contents = String::new();
-    file.read_to_string(&mut contents)?;
+    let mut lines: Vec<String> = Vec::new();
+    let mut content = String::new();
+    file.read_to_string(&mut content)
+        .expect("Failed to read file");
 
-    if let Some(last_brace_position) = contents.rfind('}') {
-        file.seek(SeekFrom::Start(last_brace_position as u64))?;
-        let new_translation_line = format!(r#"    "{}": "{}","#, json_key, en_gb_value);
-        let end = format!("{} \n }}", new_translation_line);
-        file.write_all(end.as_bytes())?;
-    }
+    content.lines().enumerate().for_each(|(index, line)| {
+        let mut trimmed_line = line.to_owned();
+
+        if trimmed_line != "{" && trimmed_line != "}" {
+            let mut updated_line = line.to_owned();
+            if !updated_line.ends_with(",") {
+                updated_line.push(',');
+            }
+            lines.push(updated_line);
+        } else if trimmed_line == "}" {
+
+            lines.push(format!(r#"    "{}": "{}""#, json_key, en_gb_value));
+            lines.push(String::from(line))
+        } else if trimmed_line == "{" {
+            lines.push(trimmed_line);
+        }
+    });
+    let lines_content: String = lines.join("\n");
+    let mut file = OpenOptions::new()
+        .write(true)
+        .truncate(true)
+        .open(en_gb_path.clone())?;
+    file.write_all(lines_content.as_bytes())?;
 
     Ok(())
 }

@@ -45,6 +45,12 @@ pub struct UpdateKeysBody {
     key: UpdatedKeyValues,
 }
 
+#[derive(Serialize)]
+pub struct ScanResponse {
+    keys: usize,
+    untranslated_keys: usize,
+}
+
 pub fn make_translation_router() -> Router<ServerState> {
     Router::new()
         .route("/keys", post(get_number_of_keys))
@@ -53,7 +59,32 @@ pub fn make_translation_router() -> Router<ServerState> {
         .route("/languages", post(get_languages))
         .route("/remove", post(remove_keys))
         .route("/update", post(update_keys))
-        .route("/check", post(get_translations))
+        .route("/scan", post(add_location))
+}
+
+pub async fn add_location(Json(payload): Json<PathBody>) -> (StatusCode, Json<ScanResponse>) {
+    let path = payload.path.replace("/messages.ts", "");
+    let keys = TranslationHandler::get_key_values_from_messages_ts(&path).await;
+
+    let key_value = TranslationHandler::get_translations(&path).await;
+
+    let untranslated_keys = key_value
+        .into_iter()
+        .filter(|entry| {
+            entry
+                .translations
+                .iter()
+                .all(|(k, v)| k == "en-GB" || v.trim().is_empty())
+        })
+        .count();
+
+    (
+        StatusCode::OK,
+        Json(ScanResponse {
+            keys: keys.len(),
+            untranslated_keys,
+        }),
+    )
 }
 
 pub async fn remove_keys(Json(payload): Json<RemoveTranslationBody>) -> (StatusCode, Json<String>) {
@@ -108,7 +139,9 @@ pub async fn get_translations(
     )
 }
 
-pub async fn add_new_key(Json(payload): Json<AddNewKeyBody>) -> (StatusCode, Json<String>) {
+pub async fn add_new_key(
+    Json(payload): Json<AddNewKeyBody>,
+) -> (StatusCode, Json<TranslationsResponse>) {
     info!("Adding new key {} to {}", &payload.ts_key, &payload.path);
     match TranslationHandler::add_new_key(
         payload.path.clone(),
@@ -118,8 +151,14 @@ pub async fn add_new_key(Json(payload): Json<AddNewKeyBody>) -> (StatusCode, Jso
     )
     .await
     {
-        Ok(_) => (StatusCode::CREATED, Json(String::from("Success"))),
-        Err(e) => (StatusCode::BAD_REQUEST, Json(e.to_string())),
+        Ok(translations) => (
+            StatusCode::CREATED,
+            Json(TranslationsResponse { keys: translations }),
+        ),
+        Err(e) => (
+            StatusCode::BAD_REQUEST,
+            Json(TranslationsResponse { keys: Vec::new() }),
+        ),
     }
 }
 

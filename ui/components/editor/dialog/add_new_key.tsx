@@ -13,6 +13,7 @@ import {
 	FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { TranslationEntry } from "@/lib/bindings";
 import { useLocationStore } from "@/lib/stores/location_store";
 import { useSettingsStore } from "@/lib/stores/settings_store";
 import { useTranslationStore } from "@/lib/stores/translation_store";
@@ -24,7 +25,7 @@ import { toast } from "sonner";
 import z from "zod";
 
 export default function AddNewKeyDialog() {
-	const { translation_entries } = useTranslationStore();
+	const { translation_entries, setTranslationEntries } = useTranslationStore();
 	const { default_language } = useSettingsStore(
 		(state) => state.translation_settings,
 	);
@@ -80,11 +81,18 @@ export default function AddNewKeyDialog() {
 			return result.data;
 		},
 		onSuccess: (data) => {
-			toast.success(data);
+			setTranslationEntries(data.keys as TranslationEntry[]);
 		},
 	});
 	function onSubmit(values: z.infer<typeof formSchema>) {
-		addNewMutation.mutate(values);
+		toast.promise(addNewMutation.mutateAsync(values), {
+			loading: "Adding translation....",
+			success: () => {
+				return `${values.ts_key} has been added`;
+			},
+			error: "There was an error",
+		});
+		// addNewMutation.mutate(values);
 	}
 
 	return (
