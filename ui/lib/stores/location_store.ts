@@ -10,6 +10,7 @@ interface LocationStoreActions {
 	removeLocation: (x: Location) => void;
 	updateFavorite: (x: Location) => void;
 	setLastSelectedLocation: (x: Location) => void;
+	updateLocation: (x: Location) => void;
 }
 export const useLocationStore = create<
 	LocationStoreState & LocationStoreActions
@@ -41,6 +42,16 @@ export const useLocationStore = create<
 			setLastSelectedLocation: (x: Location) => {
 				set((state) => {
 					state.last_selected_location = x;
+				});
+			},
+			updateLocation: (x: Location) => {
+				set((state) => {
+					state.locations = state.locations?.map((y) => {
+						if (y.name === x.name) {
+							return x;
+						}
+						return y;
+					});
 				});
 			},
 		})),

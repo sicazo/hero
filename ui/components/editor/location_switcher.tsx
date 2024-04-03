@@ -100,7 +100,7 @@ export default function LocationSwitcher({ className }: LocationSwitcherProps) {
 									className="text-sm"
 								>
 									{location.name}
-								{/*TODO: make this to id instead of name after db merge	*/}
+									{/*TODO: make this to id instead of name after db merge	*/}
 									<CheckIcon
 										className={cn(
 											"ml-auto h-4 w-4",

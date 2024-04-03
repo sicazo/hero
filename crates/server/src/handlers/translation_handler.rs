@@ -45,7 +45,7 @@ pub struct UpdateKeysBody {
     key: UpdatedKeyValues,
 }
 
-#[derive(Deserialize)]
+#[derive(Serialize)]
 pub struct ScanResponse {
     keys: usize,
     untranslated_keys: usize,
@@ -59,13 +59,25 @@ pub fn make_translation_router() -> Router<ServerState> {
         .route("/languages", post(get_languages))
         .route("/remove", post(remove_keys))
         .route("/update", post(update_keys))
-        .route("/check", post(get_translations))
         .route("/scan", post(add_location))
 }
 
-pub async fn add_location() -> (StatusCode, Json<ScanResponse>){
+pub async fn add_location(Json(payload): Json<PathBody>) -> (StatusCode, Json<ScanResponse>) {
+    let keys = TranslationHandler::get_key_values_from_messages_ts(&payload.path).await;
 
-    (StatusCode::OK, Json(ScanResponse {keys: 0, untranslated_keys: 0}))
+    let key_value = TranslationHandler::get_translations(&payload.path).await;
+
+    let untranslated_keys = key_value.into_iter().filter(|entry|
+    entry.translations.iter().all(|(k, v)| k == "en-GB" || v.trim().is_empty())).count();
+
+
+    (
+        StatusCode::OK,
+        Json(ScanResponse {
+            keys: keys.len(),
+            untranslated_keys,
+        }),
+    )
 }
 
 pub async fn remove_keys(Json(payload): Json<RemoveTranslationBody>) -> (StatusCode, Json<String>) {
@@ -120,7 +132,9 @@ pub async fn get_translations(
     )
 }
 
-pub async fn add_new_key(Json(payload): Json<AddNewKeyBody>) -> (StatusCode, Json<TranslationsResponse>) {
+pub async fn add_new_key(
+    Json(payload): Json<AddNewKeyBody>,
+) -> (StatusCode, Json<TranslationsResponse>) {
     info!("Adding new key {} to {}", &payload.ts_key, &payload.path);
     match TranslationHandler::add_new_key(
         payload.path.clone(),
@@ -130,8 +144,14 @@ pub async fn add_new_key(Json(payload): Json<AddNewKeyBody>) -> (StatusCode, Jso
     )
     .await
     {
-        Ok(translations) => (StatusCode::CREATED, Json(TranslationsResponse {keys: translations})),
-        Err(e) => (StatusCode::BAD_REQUEST, Json(TranslationsResponse {keys: Vec::new()})),
+        Ok(translations) => (
+            StatusCode::CREATED,
+            Json(TranslationsResponse { keys: translations }),
+        ),
+        Err(e) => (
+            StatusCode::BAD_REQUEST,
+            Json(TranslationsResponse { keys: Vec::new() }),
+        ),
     }
 }
 

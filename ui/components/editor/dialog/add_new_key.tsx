@@ -88,10 +88,10 @@ export default function AddNewKeyDialog() {
 		toast.promise(addNewMutation.mutateAsync(values), {
 			loading: "Adding translation....",
 			success: () => {
-				return `${values.ts_key} has been added`
+				return `${values.ts_key} has been added`;
 			},
-			error: "There was an error"
-		})
+			error: "There was an error",
+		});
 		// addNewMutation.mutate(values);
 	}
 
