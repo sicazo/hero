@@ -17,16 +17,17 @@ use sea_orm_migration::prelude::*;
 use serde_json::Value;
 use socketioxide::extract::{Bin, Data, SocketRef};
 use socketioxide::SocketIo;
+use std::sync::Arc;
 use tower_http::cors::{Any, CorsLayer};
 use tracing::info;
 use tracing_subscriber::FmtSubscriber;
 
-mod entities;
+pub mod entities;
 mod handlers;
-mod migrator;
+pub mod migrator;
 mod own_middleware;
 mod query_root;
-mod state;
+pub mod state;
 
 #[tokio::main]
 pub async fn init() -> Result<(), Box<dyn std::error::Error>> {
@@ -58,6 +59,7 @@ pub async fn init() -> Result<(), Box<dyn std::error::Error>> {
         }
     }
 
+    let state = ServerState { db: Arc::new(db) };
     // CORS Setup
     let cors = CorsLayer::new()
         .allow_methods(Any)
@@ -65,15 +67,6 @@ pub async fn init() -> Result<(), Box<dyn std::error::Error>> {
         .allow_origin(Any)
         .allow_credentials(false);
 
-    // Graphql
-    let schema = GraphSchema::build(QueryRoot, GraphEmptyMutation, GraphEmptySubscription)
-        .data(db.clone())
-        .finish();
-
-    let state = ServerState {
-        db: db,
-        schema: schema.clone(),
-    };
     let app = Router::new()
         .nest("/store", make_storage_router())
         .nest("/translation", make_translation_router())
@@ -90,8 +83,16 @@ pub async fn init() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-pub fn get_router() -> RspcRouter<()> {
-    RspcRouter::new()
+pub fn get_router() -> RspcRouter<ServerState> {
+    RspcRouter::<ServerState>::new()
         .query("hi", |t| t(|ctx, input: ()| "hello world"))
+        .query("test", |t| {
+            t(|ctx, input: ()| async move {
+                match ApplicationData::find_by_id(1).one(&*ctx.db).await {
+                    Ok(v) => Ok(v.unwrap()),
+                    Err(_) => Err("Error"),
+                }
+            })
+        })
         .build()
 }

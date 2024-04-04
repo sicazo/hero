@@ -1,9 +1,7 @@
-use crate::query_root::Query;
-use async_graphql::{EmptyMutation, EmptySubscription, Schema};
 use sea_orm::DatabaseConnection;
+use std::sync::Arc;
 
 #[derive(Clone)]
 pub struct ServerState {
-    pub db: DatabaseConnection,
-    pub schema: Schema<Query, EmptyMutation, EmptySubscription>,
+    pub db: Arc<DatabaseConnection>,
 }

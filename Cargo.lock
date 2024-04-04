@@ -163,6 +163,8 @@ dependencies = [
  "local_storage",
  "rspc",
  "rspc-tauri",
+ "sea-orm",
+ "sea-orm-migration",
  "server",
  "specta 2.0.0-rc.7",
  "tauri",

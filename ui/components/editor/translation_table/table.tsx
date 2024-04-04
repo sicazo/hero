@@ -32,6 +32,7 @@ import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { useSize } from "@/lib/hooks/useSize";
 
 interface TranslationTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[];
@@ -42,6 +43,8 @@ export default function TranslationTable<TData, TValue>({
 	columns,
 	data,
 }: TranslationTableProps<TData, TValue>) {
+
+	const { ref, width, height } = useSize()
 	// States
 	const [sorting, setSorting] = useState<SortingState>([]);
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -159,7 +162,7 @@ export default function TranslationTable<TData, TValue>({
 	// Setup
 	useEffect(() => {
 		const handleResize = () => {
-			const newPageSize = Math.floor(window.innerHeight / 80);
+			const newPageSize = Math.floor(height / 80);
 			if (newPageSize !== pageSize) {
 				table.setPageSize(newPageSize);
 				setPageSize(newPageSize);
@@ -171,14 +174,15 @@ export default function TranslationTable<TData, TValue>({
 		return () => window.removeEventListener("resize", handleResize);
 	}, [table, pageSize]);
 
-	useEffect(() => {}, []);
+	useEffect(() => { }, []);
 
 	// Misc
 
 	const rowsSelected = table.getIsSomeRowsSelected();
+	console.log(height)
 
 	return (
-		<div>
+		<div ref={ref} className="h-screen">
 			<div className="flex items-center py-2 justify-between">
 				<Input
 					placeholder="Filter keys..."
@@ -208,7 +212,7 @@ export default function TranslationTable<TData, TValue>({
 					<TranslationTableViewOptions table={table} />
 				</div>
 			</div>
-			<div className="rounded-md border">
+			<div className="rounded-md border" >
 				<Table className="overflow-hidden">
 					<TableHeader>
 						{table.getHeaderGroups().map((headerGroup) => (
@@ -219,9 +223,9 @@ export default function TranslationTable<TData, TValue>({
 											{header.isPlaceholder
 												? null
 												: flexRender(
-														header.column.columnDef.header,
-														header.getContext(),
-												  )}
+													header.column.columnDef.header,
+													header.getContext(),
+												)}
 										</TableHead>
 									);
 								})}
