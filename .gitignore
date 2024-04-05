@@ -5,3 +5,4 @@ target
 .next
 node_modules
 crates/db/src/prisma.rs
+.DS_Store
