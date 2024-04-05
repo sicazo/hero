@@ -1,0 +1,39 @@
+datasource db {
+  provider = "sqlite"
+  url = "file:dev.db"
+}
+
+
+generator client {
+  provider = "cargo prisma"
+  output = "../src/prisma.rs"
+}
+
+model Settings {
+  id Int @id @default(autoincrement())
+  nav_open Boolean @default(false)
+  theme String @default("light")
+  notifications_enabled Boolean @default(false)
+  toast_rich_colors Boolean @default(true)
+  notification_file_changes Boolean @default(false)
+  notification_finished_translation Boolean @default(false)
+  finished_scan Boolean @default(false)
+  translate_new_strings Boolean @default(false)
+  default_language String @default("en-GB")
+  translation_command String @default("")
+  home_default_size_nav Int @default(4)
+  home_default_size_home Int @default(96)
+  home_nav_collapsed Boolean @default(true)
+  home_collapsed_nav_size Int @default(4)
+}
+
+model Location {
+  id Int @id @default(autoincrement())
+  tag String
+  name String
+  path String
+  is_favourite Boolean @default(false)
+  num_of_keys Int
+  num_of_untranslated_keys Int
+  added_at String
+}

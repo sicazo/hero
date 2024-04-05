@@ -1,10 +1,10 @@
 [workspace]
 resolver = "2"
 members = [
-  "ui/src-tauri",
-  "crates/server",
-  "crates/translation_handler",
-  "crates/local_storage",
+    "ui/src-tauri",
+    "crates/server",
+    "crates/translation_handler",
+    "crates/local_storage", "crates/prisma-cli", "crates/db",
 ]
 
 
@@ -13,39 +13,28 @@ serde_json = "1.0.108"
 serde = { version = "1.0", features = ["derive"] }
 specta = "2.0.0-rc.7"
 tauri-specta = { version = "2.0.0-rc.4", features = [
-  "javascript",
-  "typescript",
+    "javascript",
+    "typescript",
 ] }
 tokio = { version = "1.35.0", features = ["rt", "rt-multi-thread", "macros"] }
 dirs = "5.0.1"
 tracing = "0.1.40"
 tracing-subscriber = "0.3.18"
 axum = "0.7.2"
-socketioxide = "0.9.0"
 glob = "0.3.1"
 regex = "1.10.2"
 tower-http = { version = "0.5.0", features = ["cors"] }
 tauri = { version = "1.5.3", features = [
-  "path-all",
-  "os-all",
-  "updater",
-  "window-all",
-  "dialog-all",
-  "notification-all",
+    "path-all",
+    "os-all",
+    "updater",
+    "window-all",
+    "dialog-all",
+    "notification-all",
 ] }
 
-# database stuff
-sea-orm = { version = "0.12.15", features = [
-  'sqlx-sqlite',
-  "runtime-tokio-native-tls",
-  "macros",
-] }
-futures = "0.3.28"
-sea-orm-migration = { version = "0.12.15", features = [
-  "runtime-tokio-native-tls",
-  "sqlx-sqlite",
-] }
-async-graphql-axum = "7.0.3"
-async-graphql = { version = "7.0.3", features = ["graphiql", "playground"] }
-rspc = "0.2.0"
+
+rspc = { version = "0.1.4" , features = ["tauri"]}
 rspc-tauri = "0.0.1"
+prisma-client-rust = { git = "https://github.com/Brendonovich/prisma-client-rust", tag = "0.6.11", features = ["sqlite", "migrations", "rspc"] }
+prisma-client-rust-cli = { git = "https://github.com/Brendonovich/prisma-client-rust", tag = "0.6.11", features = ["sqlite", "migrations", "rspc"] }

@@ -2,7 +2,10 @@
 
 export type Procedures = {
     queries: 
-        { key: "hi", input: never, result: string },
+        { key: "hi", input: never, result: string } | 
+        { key: "settings", input: never, result: Settings | null },
     mutations: never,
     subscriptions: never
 };
+
+export type Settings = { id: number; nav_open: boolean; theme: string; notifications_enabled: boolean; toast_rich_colors: boolean; notification_file_changes: boolean; notification_finished_translation: boolean; finished_scan: boolean; translate_new_strings: boolean; default_language: string; translation_command: string; home_default_size_nav: number; home_default_size_home: number; home_nav_collapsed: boolean; home_collapsed_nav_size: number }

@@ -1,65 +1,26 @@
-use crate::entities::application_data;
 use crate::handlers::storage_handler::make_storage_router;
-use crate::migrator::Migrator;
-use crate::state::ServerState;
-use async_graphql::{
-    EmptyMutation as GraphEmptyMutation, EmptySubscription as GraphEmptySubscription,
-    Schema as GraphSchema,
-};
+
 use axum::middleware::from_fn;
 use axum::Router;
-use entities::application_data::Entity as ApplicationData;
 use handlers::translation_handler::*;
-use query_root::Query as QueryRoot;
-use rspc::Router as RspcRouter;
-use sea_orm::{ConnectOptions, Database, EntityTrait, Set};
-use sea_orm_migration::prelude::*;
+use rspc::{Config, Router as RspcRouter};
 use serde_json::Value;
-use socketioxide::extract::{Bin, Data, SocketRef};
-use socketioxide::SocketIo;
 use std::sync::Arc;
 use tower_http::cors::{Any, CorsLayer};
 use tracing::info;
 use tracing_subscriber::FmtSubscriber;
+use db::context::RouterCtx;
+use db::prisma;
+use db::prisma::PrismaClient;
+use db::prisma::settings;
 
-pub mod entities;
 mod handlers;
-pub mod migrator;
 mod own_middleware;
-mod query_root;
-pub mod state;
 
 #[tokio::main]
 pub async fn init() -> Result<(), Box<dyn std::error::Error>> {
     tracing::subscriber::set_global_default(FmtSubscriber::default())?;
 
-    // Database Setup
-    let config_dir = tauri::api::path::config_dir().ok_or_else(|| {
-        std::io::Error::new(std::io::ErrorKind::NotFound, "Config directory not found")
-    })?;
-    let folder_path = config_dir.join("translationHero");
-    let url = folder_path.join("hero.sqlite?mode=rwc");
-    let db_url = format!("sqlite:{}", url.display());
-    let mut db_options = ConnectOptions::new(&db_url);
-    db_options.sqlx_logging(false);
-    println!("{}", db_url);
-    let db = Database::connect(db_options)
-        .await
-        .expect("failed to connect to db");
-    Migrator::up(&db, None).await.expect("failed to migrate db");
-
-    match ApplicationData::find_by_id(1).one(&db).await.unwrap() {
-        Some(_) => println!("Not first start"),
-        None => {
-            let data = application_data::ActiveModel {
-                theme: Set("Light".to_owned()),
-                ..Default::default()
-            };
-            let _ = ApplicationData::insert(data).exec(&db).await;
-        }
-    }
-
-    let state = ServerState { db: Arc::new(db) };
     // CORS Setup
     let cors = CorsLayer::new()
         .allow_methods(Any)
@@ -72,8 +33,7 @@ pub async fn init() -> Result<(), Box<dyn std::error::Error>> {
         .nest("/translation", make_translation_router())
         // .route("/graphql_ws", get(graphql_ws_handler))
         .layer(cors)
-        .layer(from_fn(own_middleware::logger::logger_middleware))
-        .with_state(state);
+        .layer(from_fn(own_middleware::logger::logger_middleware));
 
     info!("Starting server");
 
@@ -83,15 +43,18 @@ pub async fn init() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-pub fn get_router() -> RspcRouter<ServerState> {
-    RspcRouter::<ServerState>::new()
+pub fn get_router() -> RspcRouter<RouterCtx> {
+    RspcRouter::<RouterCtx>::new()
+        .config(
+            Config::new().export_ts_bindings("../../ui/lib/procedures.ts")
+        )
+
         .query("hi", |t| t(|ctx, input: ()| "hello world"))
-        .query("test", |t| {
+        .query("settings", |t| {
             t(|ctx, input: ()| async move {
-                match ApplicationData::find_by_id(1).one(&*ctx.db).await {
-                    Ok(v) => Ok(v.unwrap()),
-                    Err(_) => Err("Error"),
-                }
+               let client: &PrismaClient = &ctx.db;
+                let settings = client.settings().find_unique(settings::id::equals(1)).exec().await?;
+                Ok(settings)
             })
         })
         .build()

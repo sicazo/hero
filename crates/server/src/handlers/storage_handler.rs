@@ -4,9 +4,8 @@ use axum::{Json, Router};
 use axum::extract::State;
 use local_storage::{get_store, remove_store, update_store};
 use serde::Deserialize;
-use crate::state::ServerState;
 
-pub fn make_storage_router() -> Router<ServerState> {
+pub fn make_storage_router() -> Router {
     Router::new()
         .route("/set", post(set_item))
         .route("/get", post(get_item))
@@ -28,7 +27,7 @@ pub struct RemoveStoreBody {
 }
 
 pub async fn set_item(
-    State(state): State<ServerState>,
+    // State(state): State<ServerState>,
     Json(payload): Json<SetStoreBody>
 ) -> (StatusCode, Json<()>) {
     update_store(payload.name, payload.value);

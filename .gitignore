@@ -4,3 +4,4 @@ target
 .vscode
 .next
 node_modules
+crates/db/src/prisma.rs

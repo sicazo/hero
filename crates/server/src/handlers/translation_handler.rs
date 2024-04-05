@@ -7,7 +7,6 @@ use tracing::info;
 use translation_handler::updater::UpdatedKeyValues;
 use translation_handler::TranslationHandler;
 
-use crate::state::ServerState;
 
 #[derive(Deserialize)]
 pub struct PathBody {
@@ -51,7 +50,7 @@ pub struct ScanResponse {
     untranslated_keys: usize,
 }
 
-pub fn make_translation_router() -> Router<ServerState> {
+pub fn make_translation_router() -> Router {
     Router::new()
         .route("/keys", post(get_number_of_keys))
         .route("/translations", post(get_translations))
