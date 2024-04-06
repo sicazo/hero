@@ -31,8 +31,7 @@ export function LocationCard({ location }: { location: Location }) {
 				{ path: location.path },
 			);
 
-			return response.data
-
+			return response.data;
 		},
 		onSuccess: (data) => {
 			updateLocation({
@@ -41,16 +40,15 @@ export function LocationCard({ location }: { location: Location }) {
 				num_of_untranslated_keys: data.untranslated_keys,
 			});
 		},
-
 	});
 
 	const rescanLocation = () => {
 		toast.promise(check.mutateAsync(), {
 			loading: "scanning...",
 			success: "Location rescanned",
-			error: "There was an error rescanning the location"
-		})
-	}
+			error: "There was an error rescanning the location",
+		});
+	};
 
 	const removeLocationFromList = () => {
 		removeLocation(location);
@@ -84,7 +82,9 @@ export function LocationCard({ location }: { location: Location }) {
 						<DropdownMenuContent className="w-42 mx-5">
 							{/*TODO: make work*/}
 							<DropdownMenuItem disabled>Edit</DropdownMenuItem>
-							<DropdownMenuItem onClick={rescanLocation}>Rescan</DropdownMenuItem>
+							<DropdownMenuItem onClick={rescanLocation}>
+								Rescan
+							</DropdownMenuItem>
 							<DropdownMenuItem onClick={removeLocationFromList}>
 								Delete
 							</DropdownMenuItem>

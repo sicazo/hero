@@ -8,6 +8,6 @@ export default function Home() {
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: redirect to /home as / has no content
 	useEffect(() => {
-		router.push("/application");
+		router.push("/application/home");
 	}, []);
 }

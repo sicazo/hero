@@ -63,8 +63,8 @@ export default function AddNewLocation(props: props) {
 		mode: "onChange",
 	});
 	async function onSubmit(data: LocationFormValues) {
-		let path = data.path.replace("/messages.ts", "");
-		let new_path = path.replace("\\messages.ts", "");
+		const path = data.path.replace("/messages.ts", "");
+		const new_path = path.replace("\\messages.ts", "");
 		const response = await axios.post(
 			"http://localhost:3001/translation/scan",
 			{ path: new_path },

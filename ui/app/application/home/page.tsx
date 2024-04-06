@@ -3,11 +3,11 @@
 import KeyStatisticsCard from "@/components/statistics/key_statistics_card";
 import MonthlyLocationChangeCard from "@/components/statistics/monthly_location_change_card";
 import { Separator } from "@/components/ui/separator";
-import {rspc} from "@/lib/rspc";
+import { rspc } from "@/lib/rspc";
 
 export default function Page() {
-	let {data} = rspc.useQuery(["settings"])
-	console.log(data)
+	const { data } = rspc.useQuery(["settings"]);
+	console.log(data);
 	return (
 		<div className="p-5">
 			<h2 className="text-2xl font-semibold ml-5 mb-2">Statistics</h2>

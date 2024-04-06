@@ -107,7 +107,7 @@ version = "0.1.0"
 dependencies = [
  "db",
  "local_storage",
- "rspc 0.1.4",
+ "rspc",
  "rspc-tauri",
  "server",
  "specta 2.0.0-rc.7",
@@ -4598,7 +4598,7 @@ dependencies = [
 [[package]]
 name = "prisma-client-rust"
 version = "0.6.11"
-source = "git+https://github.com/Brendonovich/prisma-client-rust?tag=0.6.11#3ac68d0052533d3ae0332d93a56a8ad169c2ee18"
+source = "git+https://github.com/Brendonovich/prisma-client-rust?rev=8faf98013d0d2c7fab68fad387305a55979e777d#8faf98013d0d2c7fab68fad387305a55979e777d"
 dependencies = [
  "base64 0.13.1",
  "bigdecimal",
@@ -4617,7 +4617,7 @@ dependencies = [
  "psl",
  "query-connector",
  "query-core",
- "rspc 0.1.4",
+ "rspc",
  "schema",
  "serde",
  "serde-value",
@@ -4634,7 +4634,7 @@ dependencies = [
 [[package]]
 name = "prisma-client-rust-cli"
 version = "0.6.11"
-source = "git+https://github.com/Brendonovich/prisma-client-rust?tag=0.6.11#3ac68d0052533d3ae0332d93a56a8ad169c2ee18"
+source = "git+https://github.com/Brendonovich/prisma-client-rust?rev=8faf98013d0d2c7fab68fad387305a55979e777d#8faf98013d0d2c7fab68fad387305a55979e777d"
 dependencies = [
  "directories",
  "flate2",
@@ -4654,7 +4654,7 @@ dependencies = [
 [[package]]
 name = "prisma-client-rust-macros"
 version = "0.6.11"
-source = "git+https://github.com/Brendonovich/prisma-client-rust?tag=0.6.11#3ac68d0052533d3ae0332d93a56a8ad169c2ee18"
+source = "git+https://github.com/Brendonovich/prisma-client-rust?rev=8faf98013d0d2c7fab68fad387305a55979e777d#8faf98013d0d2c7fab68fad387305a55979e777d"
 dependencies = [
  "convert_case 0.6.0",
  "proc-macro2",
@@ -4666,7 +4666,7 @@ dependencies = [
 [[package]]
 name = "prisma-client-rust-sdk"
 version = "0.6.11"
-source = "git+https://github.com/Brendonovich/prisma-client-rust?tag=0.6.11#3ac68d0052533d3ae0332d93a56a8ad169c2ee18"
+source = "git+https://github.com/Brendonovich/prisma-client-rust?rev=8faf98013d0d2c7fab68fad387305a55979e777d#8faf98013d0d2c7fab68fad387305a55979e777d"
 dependencies = [
  "convert_case 0.5.0",
  "dml",
@@ -5379,21 +5379,6 @@ dependencies = [
 
 [[package]]
 name = "rspc"
-version = "0.1.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2a01ad1acbb8cdbfc447d2a905c6e46c92c6451dfa68346d56c8e12ecf32a1f3"
-dependencies = [
- "futures",
- "serde",
- "serde_json",
- "specta 1.0.5",
- "tauri",
- "thiserror",
- "tokio",
-]
-
-[[package]]
-name = "rspc"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7e058686e5fd778bae4f6e8ebae041dc58ce60479a686f11002d146c9e59c2ab"
@@ -5413,7 +5398,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4df243afd7ab7e4511a7bbb251644c3fc65255a613a082f34a9c95fb47cd1609"
 dependencies = [
  "futures",
- "rspc 0.2.0",
+ "rspc",
  "serde",
  "serde_json",
  "specta 1.0.5",
@@ -5895,7 +5880,7 @@ dependencies = [
  "axum",
  "db",
  "local_storage",
- "rspc 0.1.4",
+ "rspc",
  "serde",
  "serde_json",
  "tauri",

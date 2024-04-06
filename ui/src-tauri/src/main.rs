@@ -9,10 +9,7 @@ use local_storage::stores::translation_store::TranslationStoreState;
 use local_storage::types::Data;
 use server::{get_router, init};
 use db::{get_db_path, load_and_migrate, context::RouterCtx};
-use std::sync::Arc;
 use std::thread;
-use db::prisma::PrismaClient;
-use rspc::integrations::tauri::plugin;
 
 
 
@@ -48,7 +45,7 @@ async fn main() {
 
     tauri::Builder::default()
         .plugin(specta_builder)
-        .plugin(plugin(router.arced(),  move ||  RouterCtx {
+        .plugin(rspc_tauri::plugin(router.arced(),  move |_|  RouterCtx {
                 db: db.clone()
         }))
         .setup(|_app| {
