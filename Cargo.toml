@@ -4,7 +4,9 @@ members = [
     "ui/src-tauri",
     "crates/server",
     "crates/translation_handler",
-    "crates/local_storage", "crates/prisma-cli", "crates/db",
+    "crates/local_storage",
+    "crates/prisma-cli",
+    "crates/db",
 ]
 
 
@@ -29,10 +31,17 @@ tauri = { version = "1.5.3", features = [
 ] }
 
 
-
-
+async-stream = "0.3.5"
 rspc = "0.2.0"
 rspc-tauri = "0.0.1"
 specta = "1.0.5"
-prisma-client-rust = { git = "https://github.com/Brendonovich/prisma-client-rust", rev = "8faf98013d0d2c7fab68fad387305a55979e777d", features = ["sqlite", "migrations", "rspc"]}
-prisma-client-rust-cli = { git = "https://github.com/Brendonovich/prisma-client-rust", rev = "8faf98013d0d2c7fab68fad387305a55979e777d", features = ["sqlite", "migrations", "rspc"] }
+prisma-client-rust = { git = "https://github.com/Brendonovich/prisma-client-rust", rev = "8faf98013d0d2c7fab68fad387305a55979e777d", features = [
+    "sqlite",
+    "migrations",
+    "rspc",
+] }
+prisma-client-rust-cli = { git = "https://github.com/Brendonovich/prisma-client-rust", rev = "8faf98013d0d2c7fab68fad387305a55979e777d", features = [
+    "sqlite",
+    "migrations",
+    "rspc",
+] }

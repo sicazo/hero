@@ -135,7 +135,9 @@ export function Nav({ links, isCollapsed }: NavProps): JSX.Element {
 					<Link
 						href="/application/settings"
 						className={cn(
-							buttonVariants({ variant: isCurrentPath("/application/settings") }),
+							buttonVariants({
+								variant: isCurrentPath("/application/settings"),
+							}),
 							isCurrentPath("/application/settings") === "default" &&
 								"dark:bg-muted dark:hover:bg-muted dark:text-white dark:hover:text-white",
 							"justify-start",

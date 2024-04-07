@@ -11,12 +11,12 @@ import { DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { TranslationEntry } from "@/lib/bindings";
+import {TranslationEntry, UpdatedKeyValues, UpdateKeysBody} from "@/lib/procedures";
 import { useLocationStore } from "@/lib/stores/location_store";
-import { useMutation } from "@tanstack/react-query";
-import axios from "axios";
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
+import {rspc} from "@/lib/rspc";
+import {undefined} from "zod";
+import {toast} from "sonner";
 
 interface EditTranslationDialogProps {
 	translation: TranslationEntry;
@@ -40,23 +40,34 @@ export default function EditTranslationDialog({
 
 		setTranslationsJson(JSON.stringify(orderedTranslations, null, 2));
 	}, [translation]);
+	const updateMutation = rspc.useMutation(["translations.update_keys"])
 
-	const updateMutation = useMutation({
-		mutationKey: ["update_translation", translation.key],
-		mutationFn: async () => {
-			const result = axios.post("http://localhost:3001/translation/update", {
-				path: last_selected_location?.path,
-				key: {
-					ts_key: translation.key,
-					json_key: translation.value,
-					translation_values: translationsJson,
-				},
-			});
-		},
-		onSuccess: () => {
-			toast.success("Entry got updated successfully");
-		},
-	});
+	const update = () => {
+		const newTranslationsJson = JSON.parse(translationsJson);
+		let newChangedValues: Map<string, string> = new Map();
+
+		Object.keys(newTranslationsJson).forEach((key) => {
+			if (newTranslationsJson[key] !== translation.translations![key]) {
+				newChangedValues.set(key, newTranslationsJson[key])
+			}
+		});
+
+
+
+		let key: UpdatedKeyValues = {
+			json_key: translation.value!, translation_values: newChangedValues, ts_key: translation.key!
+
+		}
+		let body: UpdateKeysBody = {
+			key, path: last_selected_location?.path!
+
+		}
+		toast.promise(updateMutation.mutateAsync(body), {
+			loading: "Updating...",
+			success: "Entry updated",
+			error: "There was an error updating the Entry",
+		})
+	}
 	return (
 		<>
 			<CardHeader>
@@ -108,8 +119,10 @@ export default function EditTranslationDialog({
 				<DialogTrigger>
 					<Button variant="ghost">Cancel</Button>
 				</DialogTrigger>
+<DialogTrigger>
 
-				<Button onClick={() => updateMutation.mutate()}>Submit</Button>
+	<Button onClick={update}>Submit</Button>
+</DialogTrigger>
 			</CardFooter>
 		</>
 	);

@@ -13,7 +13,7 @@ import {
 	FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { TranslationEntry } from "@/lib/bindings";
+import { TranslationEntry, AddNewKeyBody} from "@/lib/procedures";
 import { useLocationStore } from "@/lib/stores/location_store";
 import { useSettingsStore } from "@/lib/stores/settings_store";
 import { useTranslationStore } from "@/lib/stores/translation_store";
@@ -22,7 +22,8 @@ import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import z from "zod";
+import {z} from "zod";
+import {rspc} from "@/lib/rspc";
 
 export default function AddNewKeyDialog() {
 	const { translation_entries, setTranslationEntries } = useTranslationStore();
@@ -69,30 +70,25 @@ export default function AddNewKeyDialog() {
 		mode: "onChange",
 	});
 
-	const addNewMutation = useMutation({
-		mutationKey: ["Add New Key"],
-		mutationFn: async (values: z.infer<typeof formSchema>) => {
-			const result = await axios.post("http://localhost:3001/translation/add", {
-				path: last_selected_location?.path,
-				ts_key: values.ts_key,
-				json_key: values.json_key,
-				value: values.translation,
-			});
-			return result.data;
-		},
-		onSuccess: (data) => {
-			setTranslationEntries(data.keys as TranslationEntry[]);
-		},
-	});
+	const addNewMutation = rspc.useMutation(["translations.add_key"])
+
 	function onSubmit(values: z.infer<typeof formSchema>) {
-		toast.promise(addNewMutation.mutateAsync(values), {
+		let body: AddNewKeyBody = {
+			path: last_selected_location?.path!,
+			value: values.translation,
+			json_key: values.json_key,
+			ts_key: values.ts_key
+		}
+
+		let mutation = addNewMutation.mutateAsync(body)
+		toast.promise(mutation, {
 			loading: "Adding translation....",
 			success: () => {
 				return `${values.ts_key} has been added`;
 			},
 			error: "There was an error",
 		});
-		// addNewMutation.mutate(values);
+		mutation.then((data) => setTranslationEntries(data))
 	}
 
 	return (

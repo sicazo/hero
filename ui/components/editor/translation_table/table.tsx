@@ -25,7 +25,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
-import { TranslationEntry } from "@/lib/bindings";
+import { TranslationEntry } from "@/lib/procedures";
 import { useSize } from "@/lib/hooks/useSize";
 import { useLocationStore } from "@/lib/stores/location_store";
 import { useTranslationStore } from "@/lib/stores/translation_store";
@@ -178,7 +178,6 @@ export default function TranslationTable<TData, TValue>({
 	// Misc
 
 	const rowsSelected = table.getIsSomeRowsSelected();
-	console.log(height);
 
 	return (
 		<div ref={ref} className="h-screen">

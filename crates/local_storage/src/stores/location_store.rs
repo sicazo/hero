@@ -64,9 +64,13 @@ impl Into<LocationStore> for Vec<db::prisma::location::Data> {
     fn into(self) -> LocationStore {
         LocationStore {
             version: 0f32,
-            state: LocationStoreState{
+            state: LocationStoreState {
                 last_selected_location: None,
-                locations: self.iter().map(move |location| (*location).clone().into()).collect::<Vec<Location>>() }
+                locations: self
+                    .iter()
+                    .map(move |location| (*location).clone().into())
+                    .collect::<Vec<Location>>(),
+            },
         }
     }
 }

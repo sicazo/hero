@@ -1,21 +1,10 @@
-use crate::handlers::storage_handler::{get_storage_router, make_storage_router};
-
+use crate::handlers::location_handler::get_location_router;
 use axum::middleware::from_fn;
 use axum::Router;
 use db::context::RouterCtx;
-use db::prisma;
-use db::prisma::settings;
-use db::prisma::PrismaClient;
-use handlers::translation_handler::*;
-use local_storage::stores::location_store::LocationStore;
-use local_storage::stores::settings_store::SettingsStore;
-use local_storage::stores::translation_store::TranslationStore;
-use rspc::internal::specta;
+use handlers::{storage_handler::get_storage_router, translation_handler::*};
 use rspc::{Config, Router as RspcRouter};
-use serde::{Deserialize, Serialize};
-use serde_json::Value;
-use specta::Type;
-use std::sync::Arc;
+use tokio::time::{sleep, Duration};
 use tower_http::cors::{Any, CorsLayer};
 use tracing::info;
 use tracing_subscriber::FmtSubscriber;
@@ -35,8 +24,6 @@ pub async fn init() -> Result<(), Box<dyn std::error::Error>> {
         .allow_credentials(false);
 
     let app = Router::new()
-        .nest("/store", make_storage_router())
-        .nest("/translation", make_translation_router())
         // .route("/graphql_ws", get(graphql_ws_handler))
         .layer(cors)
         .layer(from_fn(own_middleware::logger::logger_middleware));
@@ -52,7 +39,19 @@ pub async fn init() -> Result<(), Box<dyn std::error::Error>> {
 pub fn get_router() -> RspcRouter<RouterCtx> {
     RspcRouter::<RouterCtx>::new()
         .config(Config::new().export_ts_bindings("../../ui/lib/procedures.ts"))
-        .query("hi", |t| t(|ctx, input: ()| "hello world"))
+        .query("hi", |t| t(|_ctx, _input: ()| "hello world"))
         .merge("stores.", get_storage_router())
+        .merge("translations.", get_translation_router())
+        .merge("locations.", get_location_router())
+        .subscription("test", |t| {
+            t(|ctx, input: ()| {
+                async_stream::stream! {
+                    for i in 0..5 {
+                        yield "ping".to_string();
+                        sleep(Duration::from_secs(1)).await;
+                    }
+                }
+            })
+        })
         .build()
 }

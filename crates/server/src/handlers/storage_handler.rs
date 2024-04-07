@@ -1,57 +1,13 @@
-use axum::extract::State;
-use axum::http::StatusCode;
-use axum::routing::post;
-use axum::{Json, Router};
 use db::context::RouterCtx;
 use db::prisma::PrismaClient;
 use db::prisma::{location, settings};
 use local_storage::stores::location_store::LocationStore;
 use local_storage::stores::settings_store::SettingsStore;
 use local_storage::stores::translation_store::TranslationStore;
-use local_storage::{get_store, remove_store, update_store};
 use rspc::{Router as RspcRouter, RouterBuilder as RspcRouterBuilder};
 use serde::{Deserialize, Serialize};
 use specta::Type;
 use tracing::{error, info};
-
-pub fn make_storage_router() -> Router {
-    Router::new()
-        .route("/set", post(set_item))
-        .route("/get", post(get_item))
-        .route("/delete", post(delete_item))
-}
-
-#[derive(Deserialize)]
-pub struct SetStoreBody {
-    name: String,
-    value: String,
-}
-#[derive(Deserialize)]
-pub struct GetStoreBody {
-    name: String,
-}
-#[derive(Deserialize)]
-pub struct RemoveStoreBody {
-    name: String,
-}
-
-pub async fn set_item(
-    // State(state): State<ServerState>,
-    Json(payload): Json<SetStoreBody>,
-) -> (StatusCode, Json<()>) {
-    update_store(payload.name, payload.value);
-    (StatusCode::OK, Json(()))
-}
-
-pub async fn get_item(Json(payload): Json<GetStoreBody>) -> (StatusCode, Json<String>) {
-    let value = get_store(payload.name);
-    (StatusCode::OK, Json(value))
-}
-
-pub async fn delete_item(Json(payload): Json<RemoveStoreBody>) -> (StatusCode, Json<()>) {
-    remove_store(payload.name);
-    (StatusCode::OK, Json(()))
-}
 
 #[derive(Deserialize, Type, Serialize)]
 #[serde(untagged)]
@@ -60,7 +16,6 @@ enum Store {
     LocationStore(LocationStore),
     TranslationStore(TranslationStore),
 }
-
 
 pub fn get_storage_router() -> RspcRouterBuilder<RouterCtx> {
     RspcRouter::<RouterCtx>::new()
@@ -111,7 +66,9 @@ pub fn get_storage_router() -> RspcRouterBuilder<RouterCtx> {
                                     settings::home_collapsed_nav_size::set(
                                         store.state.resizable_panel_state.home_collapsed_size,
                                     ),
-                                    settings::translate_updated_strings::set(store.state.translation_settings.translate_updated_strings)
+                                    settings::translate_updated_strings::set(
+                                        store.state.translation_settings.translate_updated_strings,
+                                    ),
                                 ],
                             )
                             .exec()
@@ -119,7 +76,6 @@ pub fn get_storage_router() -> RspcRouterBuilder<RouterCtx> {
                             .expect("failed to update settings");
                     }
                     Store::LocationStore(store) => {
-                        println!("Updating locations");
                         // upsert all the state locations
 
                         for location in &store.state.locations {
@@ -182,6 +138,7 @@ pub fn get_storage_router() -> RspcRouterBuilder<RouterCtx> {
                             .map(|item| {
                                 let item = item.to_owned();
 
+                                //TODO: this still throws errors because of the prisma client, fix it
                                 let db = ctx.db.clone();
                                 tokio::spawn(async move {
                                     match db
@@ -200,7 +157,7 @@ pub fn get_storage_router() -> RspcRouterBuilder<RouterCtx> {
                         futures::future::join_all(futures_vec).await;
                     }
                     Store::TranslationStore(store) => {
-                        println!("{:?}", store)
+                        todo!()
                     }
                 }
             })
@@ -221,16 +178,24 @@ pub fn get_storage_router() -> RspcRouterBuilder<RouterCtx> {
                 match store.as_str() {
                     "settings_store" => {
                         let db: &PrismaClient = &ctx.db;
-                        let settings = db.settings().find_unique(settings::id::equals(1)).exec().await?.unwrap();
+                        let settings = db
+                            .settings()
+                            .find_unique(settings::id::equals(1))
+                            .exec()
+                            .await?
+                            .unwrap();
                         Ok(Store::SettingsStore(settings.into()))
-                    },
+                    }
                     "location_store" => {
                         let db: &PrismaClient = &ctx.db;
-                        let locations = db.location().find_many(vec![location::name::equals("test".to_string())]).exec().await?;
-                        println!("{:?}", locations);
+                        let locations = db
+                            .location()
+                            .find_many(vec![location::name::equals("test".to_string())])
+                            .exec()
+                            .await?;
                         Ok(Store::LocationStore(locations.into()))
                     }
-                    &_ => todo!()
+                    &_ => todo!(),
                 }
             })
         })

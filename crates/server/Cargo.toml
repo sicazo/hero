@@ -19,7 +19,8 @@ local_storage = { path = "../local_storage" }
 translation_handler = { path = "../translation_handler" }
 tauri = { workspace = true }
 rspc = { workspace = true }
-db = {path = "../db"}
-specta = {workspace = true}
+db = { path = "../db" }
+specta = { workspace = true }
 futures = "0.3.30"
-prisma-client-rust = {workspace = true}
+prisma-client-rust = { workspace = true }
+async-stream = { workspace = true }

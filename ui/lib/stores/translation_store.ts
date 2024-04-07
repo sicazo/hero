@@ -1,5 +1,5 @@
 "use client";
-import { TranslationEntry, TranslationStoreState } from "@/lib/bindings";
+import { TranslationEntry, TranslationStoreState } from "@/lib/procedures";
 import storage from "@/lib/stores/local_storage_handler";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
@@ -31,8 +31,8 @@ export const useTranslationStore = create<
 		})),
 		{
 			name: "translation_store",
-			storage: createJSONStorage(() => storage),
-			skipHydration: true,
+			storage: createJSONStorage(() => localStorage),
+			skipHydration: false,
 		},
 	),
 );
