@@ -70,6 +70,7 @@ export default function AddNewLocation(props: props) {
 			{ path: new_path },
 		);
 		addLocation({
+			tag: "FE",
 			name: data.name,
 			path: new_path,
 			is_favourite: false,

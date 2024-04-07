@@ -11,10 +11,6 @@ members = [
 [workspace.dependencies]
 serde_json = "1.0.108"
 serde = { version = "1.0", features = ["derive"] }
-tauri-specta = { version = "2.0.0-rc.4", features = [
-    "javascript",
-    "typescript",
-] }
 tokio = { version = "1.35.0", features = ["rt", "rt-multi-thread", "macros"] }
 dirs = "5.0.1"
 tracing = "0.1.40"
@@ -37,6 +33,6 @@ tauri = { version = "1.5.3", features = [
 
 rspc = "0.2.0"
 rspc-tauri = "0.0.1"
-specta = "2.0.0-rc.7"
+specta = "1.0.5"
 prisma-client-rust = { git = "https://github.com/Brendonovich/prisma-client-rust", rev = "8faf98013d0d2c7fab68fad387305a55979e777d", features = ["sqlite", "migrations", "rspc"]}
 prisma-client-rust-cli = { git = "https://github.com/Brendonovich/prisma-client-rust", rev = "8faf98013d0d2c7fab68fad387305a55979e777d", features = ["sqlite", "migrations", "rspc"] }

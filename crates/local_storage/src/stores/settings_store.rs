@@ -1,19 +1,19 @@
 use crate::types::StoreUpgrade;
 use crate::{get_data, StoreType};
+use db::prisma::settings;
 use serde::{Deserialize, Serialize};
 use specta::Type;
 use std::error::Error;
 use std::fmt::Display;
 use std::str::FromStr;
-use tauri_specta::Event;
 
-#[derive(Debug, Serialize, Deserialize, Clone, Type, Event)]
+#[derive(Debug, Serialize, Deserialize, Clone, Type)]
 pub struct SettingsStore {
     pub state: SettingsStoreState,
     pub version: f32,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone, Type, Event)]
+#[derive(Debug, Serialize, Deserialize, Clone, Type)]
 pub struct SettingsStoreState {
     #[serde(default)]
     pub nav_open: bool,
@@ -26,16 +26,16 @@ pub struct SettingsStoreState {
     pub translation_settings: TranslationSettings,
     pub resizable_panel_state: ResizablePanelState,
 }
-#[derive(Debug, Serialize, Deserialize, Clone, Type, Event)]
+#[derive(Debug, Serialize, Deserialize, Clone, Type)]
 pub struct Notifications {
     #[serde(default)]
-    file_changes: bool,
+    pub file_changes: bool,
     #[serde(default)]
-    finished_translation: bool,
+    pub finished_translation: bool,
     #[serde(default)]
-    finished_scan: bool,
+    pub finished_scan: bool,
 }
-#[derive(Debug, Serialize, Deserialize, Clone, Type, Event)]
+#[derive(Debug, Serialize, Deserialize, Clone, Type)]
 pub struct ResizablePanelState {
     #[serde(default)]
     pub home_default_sizes: Vec<f32>,
@@ -44,7 +44,7 @@ pub struct ResizablePanelState {
     #[serde(default)]
     pub home_collapsed_size: i32,
 }
-#[derive(Debug, Serialize, Deserialize, Clone, Type, Event)]
+#[derive(Debug, Serialize, Deserialize, Clone, Type)]
 pub struct TranslationSettings {
     #[serde(default)]
     pub translate_new_strings: bool,
@@ -56,7 +56,7 @@ pub struct TranslationSettings {
     pub translation_command: String,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone, Type, Event)]
+#[derive(Debug, Serialize, Deserialize, Clone, Type)]
 #[serde(rename_all = "lowercase")]
 pub enum Theme {
     Light,
@@ -76,6 +76,8 @@ impl From<&str> for Theme {
         match s {
             "light" => Theme::Light,
             "dark" => Theme::Dark,
+            "Light" => Theme::Light,
+            "Dark" => Theme::Dark,
             _ => unreachable!(),
         }
     }
@@ -136,6 +138,39 @@ impl StoreUpgrade for SettingsStore {
             };
         }
         Ok(())
+    }
+}
+
+impl Into<SettingsStore> for settings::Data {
+    fn into(self) -> SettingsStore {
+        SettingsStore {
+            version: 0f32,
+            state: SettingsStoreState {
+                nav_open: self.nav_open,
+                theme: Theme::from(self.theme.as_str()),
+                notifications_enabled: self.notifications_enabled,
+                toast_rich_colors: self.toast_rich_colors,
+                enabled_notification_types: Notifications {
+                    file_changes: self.notification_file_changes,
+                    finished_translation: self.notification_finished_translation,
+                    finished_scan: self.finished_scan,
+                },
+                translation_settings: TranslationSettings {
+                    translate_new_strings: self.translate_new_strings,
+                    translate_updated_strings: self.translate_updated_strings,
+                    default_language: self.default_language,
+                    translation_command: self.translation_command,
+                },
+                resizable_panel_state: ResizablePanelState {
+                    home_default_sizes: vec![
+                        self.home_default_size_nav as f32,
+                        self.home_default_size_home as f32,
+                    ],
+                    home_nav_collapsed: self.home_nav_collapsed,
+                    home_collapsed_size: self.home_collapsed_nav_size,
+                },
+            },
+        }
     }
 }
 

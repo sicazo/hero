@@ -7,7 +7,6 @@ use tracing::info;
 use translation_handler::updater::UpdatedKeyValues;
 use translation_handler::TranslationHandler;
 
-
 #[derive(Deserialize)]
 pub struct PathBody {
     path: String,

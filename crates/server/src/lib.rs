@@ -1,18 +1,24 @@
-use crate::handlers::storage_handler::make_storage_router;
+use crate::handlers::storage_handler::{get_storage_router, make_storage_router};
 
 use axum::middleware::from_fn;
 use axum::Router;
+use db::context::RouterCtx;
+use db::prisma;
+use db::prisma::settings;
+use db::prisma::PrismaClient;
 use handlers::translation_handler::*;
+use local_storage::stores::location_store::LocationStore;
+use local_storage::stores::settings_store::SettingsStore;
+use local_storage::stores::translation_store::TranslationStore;
+use rspc::internal::specta;
 use rspc::{Config, Router as RspcRouter};
+use serde::{Deserialize, Serialize};
 use serde_json::Value;
+use specta::Type;
 use std::sync::Arc;
 use tower_http::cors::{Any, CorsLayer};
 use tracing::info;
 use tracing_subscriber::FmtSubscriber;
-use db::context::RouterCtx;
-use db::prisma;
-use db::prisma::PrismaClient;
-use db::prisma::settings;
 
 mod handlers;
 mod own_middleware;
@@ -45,17 +51,8 @@ pub async fn init() -> Result<(), Box<dyn std::error::Error>> {
 
 pub fn get_router() -> RspcRouter<RouterCtx> {
     RspcRouter::<RouterCtx>::new()
-        .config(
-            Config::new().export_ts_bindings("../../ui/lib/procedures.ts")
-        )
-
+        .config(Config::new().export_ts_bindings("../../ui/lib/procedures.ts"))
         .query("hi", |t| t(|ctx, input: ()| "hello world"))
-        .query("settings", |t| {
-            t(|ctx, input: ()| async move {
-               let client: &PrismaClient = &ctx.db;
-                let settings = client.settings().find_unique(settings::id::equals(1)).exec().await?;
-                Ok(settings)
-            })
-        })
+        .merge("stores.", get_storage_router())
         .build()
 }

@@ -5,7 +5,6 @@ use std::error::Error;
 use crate::stores::location_store::LocationStore;
 use crate::stores::settings_store::SettingsStore;
 use crate::stores::translation_store::TranslationStore;
-use tauri_specta::Event;
 
 pub trait StoreDefault {
     fn default() -> Self;
@@ -22,7 +21,7 @@ pub trait StoreUpgrade {
     fn upgrade(&mut self, current_data_version: f32) -> Result<(), Box<dyn Error>>;
 }
 
-#[derive(Debug, Default, Serialize, Deserialize, Clone, Type, Event)]
+#[derive(Debug, Default, Serialize, Deserialize, Clone, Type)]
 pub struct Data {
     pub settings_store: SettingsStore,
     pub translation_store: TranslationStore,

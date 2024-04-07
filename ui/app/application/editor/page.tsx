@@ -23,7 +23,7 @@ export default function Page() {
 				</div>
 				<Link
 					href={{
-						pathname: "/locations",
+						pathname: "/application/locations",
 						query: { add: "true" },
 					}}
 				>

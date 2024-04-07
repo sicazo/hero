@@ -9,6 +9,7 @@ CREATE TABLE "Settings" (
     "notification_finished_translation" BOOLEAN NOT NULL DEFAULT false,
     "finished_scan" BOOLEAN NOT NULL DEFAULT false,
     "translate_new_strings" BOOLEAN NOT NULL DEFAULT false,
+    "translate_updated_strings" BOOLEAN NOT NULL DEFAULT false,
     "default_language" TEXT NOT NULL DEFAULT 'en-GB',
     "translation_command" TEXT NOT NULL DEFAULT '',
     "home_default_size_nav" INTEGER NOT NULL DEFAULT 4,
@@ -28,3 +29,9 @@ CREATE TABLE "Location" (
     "num_of_untranslated_keys" INTEGER NOT NULL,
     "added_at" TEXT NOT NULL
 );
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Location_name_key" ON "Location"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Location_path_key" ON "Location"("path");

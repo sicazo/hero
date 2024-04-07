@@ -1,20 +1,28 @@
 'use client'
 
 
-import {StateStorage} from "zustand/middleware";
-import axios from "axios";
 import {PersistStorage} from "zustand/middleware";
 import {StorageValue} from "zustand/middleware";
+import {client} from "@/lib/rspc";
+import {LocationStore, SettingsStore, TranslationStore} from "@/lib/procedures";
 
 
-const rspc_storage: PersistStorage<any> = {
+const rspc_storage_handler: PersistStorage<any> = {
     getItem: async (name: string) : Promise<StorageValue<any> | null> => {
-        return null
+            return (await client.mutation(["stores.getStore", name]))
     },
-    setItem: (name: string, value: StorageValue<any>): void | Promise<void> => {
-        console.log(value)
+    setItem: async (name: string, value: StorageValue<any>): Promise<void> => {
+        if (name === "settings_store") {
+            await client.mutation(["stores.setStore", value as SettingsStore])
+        } else if (name === "translation_store") {
+            await client.mutation(["stores.setStore", value as TranslationStore])
+        } else if (name === "location_store") {
+            await client.mutation(["stores.setStore", value as LocationStore])
+        }
     },
-    removeItem: (name: string) : void | Promise<void> => {}
+    removeItem: async (name: string) : Promise<void> => {
+        await client.mutation(["stores.removeStore", name])
+    }
 };
 
-export default rspc_storage;
+export default rspc_storage_handler;

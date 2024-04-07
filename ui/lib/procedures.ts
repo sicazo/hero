@@ -2,10 +2,36 @@
 
 export type Procedures = {
     queries: 
-        { key: "hi", input: never, result: string } | 
-        { key: "settings", input: never, result: Settings | null },
-    mutations: never,
+        { key: "hi", input: never, result: string },
+    mutations: 
+        { key: "stores.getStore", input: string, result: Store } | 
+        { key: "stores.removeStore", input: string, result: null } | 
+        { key: "stores.setStore", input: Store, result: null },
     subscriptions: never
 };
 
-export type Settings = { id: number; nav_open: boolean; theme: string; notifications_enabled: boolean; toast_rich_colors: boolean; notification_file_changes: boolean; notification_finished_translation: boolean; finished_scan: boolean; translate_new_strings: boolean; default_language: string; translation_command: string; home_default_size_nav: number; home_default_size_home: number; home_nav_collapsed: boolean; home_collapsed_nav_size: number }
+export type LocationStore = { state: LocationStoreState; version: number }
+
+export type LocationStoreState = { last_selected_location?: Location | null; locations?: Location[] }
+
+export type TranslationSettings = { translate_new_strings?: boolean; translate_updated_strings?: boolean; default_language?: string; translation_command?: string }
+
+export type Store = SettingsStore | LocationStore | TranslationStore
+
+export type Notifications = { file_changes?: boolean; finished_translation?: boolean; finished_scan?: boolean }
+
+export type ResizablePanelState = { home_default_sizes?: number[]; home_nav_collapsed?: boolean; home_collapsed_size?: number }
+
+export type SettingsStoreState = { nav_open?: boolean; theme: Theme; notifications_enabled?: boolean; toast_rich_colors?: boolean; enabled_notification_types: Notifications; translation_settings: TranslationSettings; resizable_panel_state: ResizablePanelState }
+
+export type TranslationStoreState = { languages?: string[]; translation_entries: TranslationEntry[] }
+
+export type Theme = "light" | "dark"
+
+export type SettingsStore = { state: SettingsStoreState; version: number }
+
+export type Location = { tag?: string; name?: string; path?: string; is_favourite?: boolean; num_of_keys?: number; num_of_untranslated_keys?: number; added_at?: string }
+
+export type TranslationEntry = { key?: string; value?: string; translations?: { [key: string]: string }; in_use?: boolean }
+
+export type TranslationStore = { state: TranslationStoreState; version: number }

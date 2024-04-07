@@ -20,3 +20,6 @@ translation_handler = { path = "../translation_handler" }
 tauri = { workspace = true }
 rspc = { workspace = true }
 db = {path = "../db"}
+specta = {workspace = true}
+futures = "0.3.30"
+prisma-client-rust = {workspace = true}

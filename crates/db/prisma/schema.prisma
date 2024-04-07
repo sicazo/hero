@@ -19,6 +19,7 @@ model Settings {
   notification_finished_translation Boolean @default(false)
   finished_scan Boolean @default(false)
   translate_new_strings Boolean @default(false)
+  translate_updated_strings Boolean @default(false)
   default_language String @default("en-GB")
   translation_command String @default("")
   home_default_size_nav Int @default(4)
@@ -30,8 +31,8 @@ model Settings {
 model Location {
   id Int @id @default(autoincrement())
   tag String
-  name String
-  path String
+  name String @unique
+  path String @unique
   is_favourite Boolean @default(false)
   num_of_keys Int
   num_of_untranslated_keys Int
