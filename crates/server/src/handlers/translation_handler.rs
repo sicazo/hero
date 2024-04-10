@@ -1,20 +1,21 @@
 use axum::http::StatusCode;
 use axum::routing::post;
 use axum::{Json, Router};
+use db::context::RouterCtx;
 use local_storage::stores::translation_store::TranslationEntry;
 use serde::{Deserialize, Serialize};
 use tracing::info;
 use translation_handler::updater::UpdatedKeyValues;
 use translation_handler::TranslationHandler;
 
-use crate::state::ServerState;
+use rspc::{Router as RspcRouter, RouterBuilder as RspcRouterBuilder};
 
 #[derive(Deserialize)]
 pub struct PathBody {
-    path: String,
+    pub(crate) path: String,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, specta::Type)]
 pub struct RemoveTranslationBody {
     path: String,
     ts_key: Vec<String>,
@@ -31,7 +32,7 @@ pub struct TranslationsResponse {
     keys: Vec<TranslationEntry>,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, specta::Type)]
 pub struct AddNewKeyBody {
     path: String,
     ts_key: String,
@@ -39,131 +40,59 @@ pub struct AddNewKeyBody {
     value: String,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, specta::Type)]
 pub struct UpdateKeysBody {
     path: String,
     key: UpdatedKeyValues,
 }
 
-#[derive(Serialize)]
-pub struct ScanResponse {
-    keys: usize,
-    untranslated_keys: usize,
-}
-
-pub fn make_translation_router() -> Router<ServerState> {
-    Router::new()
-        .route("/keys", post(get_number_of_keys))
-        .route("/translations", post(get_translations))
-        .route("/add", post(add_new_key))
-        .route("/languages", post(get_languages))
-        .route("/remove", post(remove_keys))
-        .route("/update", post(update_keys))
-        .route("/scan", post(add_location))
-}
-
-pub async fn add_location(Json(payload): Json<PathBody>) -> (StatusCode, Json<ScanResponse>) {
-    let path = payload.path.replace("/messages.ts", "");
-    let keys = TranslationHandler::get_key_values_from_messages_ts(&path).await;
-
-    let key_value = TranslationHandler::get_translations(&path).await;
-
-    let untranslated_keys = key_value
-        .into_iter()
-        .filter(|entry| {
-            entry
-                .translations
-                .iter()
-                .all(|(k, v)| k == "en-GB" || v.trim().is_empty())
+pub fn get_translation_router() -> RspcRouterBuilder<RouterCtx> {
+    RspcRouter::<RouterCtx>::new()
+        .mutation("get_translations", |t| {
+            t(|_ctx, path: String| async move { TranslationHandler::get_translations(&path).await })
         })
-        .count();
+        .query("get_number_of_keys", |t| {
+            t(|_ctx, path: String| async move {
+                TranslationHandler::get_translations(&path).await.len() as u32
+            })
+        })
+        .query("get_languages", |t| {
+            t(|_ctx, path: String| async move {
+                TranslationHandler::extract_language_codes_from_locales(path)
+            })
+        })
+        .mutation("add_key", |t| {
+            t(|_ctx, input: AddNewKeyBody| async move {
+                let keys = TranslationHandler::add_new_key(
+                    input.path.clone(),
+                    input.ts_key.clone(),
+                    input.json_key.clone(),
+                    input.value.clone(),
+                )
+                .await
+                .map_err(|error| {
+                    rspc::Error::new(rspc::ErrorCode::InternalServerError, error.to_string())
+                })?;
 
-    (
-        StatusCode::OK,
-        Json(ScanResponse {
-            keys: keys.len(),
-            untranslated_keys,
-        }),
-    )
-}
-
-pub async fn remove_keys(Json(payload): Json<RemoveTranslationBody>) -> (StatusCode, Json<String>) {
-    info!(target: "server_action", "Removing keys from {}",&payload.path);
-    match TranslationHandler::remove_key(payload.path, payload.ts_key, payload.json_key).await {
-        Ok(_) => (StatusCode::OK, Json(String::from("Success"))),
-        Err(e) => {
-            println!("{:?}", e);
-            (StatusCode::BAD_REQUEST, Json(e.to_string()))
-        }
-    }
-}
-
-pub async fn update_keys(Json(payload): Json<UpdateKeysBody>) -> (StatusCode, Json<String>) {
-    match TranslationHandler::update_keys(payload.path, payload.key).await {
-        Ok(_) => (StatusCode::OK, Json(String::from("Success"))),
-        Err(e) => {
-            println!("{:?}", e);
-            (StatusCode::BAD_REQUEST, Json(e.to_string()))
-        }
-    }
-}
-
-pub async fn get_number_of_keys(
-    Json(payload): Json<PathBody>,
-) -> (StatusCode, Json<NumberOfKeysResponse>) {
-    info!(target: "server_action", "Getting number of keys for {}", &payload.path);
-    let key_value_len = TranslationHandler::get_key_values_from_messages_ts(&payload.path)
-        .await
-        .len() as u32;
-    info!(
-        "Responding with {} keys for {}",
-        &key_value_len, &payload.path
-    );
-    (
-        StatusCode::OK,
-        Json(NumberOfKeysResponse {
-            num_of_keys: key_value_len,
-        }),
-    )
-}
-
-pub async fn get_translations(
-    Json(payload): Json<PathBody>,
-) -> (StatusCode, Json<TranslationsResponse>) {
-    info!("Getting keys from {}", &payload.path);
-    let key_value = TranslationHandler::get_translations(&payload.path).await;
-    info!("{}", key_value.len());
-    (
-        StatusCode::OK,
-        Json(TranslationsResponse { keys: key_value }),
-    )
-}
-
-pub async fn add_new_key(
-    Json(payload): Json<AddNewKeyBody>,
-) -> (StatusCode, Json<TranslationsResponse>) {
-    info!("Adding new key {} to {}", &payload.ts_key, &payload.path);
-    match TranslationHandler::add_new_key(
-        payload.path.clone(),
-        payload.ts_key.clone(),
-        payload.json_key.clone(),
-        payload.value.clone(),
-    )
-    .await
-    {
-        Ok(translations) => (
-            StatusCode::CREATED,
-            Json(TranslationsResponse { keys: translations }),
-        ),
-        Err(e) => (
-            StatusCode::BAD_REQUEST,
-            Json(TranslationsResponse { keys: Vec::new() }),
-        ),
-    }
-}
-
-pub async fn get_languages(Json(payload): Json<PathBody>) -> (StatusCode, Json<Vec<String>>) {
-    info!("Getting language codes from {}", &payload.path);
-    let languages = TranslationHandler::extract_language_codes_from_locales(payload.path);
-    (StatusCode::OK, Json(languages))
+                Ok(keys)
+            })
+        })
+        .mutation("remove_keys", |t| {
+            t(|ctx, input: RemoveTranslationBody| async move {
+                TranslationHandler::remove_key(input.path, input.ts_key, input.json_key)
+                    .await
+                    .map_err(|error| {
+                        rspc::Error::new(rspc::ErrorCode::InternalServerError, error.to_string())
+                    })
+            })
+        })
+        .mutation("update_keys", |t| {
+            t(|ctx, input: UpdateKeysBody| async move {
+                TranslationHandler::update_keys(input.path, input.key)
+                    .await
+                    .map_err(|error| {
+                        rspc::Error::new(rspc::ErrorCode::InternalServerError, error.to_string())
+                    })
+            })
+        })
 }

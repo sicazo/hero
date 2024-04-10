@@ -10,11 +10,11 @@ use std::path::Path;
 use std::{fs, io};
 use tracing::{error, info};
 
-#[derive(Deserialize, Clone)]
+#[derive(Deserialize, Clone, specta::Type)]
 pub struct UpdatedKeyValues {
     pub ts_key: String,
     pub json_key: String,
-    pub translation_values: String,
+    pub translation_values: HashMap<String, String>,
 }
 
 impl TranslationHandler {
@@ -23,13 +23,24 @@ impl TranslationHandler {
         updated_key: UpdatedKeyValues,
     ) -> Result<(), std::io::Error> {
         let translations_directory_path = PathType::TranslationDirectory.create_path(path.clone());
-        let translations = parse_updated_values(updated_key.clone()).await;
         let json_files = glob(format!("{}/*.json", translations_directory_path).as_str())
             .expect("Failed to read glob pattern");
 
         for file in json_files {
             if let Ok(path) = file {
-                update_translation_file(&path, &updated_key, &translations).await?;
+                let lang = path.file_stem().unwrap().to_str().unwrap();
+                if updated_key.translation_values.contains_key(lang) {
+                    update_translation_file(
+                        &path,
+                        updated_key.json_key.to_owned(),
+                        updated_key
+                            .translation_values
+                            .get(lang)
+                            .unwrap()
+                            .to_string(),
+                    )
+                    .await?;
+                }
             } else if let Err(e) = file {
                 error!("{:?}", e);
             }
@@ -39,18 +50,10 @@ impl TranslationHandler {
     }
 }
 
-async fn parse_updated_values(updated_key_values: UpdatedKeyValues) -> Map<String, Value> {
-    let json: serde_json::Value =
-        serde_json::from_str(&updated_key_values.translation_values).expect("failed to parse json");
-    json.as_object()
-        .expect("failed to create object")
-        .to_owned()
-}
-
 async fn update_translation_file(
     path: &Path,
-    updated_key: &UpdatedKeyValues,
-    translations: &Map<String, Value>,
+    key: String,
+    value: String,
 ) -> Result<(), std::io::Error> {
     let file = fs::File::open(path)?;
     let reader = BufReader::new(file);
@@ -59,9 +62,11 @@ async fn update_translation_file(
 
     for line_res in reader.lines() {
         let mut line = line_res?;
-        if line.contains(&format!("\"{}\":", &updated_key.json_key)) {
-            if let Some(new_val) = translations.get(path.file_stem().unwrap().to_str().unwrap()) {
-                line = format!("    \"{}\": {}", &updated_key.json_key, new_val);
+        if line.contains(&format!("\"{}\":", &key)) {
+            let key_value_regex = regex::Regex::new(r#"(\w+): '(.*)'|"(.*?)": "(.*)""#).unwrap();;
+            if let Some(capture) = key_value_regex.captures(line.clone().as_str()) {
+                let old_value = &capture[4];
+                line = line.replace(old_value, value.as_str());
                 found = true;
             }
         }

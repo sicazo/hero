@@ -19,6 +19,7 @@ import { Input } from "@/components/ui/input";
 import { useLocationStore } from "@/lib/stores/location_store";
 import { zodResolver } from "@hookform/resolvers/zod";
 
+import { rspc } from "@/lib/rspc";
 import { dialog } from "@tauri-apps/api";
 import axios from "axios";
 import { useEffect, useState } from "react";
@@ -62,22 +63,25 @@ export default function AddNewLocation(props: props) {
 		resolver: zodResolver(addLocationFormSchema),
 		mode: "onChange",
 	});
+
+	const rspcLocation = rspc.useMutation(["locations.add_location"]);
 	async function onSubmit(data: LocationFormValues) {
-		let path = data.path.replace("/messages.ts", "");
-		let new_path = path.replace("\\messages.ts", "");
-		const response = await axios.post(
-			"http://localhost:3001/translation/scan",
-			{ path: new_path },
-		);
-		addLocation({
-			name: data.name,
-			path: new_path,
-			is_favourite: false,
-			num_of_keys: response.data.keys,
-			num_of_untranslated_keys: response.data.untranslated_keys,
-			added_at: new Date().toLocaleString(),
-		});
-		props.setAddNew(false);
+		const path = data.path.replace("/messages.ts", "");
+		const new_path = path.replace("\\messages.ts", "");
+
+		rspcLocation.mutate(new_path);
+		if (rspcLocation.isSuccess) {
+			addLocation({
+				tag: "FE",
+				name: data.name,
+				path: new_path,
+				is_favourite: false,
+				num_of_keys: rspcLocation.data.keys,
+				num_of_untranslated_keys: rspcLocation.data.untranslated_keys,
+				added_at: new Date().toLocaleString(),
+			});
+			props.setAddNew(false);
+		}
 	}
 
 	const [tauriOpen, setTauriOpen] = useState<typeof dialog>();

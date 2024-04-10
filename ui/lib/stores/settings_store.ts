@@ -3,11 +3,11 @@ import {
 	Notifications,
 	SettingsStoreState,
 	TranslationSettings,
-} from "@/lib/bindings";
-import storage from "@/lib/stores/local_storage_handler";
+} from "@/lib/procedures";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
+import rspc_storage_handler from "@/lib/stores/rspc_handler";
 
 interface SettingsStoreActions {
 	toggleNav: () => void;
@@ -90,7 +90,8 @@ export const useSettingsStore = create<
 		})),
 		{
 			name: "settings_store",
-			storage: createJSONStorage(() => storage),
+			// storage: createJSONStorage(() => storage),
+			storage: rspc_storage_handler,
 			skipHydration: true,
 		},
 	),

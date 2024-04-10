@@ -13,7 +13,7 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 } from "@/components/ui/popover";
-import { Location, TranslationEntry } from "@/lib/bindings";
+import { Location, TranslationEntry } from "@/lib/procedures";
 import { useLocationStore } from "@/lib/stores/location_store";
 import { useTranslationStore } from "@/lib/stores/translation_store";
 import { cn } from "@/lib/utils";
@@ -21,6 +21,7 @@ import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import {rspc} from "@/lib/rspc";
 
 type PopoverTriggerProps = React.ComponentPropsWithoutRef<
 	typeof PopoverTrigger
@@ -42,22 +43,10 @@ export default function LocationSwitcher({ className }: LocationSwitcherProps) {
 	);
 	const [searchTerm, setSearchTerm] = useState("");
 
-	const getData = useMutation<{ keys: TranslationEntry[] }>({
-		mutationKey: [`get_location${selectedLocation?.name}`],
-		mutationFn: async () => {
-			const response = await axios.post(
-				"http://localhost:3001/translation/translations",
-				{ path: selectedLocation?.path },
-			);
-			return response.data;
-		},
-		onSuccess: (data) => {
-			setTranslationEntries(data.keys);
-		},
-	});
+	const  getData = rspc.useMutation(["translations.get_translations"])
 	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	useEffect(() => {
-		getData.mutate();
+		getData.mutateAsync(selectedLocation.path as string).then((data) =>setTranslationEntries(data) );
 	}, []);
 
 	return (
@@ -95,7 +84,7 @@ export default function LocationSwitcher({ className }: LocationSwitcherProps) {
 										setSelectedLocation(location);
 										setOpen(false);
 										setLastSelectedLocation(location);
-										getData.mutate();
+										getData.mutateAsync(selectedLocation.path as string).then((data) => setTranslationEntries(data));
 									}}
 									className="text-sm"
 								>

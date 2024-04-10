@@ -14,7 +14,8 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Location } from "@/lib/bindings";
+import { Location } from "@/lib/procedures";
+import { rspc } from "@/lib/rspc";
 import { useLocationStore } from "@/lib/stores/location_store";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
@@ -23,34 +24,23 @@ import { toast } from "sonner";
 export function LocationCard({ location }: { location: Location }) {
 	const { updateFavorite, removeLocation, updateLocation } = useLocationStore();
 
-	const check = useMutation({
-		mutationKey: ["rescan"],
-		mutationFn: async () => {
-			const response = await axios.post(
-				"http://localhost:3001/translation/scan",
-				{ path: location.path },
-			);
+	const check = rspc.useMutation(["locations.add_location"]);
 
-			return response.data
-
-		},
-		onSuccess: (data) => {
+	const rescanLocation = () => {
+		const checkPromise = check.mutateAsync(location.path as string);
+		toast.promise(checkPromise, {
+			loading: "Scanning...",
+			success: "Location rescanned",
+			error: "There was an error rescanning the location",
+		});
+		checkPromise.then((data) => {
 			updateLocation({
 				...location,
 				num_of_keys: data.keys,
 				num_of_untranslated_keys: data.untranslated_keys,
 			});
-		},
-
-	});
-
-	const rescanLocation = () => {
-		toast.promise(check.mutateAsync(), {
-			loading: "scanning...",
-			success: "Location rescanned",
-			error: "There was an error rescanning the location"
 		})
-	}
+	};
 
 	const removeLocationFromList = () => {
 		removeLocation(location);
@@ -84,7 +74,9 @@ export function LocationCard({ location }: { location: Location }) {
 						<DropdownMenuContent className="w-42 mx-5">
 							{/*TODO: make work*/}
 							<DropdownMenuItem disabled>Edit</DropdownMenuItem>
-							<DropdownMenuItem onClick={rescanLocation}>Rescan</DropdownMenuItem>
+							<DropdownMenuItem onClick={rescanLocation}>
+								Rescan
+							</DropdownMenuItem>
 							<DropdownMenuItem onClick={removeLocationFromList}>
 								Delete
 							</DropdownMenuItem>

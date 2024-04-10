@@ -15,16 +15,15 @@ import {
 	TooltipContent,
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { TranslationEntry } from "@/lib/bindings";
+import { TranslationEntry } from "@/lib/procedures";
 import { useLocationStore } from "@/lib/stores/location_store";
 import { useSettingsStore } from "@/lib/stores/settings_store";
 import { useTranslationStore } from "@/lib/stores/translation_store";
 import { DialogTrigger } from "@radix-ui/react-dialog";
-import { useMutation } from "@tanstack/react-query";
 import { ColumnDef } from "@tanstack/react-table";
-import axios from "axios";
 import { ArrowUpDown, Info, MoreVertical } from "lucide-react";
 import { toast } from "sonner";
+import {rspc} from "@/lib/rspc";
 
 export const columns: ColumnDef<TranslationEntry>[] = [
 	{
@@ -124,32 +123,25 @@ export const columns: ColumnDef<TranslationEntry>[] = [
 		cell: ({ row }) => {
 			const { last_selected_location } = useLocationStore();
 			const { removeKeysFromTranslationEntries } = useTranslationStore();
-			const deleteMutation = useMutation({
-				mutationKey: ["delete_translation", row.original.key],
-				mutationFn: async () => {
-					await axios.post("http://localhost:3001/translation/delete", {
-						translations: [
-							{
-								path: last_selected_location?.path,
-								ts_key: [row.original.key],
-								json_key: [row.original.value],
-							},
-						],
-					});
-				},
-				onSuccess: () => {
-					toast.success("The Entry got successfully removed");
-					removeKeysFromTranslationEntries([row.original.key as string]);
-				},
-				onError: (e) => {
-					toast.error(
-						<p>
-							Failed to delete translation <br />
-							<code>{e.message}</code>
-						</p>,
-					);
-				},
-			});
+
+			const deleteMutation = rspc.useMutation(["translations.remove_keys"])
+
+			const deleteKeys = () => {
+
+				const mutation = deleteMutation.mutateAsync({
+					path: last_selected_location?.path as string,
+					ts_key: [row.original.value as string],
+					json_key: [row.original.value as string]
+				});
+
+				toast.promise(mutation, {
+					loading: "Removing key...",
+					success: "The Entry got successfully removed",
+					error: "Failed to delete the translation"
+				})
+				mutation.then(() => removeKeysFromTranslationEntries([row.original.key as string]))
+
+			}
 
 			return (
 				<div className="flex w-auto">
@@ -171,7 +163,7 @@ export const columns: ColumnDef<TranslationEntry>[] = [
 											{
 												action: {
 													label: "Yes",
-													onClick: () => deleteMutation.mutate(),
+													onClick: () => deleteKeys(),
 												},
 												cancel: {
 													label: "No",

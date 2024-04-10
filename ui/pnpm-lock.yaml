@@ -62,8 +62,17 @@ dependencies:
   '@radix-ui/react-tooltip':
     specifier: ^1.0.7
     version: 1.0.7(@types/react-dom@18.2.17)(@types/react@18.2.44)(react-dom@18.2.0)(react@18.2.0)
+  '@rspc/client':
+    specifier: ^0.2.0
+    version: 0.2.0
+  '@rspc/react':
+    specifier: ^0.2.0
+    version: 0.2.0(@tanstack/react-query@5.15.4)(react@18.2.0)
+  '@rspc/tauri':
+    specifier: ^0.2.0
+    version: 0.2.0(@tauri-apps/api@1.5.3)
   '@tanstack/react-query':
-    specifier: ^5.15.4
+    specifier: 5.15.4
     version: 5.15.4(react@18.2.0)
   '@tanstack/react-query-devtools':
     specifier: ^5.15.4
@@ -1624,6 +1633,30 @@ packages:
     resolution: {integrity: sha512-fyrgCaedtvMg9NK3en0pnOYJdtfwxUcNolezkNPUsoX57X8oQk+NkqcvzHXD2uKNij6GXmWU9NDru2IWjrO4BQ==}
     dependencies:
       '@babel/runtime': 7.23.6
+    dev: false
+
+  /@rspc/client@0.2.0:
+    resolution: {integrity: sha512-IIOfAk4g+bzbfr3cmvm42EocsjtzMO9CRCc95ZMx9mFh5ixHzP4Na1lun+KipGzsFV1QsmV6uYSBg/4Kpnu9iA==}
+    dev: false
+
+  /@rspc/react@0.2.0(@tanstack/react-query@5.15.4)(react@18.2.0):
+    resolution: {integrity: sha512-gQ9nnj+AYMpRnyrKjBTkKYK5b13Ml0PJjb/BAjwCqXq5fDK5PMdmXL8bTh6mCmQYxOnnukzYKcvxz7MTbjd2DA==}
+    peerDependencies:
+      '@tanstack/react-query': ^5.0.0
+      react: ^18.0.0
+    dependencies:
+      '@rspc/client': 0.2.0
+      '@tanstack/react-query': 5.15.4(react@18.2.0)
+      react: 18.2.0
+    dev: false
+
+  /@rspc/tauri@0.2.0(@tauri-apps/api@1.5.3):
+    resolution: {integrity: sha512-YULpKSCV/YZLtDRs/poiq3PVW54vMJjIbFZ8PgG+sdyZcujRudpza7xaLrfAHfbo61XdQYz/HP5j/9s5uqXQrA==}
+    peerDependencies:
+      '@tauri-apps/api': ^1.2.0
+    dependencies:
+      '@rspc/client': 0.2.0
+      '@tauri-apps/api': 1.5.3
     dev: false
 
   /@rushstack/eslint-patch@1.6.0:

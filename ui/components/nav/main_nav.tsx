@@ -112,14 +112,14 @@ export function Nav({ links, isCollapsed }: NavProps): JSX.Element {
 					<Tooltip delayDuration={0}>
 						<TooltipTrigger asChild>
 							<Link
-								href="/settings"
+								href="/application/settings"
 								className={cn(
 									buttonVariants({
-										variant: isCurrentPath("/settings"),
+										variant: isCurrentPath("/application/settings"),
 										size: "icon",
 									}),
 									"h-9 w-9",
-									isCurrentPath("/settings") === "default" &&
+									isCurrentPath("/application/settings") === "default" &&
 										"dark:bg-muted dark:text-muted-foreground dark:hover:bg-muted dark:hover:text-white",
 								)}
 							>
@@ -133,10 +133,12 @@ export function Nav({ links, isCollapsed }: NavProps): JSX.Element {
 					</Tooltip>
 				) : (
 					<Link
-						href="/settings"
+						href="/application/settings"
 						className={cn(
-							buttonVariants({ variant: isCurrentPath("/settings") }),
-							isCurrentPath("/settings") === "default" &&
+							buttonVariants({
+								variant: isCurrentPath("/application/settings"),
+							}),
+							isCurrentPath("/application/settings") === "default" &&
 								"dark:bg-muted dark:hover:bg-muted dark:text-white dark:hover:text-white",
 							"justify-start",
 							"w-full",

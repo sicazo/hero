@@ -1,11 +1,11 @@
 use crate::{PathType, TranslationHandler};
 use local_storage::stores::settings_store::SettingsStore;
+use local_storage::stores::translation_store::TranslationEntry;
 use serde::Serialize;
 use serde_json::ser::PrettyFormatter;
 use std::fs::{read_to_string, OpenOptions};
 use std::io::{Read, Seek, SeekFrom, Write};
 use std::process::Command;
-use local_storage::stores::translation_store::TranslationEntry;
 
 impl TranslationHandler {
     pub async fn add_new_key(
@@ -73,8 +73,6 @@ fn add_key_to_messages_ts(
         lines[check_line].clone()
     };
 
-
-
     let lines_content: String = lines.join("\n");
     let mut file = OpenOptions::new()
         .write(true)
@@ -91,7 +89,10 @@ fn add_translation_to_default_language(
 ) -> Result<(), std::io::Error> {
     let en_gb_path = PathType::EnGbFile.create_path(path.clone());
 
-    let mut file = OpenOptions::new().write(true).read(true).open(en_gb_path.clone())?;
+    let mut file = OpenOptions::new()
+        .write(true)
+        .read(true)
+        .open(en_gb_path.clone())?;
 
     let mut lines: Vec<String> = Vec::new();
     let mut content = String::new();
@@ -108,7 +109,6 @@ fn add_translation_to_default_language(
             }
             lines.push(updated_line);
         } else if trimmed_line == "}" {
-
             lines.push(format!(r#"    "{}": "{}""#, json_key, en_gb_value));
             lines.push(String::from(line))
         } else if trimmed_line == "{" {

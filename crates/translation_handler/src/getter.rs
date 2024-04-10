@@ -59,8 +59,9 @@ impl TranslationHandler {
             match entry {
                 Ok(path) => {
                     let file_content = fs::read_to_string(&path).expect("Unable to read file");
-                    let data: HashMap<String, Value> =
-                        serde_json::from_str(&file_content).expect("JSON was not well-formatted");
+                    let data: HashMap<String, Value> = serde_json::from_str(&file_content).expect(
+                        &format!("JSON was not well-formatted in {}", path.display()),
+                    );
                     let file_stem = path.file_stem().unwrap().to_str().unwrap().to_string();
 
                     for (ts_key, json_key) in &keys {
