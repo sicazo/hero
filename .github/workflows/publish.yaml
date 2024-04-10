@@ -38,6 +38,13 @@ jobs:
         # If you don't have `beforeBuildCommand` configured you may want to build your frontend here too.
         run: pnpm install # Change this to npm, yarn or pnpm.
 
+      - name: Generate prisma client
+        working-directory: crates/db
+        # If you don't have `beforeBuildCommand` configured you may want to build your frontend here too.
+        run: cargo prisma generate
+
+
+
       - name: Build the app
         uses: tauri-apps/tauri-action@v0
 
