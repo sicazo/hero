@@ -38,6 +38,7 @@ jobs:
 
       - name: Install frontend dependencies
         # If you don't have `beforeBuildCommand` configured you may want to build your frontend here too.
+        working-directory: ui/
         run: pnpm install # Change this to npm, yarn or pnpm.
 
       - name: Build the app
