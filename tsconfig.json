@@ -25,12 +25,12 @@
     "baseUrl": ".",
     "paths": {
       "@/*": [
-        "./app/*"
+        "./src/*"
       ]
     }
   },
   "include": [
-    "app"
+    "src"
   ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
