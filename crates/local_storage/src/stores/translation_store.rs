@@ -4,7 +4,6 @@ use specta::Type;
 use std::collections::HashMap;
 use std::error::Error;
 use std::str::FromStr;
-use tauri_specta::Event;
 
 const DEFAULT_LANGUAGES: [&str; 34] = [
     "de-DE", "de-AT", "de-CH", "de-LU", "nl-NL", "nl-BE", "en-GB", "en-US", "es-ES", "fr-FR",
@@ -13,20 +12,20 @@ const DEFAULT_LANGUAGES: [&str; 34] = [
     "uk-UA", "et-EE", "lt-LT", "lv-LV",
 ];
 
-#[derive(Debug, Serialize, Deserialize, Clone, Type, Event)]
+#[derive(Debug, Serialize, Deserialize, Clone, Type)]
 pub struct TranslationStore {
     pub state: TranslationStoreState,
     pub version: f32,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone, Type, Event)]
+#[derive(Debug, Serialize, Deserialize, Clone, Type)]
 pub struct TranslationStoreState {
     #[serde(default)]
     pub languages: Vec<String>,
     pub translation_entries: Vec<TranslationEntry>,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone, Type, Event)]
+#[derive(Debug, Serialize, Deserialize, Clone, Type)]
 pub struct TranslationEntry {
     #[serde(default)]
     pub key: String,

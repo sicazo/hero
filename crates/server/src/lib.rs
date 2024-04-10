@@ -1,11 +1,10 @@
-use crate::handlers::storage_handler::store_router;
-use crate::handlers::translation_handler::translation_router;
+use crate::handlers::location_handler::get_location_router;
 use axum::middleware::from_fn;
-use axum::routing::{get, post};
 use axum::Router;
-use serde_json::Value;
-use socketioxide::extract::{Bin, Data, SocketRef};
-use socketioxide::SocketIo;
+use db::context::RouterCtx;
+use handlers::{storage_handler::get_storage_router, translation_handler::*};
+use rspc::{Config, Router as RspcRouter};
+use tokio::time::{sleep, Duration};
 use tower_http::cors::{Any, CorsLayer};
 use tracing::info;
 use tracing_subscriber::FmtSubscriber;
@@ -13,39 +12,21 @@ use tracing_subscriber::FmtSubscriber;
 mod handlers;
 mod own_middleware;
 
-fn on_connect(socket: SocketRef, Data(data): Data<Value>) {
-    info!("Socket.IO connected: {:?} {:?}", socket.ns(), socket.id);
-    socket.emit("auth", data).ok();
-
-    socket.on(
-        "message",
-        |socket: SocketRef, Data::<Value>(data), Bin(bin)| {
-            info!("Received event: {:?} {:?}", data, bin);
-            socket.bin(bin).emit("message-back", data).ok();
-        },
-    );
-}
 #[tokio::main]
 pub async fn init() -> Result<(), Box<dyn std::error::Error>> {
     tracing::subscriber::set_global_default(FmtSubscriber::default())?;
 
-    let (layer, io) = SocketIo::new_layer();
+    // CORS Setup
     let cors = CorsLayer::new()
         .allow_methods(Any)
         .allow_headers(Any)
         .allow_origin(Any)
         .allow_credentials(false);
 
-    io.ns("/", on_connect);
-    io.ns("/custom", on_connect);
-
-    let app = axum::Router::new()
-        .nest("/translation", translation_router())
-        .nest("/store", store_router())
-        .route("/", get(|| async { "Hello, World!" }))
+    let app = Router::new()
+        // .route("/graphql_ws", get(graphql_ws_handler))
         .layer(cors)
-        .layer(from_fn(own_middleware::logger::logger_middleware))
-        .layer(layer);
+        .layer(from_fn(own_middleware::logger::logger_middleware));
 
     info!("Starting server");
 
@@ -53,4 +34,24 @@ pub async fn init() -> Result<(), Box<dyn std::error::Error>> {
     axum::serve(listener, app).await.unwrap();
 
     Ok(())
+}
+
+pub fn get_router() -> RspcRouter<RouterCtx> {
+    RspcRouter::<RouterCtx>::new()
+        .config(Config::new().export_ts_bindings("../../ui/lib/procedures.ts"))
+        .query("hi", |t| t(|_ctx, _input: ()| "hello world"))
+        .merge("stores.", get_storage_router())
+        .merge("translations.", get_translation_router())
+        .merge("locations.", get_location_router())
+        .subscription("test", |t| {
+            t(|ctx, input: ()| {
+                async_stream::stream! {
+                    for i in 0..5 {
+                        yield "ping".to_string();
+                        sleep(Duration::from_secs(1)).await;
+                    }
+                }
+            })
+        })
+        .build()
 }

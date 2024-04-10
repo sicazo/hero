@@ -1,12 +1,12 @@
+use crate::{PathType, TranslationHandler};
+use glob::glob;
+use local_storage::stores::translation_store::TranslationEntry;
+use serde_json::Value;
 use std::collections::HashMap;
 use std::fs;
-use crate::{PathType, TranslationHandler};
 use std::fs::OpenOptions;
 use std::io::{Read, Write};
-use glob::glob;
-use serde_json::Value;
 use tracing::{error, info};
-use local_storage::stores::translation_store::TranslationEntry;
 
 impl TranslationHandler {
     pub async fn remove_key(
@@ -23,7 +23,10 @@ impl TranslationHandler {
     }
 }
 
-fn remove_key_from_language_jsons(locales_path: String, keys: Vec<String>) -> Result<(), std::io::Error> {
+fn remove_key_from_language_jsons(
+    locales_path: String,
+    keys: Vec<String>,
+) -> Result<(), std::io::Error> {
     info!(target: "remover", "Removing keys from language jsons");
     let json_files =
         glob(format!("{}/*.json", locales_path).as_str()).expect("Failed to read glob pattern");
@@ -39,12 +42,17 @@ fn remove_key_from_language_jsons(locales_path: String, keys: Vec<String>) -> Re
                 let file_content = fs::read_to_string(&path).expect("Unable to read file");
                 let first_line = format!("{{{}", newline);
                 let mut new_content: String = String::from(first_line);
-                let regex = regex::Regex::new(r#""([^"]*)": "([^"]*)""#).expect("failed to create regex");
+                let regex =
+                    regex::Regex::new(r#""([^"]*)": "([^"]*)""#).expect("failed to create regex");
                 file_content.lines().for_each(|line| {
                     if let Some(capture) = regex.captures(line) {
-                       if  !keys.clone().into_iter().any(|key| key == capture.get(1).unwrap().as_str() ) {
-                           new_content.push_str(&*(line.to_owned() + newline))
-                       }
+                        if !keys
+                            .clone()
+                            .into_iter()
+                            .any(|key| key == capture.get(1).unwrap().as_str())
+                        {
+                            new_content.push_str(&*(line.to_owned() + newline))
+                        }
                     }
                 });
                 new_content.push_str("}");
@@ -54,7 +62,6 @@ fn remove_key_from_language_jsons(locales_path: String, keys: Vec<String>) -> Re
                     .open(path.clone())?;
                 file.write_all(new_content.as_bytes())?;
                 info!(target: "remover", "Removed keys from: {}" , path.display());
-
             }
             Err(e) => println!("{:?}", e),
         }
@@ -71,7 +78,8 @@ fn remove_key_from_messages_ts(path: String, keys: Vec<String>) -> Result<(), st
     file.read_to_string(&mut content)
         .expect("Failed to read file");
 
-    let json_start = content.find("export default defineLocales(").unwrap() + "export default defineLocales(".len();
+    let json_start = content.find("export default defineLocales(").unwrap()
+        + "export default defineLocales(".len();
     let json_end = content.find("locales,").unwrap();
     let key_value_pairs = &content[json_start..json_end];
     let mut new_entries: String = String::from("");
@@ -87,7 +95,10 @@ fn remove_key_from_messages_ts(path: String, keys: Vec<String>) -> Result<(), st
         match key_value_regex.captures(line) {
             None => new_entries.push_str(&*(line.to_owned() + newline)),
             Some(capture) => {
-                if !keys.iter().any(|key| &capture.get(1).unwrap().as_str().to_string() == key) {
+                if !keys
+                    .iter()
+                    .any(|key| &capture.get(1).unwrap().as_str().to_string() == key)
+                {
                     new_entries.push_str(&*(line.to_owned() + newline));
                 }
             }
@@ -101,7 +112,8 @@ fn remove_key_from_messages_ts(path: String, keys: Vec<String>) -> Result<(), st
         }
     }
 
-    let new_file = (&content[0..json_start]).to_owned() + new_entries.as_str() + &content[json_end..];
+    let new_file =
+        (&content[0..json_start]).to_owned() + new_entries.as_str() + &content[json_end..];
 
     let mut file = OpenOptions::new()
         .write(true)

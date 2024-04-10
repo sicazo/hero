@@ -15,5 +15,6 @@ serde = {workspace = true}
 tauri = {workspace = true}
 dirs = {workspace = true}
 specta = {workspace = true}
-tauri-specta = {workspace = true}
+rspc = {workspace = true}
+db = {path = "../db"}
 

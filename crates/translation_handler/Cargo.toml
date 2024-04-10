@@ -7,12 +7,13 @@ repository = ""
 edition = "2021"
 
 
-
 [dependencies]
-glob = {workspace = true}
-serde_json = {workspace = true}
-tracing = {workspace = true}
-regex = {workspace = true}
-local_storage = {path = "../local_storage" }
-serde = {workspace = true}
-tokio = {workspace = true}
+glob = { workspace = true }
+serde_json = { workspace = true }
+tracing = { workspace = true }
+regex = { workspace = true }
+local_storage = { path = "../local_storage" }
+serde = { workspace = true }
+tokio = { workspace = true }
+rspc = { workspace = true }
+specta = {workspace = true}
