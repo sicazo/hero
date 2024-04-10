@@ -1,17 +1,11 @@
 "use client";
 
 import { LucideIcon, Settings2 } from "lucide-react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 
-import Pulse from "@/components/miscelaneous/pulse";
-import { buttonVariants } from "@/components/ui/button";
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { cn } from "@/lib/utils";
+import { Link} from "@tanstack/react-router"
+import {Tooltip, TooltipContent, TooltipTrigger} from "../ui/tooltip.tsx";
+import {cn} from "../../lib/utils.ts";
+import {buttonVariants} from "../ui/button.tsx";
 
 interface NavProps {
 	isCollapsed: boolean;
@@ -24,7 +18,9 @@ interface NavProps {
 }
 
 export function Nav({ links, isCollapsed }: NavProps): JSX.Element {
-	const pathName = usePathname();
+	// const pathName = usePathname();
+	//TODO: move to react Router path stuff
+	let pathName = "/home"
 	const isCurrentPath = (link: string) => {
 		if (pathName.startsWith(link)) {
 			return "default";

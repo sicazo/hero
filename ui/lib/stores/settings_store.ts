@@ -3,11 +3,11 @@ import {
 	Notifications,
 	SettingsStoreState,
 	TranslationSettings,
-} from "@/lib/procedures";
+} from "../procedures";
 import { create } from "zustand";
-import { createJSONStorage, persist } from "zustand/middleware";
+import { persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
-import rspc_storage_handler from "@/lib/stores/rspc_handler";
+import rspc_storage_handler from "./rspc_handler";
 
 interface SettingsStoreActions {
 	toggleNav: () => void;

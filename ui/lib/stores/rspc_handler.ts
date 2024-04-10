@@ -3,8 +3,8 @@
 
 import {PersistStorage} from "zustand/middleware";
 import {StorageValue} from "zustand/middleware";
-import {client} from "@/lib/rspc";
-import {LocationStore, SettingsStore, TranslationStore} from "@/lib/procedures";
+import {client} from "../rspc";
+import {LocationStore, SettingsStore, TranslationStore} from "../procedures";
 
 
 const rspc_storage_handler: PersistStorage<any> = {

@@ -3,9 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
+    "dev": "vite",
+    "build": "tsc && vite build",
     "lint": "biome check --apply app && biome check --apply components && biome check --apply lib",
     "generate_entities": "sea-orm-cli generate entity --database-url 'sqlite:/Users/marius/Library/Application Support/translationHero/hero.sqlite' -o ../crates/server/src/entities --model-extra-derives 'SimpleObject'"
   },
