@@ -1,4 +1,3 @@
-"use client";
 
 import EditTranslationDialog from "@/components/editor/dialog/edit";
 import { Button } from "@/components/ui/button";

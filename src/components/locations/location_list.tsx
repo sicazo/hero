@@ -1,8 +1,7 @@
-"use client";
 
 import { LocationCard } from "@/components/locations/location_card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import type { Location } from "@/lib/bindings";
+import type { Location } from "@/lib/procedures.ts";
 
 interface LocationListProps {
 	locations: Location[];

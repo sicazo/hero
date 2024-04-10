@@ -1,4 +1,3 @@
-"use client";
 import { TranslationEntry, TranslationStoreState } from "@/lib/procedures";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";

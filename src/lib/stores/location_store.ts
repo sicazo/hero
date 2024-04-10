@@ -1,4 +1,3 @@
-"use client";
 import { Location, LocationStoreState } from "@/lib/procedures";
 import { create } from "zustand";
 import {  persist } from "zustand/middleware";
