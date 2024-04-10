@@ -12,11 +12,29 @@
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as IndexImport } from './routes/index'
+import { Route as SettingsIndexImport } from './routes/settings/index'
+import { Route as LocationsIndexImport } from './routes/locations/index'
+import { Route as EditorIndexImport } from './routes/editor/index'
 
 // Create/Update Routes
 
 const IndexRoute = IndexImport.update({
   path: '/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const SettingsIndexRoute = SettingsIndexImport.update({
+  path: '/settings/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const LocationsIndexRoute = LocationsIndexImport.update({
+  path: '/locations/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const EditorIndexRoute = EditorIndexImport.update({
+  path: '/editor/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -28,11 +46,28 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
+    '/editor/': {
+      preLoaderRoute: typeof EditorIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/locations/': {
+      preLoaderRoute: typeof LocationsIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/settings/': {
+      preLoaderRoute: typeof SettingsIndexImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
 // Create and export the route tree
 
-export const routeTree = rootRoute.addChildren([IndexRoute])
+export const routeTree = rootRoute.addChildren([
+  IndexRoute,
+  EditorIndexRoute,
+  LocationsIndexRoute,
+  SettingsIndexRoute,
+])
 
 /* prettier-ignore-end */
