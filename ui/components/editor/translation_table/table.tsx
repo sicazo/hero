@@ -29,10 +29,9 @@ import { TranslationEntry } from "@/lib/procedures";
 import { useSize } from "@/lib/hooks/useSize";
 import { useLocationStore } from "@/lib/stores/location_store";
 import { useTranslationStore } from "@/lib/stores/translation_store";
-import { useMutation } from "@tanstack/react-query";
-import axios from "axios";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import {rspc} from "@/lib/rspc";
 
 interface TranslationTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[];
@@ -61,43 +60,24 @@ export default function TranslationTable<TData, TValue>({
 	} = useTranslationStore();
 
 	// Requests
-	const removeKeyMutation = useMutation({
-		mutationKey: ["remove_keys"],
-		mutationFn: async ({
-			ts_keys,
-			json_keys,
-		}: { ts_keys: string[]; json_keys: string[] }) => {
-			const response = await axios.post(
-				"http://localhost:3001/translation/remove",
-				{
-					path: last_selected_location?.path,
-					ts_key: ts_keys,
-					json_key: json_keys,
-				},
-			);
-			return response.data;
-		},
-		onSuccess: (_, variables) => {
-			toast.success("The Entries got successfully removed");
-			removeKeysFromTranslationEntries(variables.ts_keys);
-		},
-	});
+	const removeKeyMutation = rspc.useMutation(["translations.remove_keys"])
 
-	const checkLocationMutation = useMutation<{ keys: TranslationEntry[] }>({
-		mutationKey: ["check-location"],
-		mutationFn: async () => {
-			const response = await axios.post(
-				"http://localhost:3001/translation/check",
-				{
-					path: last_selected_location?.path,
-				},
-			);
-			return response.data;
-		},
-		onSuccess: (data) => {
-			updatePossibleLocationChanges(data.keys);
-		},
-	});
+	const removeKeys = (ts_keys: string[], json_keys:  string[]) => {
+	const mutation = removeKeyMutation.mutateAsync({
+		path: last_selected_location?.path as string,
+		ts_key: ts_keys,
+		json_key: json_keys
+	})
+
+	toast.promise(mutation, {
+		loading: "Removing keys...",
+		success: "The keys got successfully removed",
+		error: "There was an error deleting the selected keys"
+	})
+		mutation.then(() => removeKeysFromTranslationEntries(ts_keys))
+
+
+	}
 
 	// Functions
 
@@ -130,7 +110,7 @@ export default function TranslationTable<TData, TValue>({
 			//@ts-expect-error
 			json_keys.push(row.original.value);
 		}
-		removeKeyMutation.mutate({ ts_keys, json_keys });
+		removeKeys(ts_keys, json_keys)
 	};
 
 	const table = useReactTable({

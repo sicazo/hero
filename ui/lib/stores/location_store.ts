@@ -1,8 +1,7 @@
 "use client";
 import { Location, LocationStoreState } from "@/lib/procedures";
-import storage from "@/lib/stores/local_storage_handler";
 import { create } from "zustand";
-import { createJSONStorage, persist } from "zustand/middleware";
+import {  persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 import rspc_storage_handler from "@/lib/stores/rspc_handler";
 

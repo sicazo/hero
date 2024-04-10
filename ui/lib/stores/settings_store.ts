@@ -3,8 +3,7 @@ import {
 	Notifications,
 	SettingsStoreState,
 	TranslationSettings,
-} from "@/lib/bindings";
-import storage from "@/lib/stores/local_storage_handler";
+} from "@/lib/procedures";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";

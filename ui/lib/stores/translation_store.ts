@@ -1,6 +1,5 @@
 "use client";
 import { TranslationEntry, TranslationStoreState } from "@/lib/procedures";
-import storage from "@/lib/stores/local_storage_handler";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
@@ -15,8 +14,8 @@ export const useTranslationStore = create<
 >()(
 	persist(
 		immer((set, get) => ({
-			languages: [],
-			translation_entries: [],
+			languages: [] as string[],
+			translation_entries: [] as TranslationEntry[],
 			setTranslationEntries: (x) => set({ translation_entries: x }),
 			removeKeysFromTranslationEntries: (x) =>
 				set((state) => {

@@ -43,19 +43,6 @@ export default function LocationSwitcher({ className }: LocationSwitcherProps) {
 	);
 	const [searchTerm, setSearchTerm] = useState("");
 
-	// const getData = useMutation<{ keys: TranslationEntry[] }>({
-	// 	mutationKey: [`get_location${selectedLocation?.name}`],
-	// 	mutationFn: async () => {
-	// 		const response = await axios.post(
-	// 			"http://localhost:3001/translation/translations",
-	// 			{ path: selectedLocation?.path },
-	// 		);
-	// 		return response.data;
-	// 	},
-	// 	onSuccess: (data) => {
-	// 		setTranslationEntries(data.keys);
-	// 	},
-	// });
 	const  getData = rspc.useMutation(["translations.get_translations"])
 	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	useEffect(() => {
