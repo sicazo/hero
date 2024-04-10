@@ -1,6 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import {
 	Form,
 	FormControl,
@@ -17,7 +16,6 @@ import { useSettingsStore } from "@/lib/stores/settings_store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTheme } from "next-themes";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
 import * as z from "zod";
 
 const appearanceFormSchema = z.object({
@@ -81,7 +79,7 @@ export default function AppearanceForm() {
 				<FormField
 					control={form.control}
 					name="theme"
-					render={({ field }) => (
+					render={( ) => (
 						<FormItem className="space-y-1">
 							<FormLabel>Theme</FormLabel>
 							<FormDescription>
@@ -91,7 +89,7 @@ export default function AppearanceForm() {
 							<RadioGroup
 								onValueChange={(theme) => {
 									setTheme(theme);
-									// @ts-ignore
+									// @ts-expect-error reasons
 									settings.setTheme(theme);
 								}}
 								defaultValue={settings.theme}

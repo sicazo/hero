@@ -1,9 +1,9 @@
 "use client";
 
 import {
-	ColumnDef,
-	ColumnFiltersState,
-	SortingState,
+	type ColumnDef,
+	type ColumnFiltersState,
+	type SortingState,
 	flexRender,
 	getCoreRowModel,
 	getFilteredRowModel,
@@ -25,13 +25,11 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
-import { TranslationEntry } from "@/lib/procedures";
-import { useSize } from "@/lib/hooks/useSize";
+import { rspc } from "@/lib/rspc";
 import { useLocationStore } from "@/lib/stores/location_store";
 import { useTranslationStore } from "@/lib/stores/translation_store";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import {rspc} from "@/lib/rspc";
 
 interface TranslationTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[];
@@ -42,7 +40,6 @@ export default function TranslationTable<TData, TValue>({
 	columns,
 	data,
 }: TranslationTableProps<TData, TValue>) {
-	const { ref, width, height } = useSize();
 	// States
 	const [sorting, setSorting] = useState<SortingState>([]);
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -55,62 +52,58 @@ export default function TranslationTable<TData, TValue>({
 	const { last_selected_location } = useLocationStore();
 	const {
 		removeKeysFromTranslationEntries,
-		translation_entries,
-		setTranslationEntries,
 	} = useTranslationStore();
 
 	// Requests
-	const removeKeyMutation = rspc.useMutation(["translations.remove_keys"])
+	const removeKeyMutation = rspc.useMutation(["translations.remove_keys"]);
 
-	const removeKeys = (ts_keys: string[], json_keys:  string[]) => {
-	const mutation = removeKeyMutation.mutateAsync({
-		path: last_selected_location?.path as string,
-		ts_key: ts_keys,
-		json_key: json_keys
-	})
+	const removeKeys = (ts_keys: string[], json_keys: string[]) => {
+		const mutation = removeKeyMutation.mutateAsync({
+			path: last_selected_location?.path as string,
+			ts_key: ts_keys,
+			json_key: json_keys,
+		});
 
-	toast.promise(mutation, {
-		loading: "Removing keys...",
-		success: "The keys got successfully removed",
-		error: "There was an error deleting the selected keys"
-	})
-		mutation.then(() => removeKeysFromTranslationEntries(ts_keys))
-
-
-	}
+		toast.promise(mutation, {
+			loading: "Removing keys...",
+			success: "The keys got successfully removed",
+			error: "There was an error deleting the selected keys",
+		});
+		mutation.then(() => removeKeysFromTranslationEntries(ts_keys));
+	};
 
 	// Functions
 
-	const updatePossibleLocationChanges = (keys: TranslationEntry[]) => {
-		const newTranslationEntries = [...translation_entries];
-		for (const key of keys) {
-			const existingEntryIndex = newTranslationEntries.findIndex(
-				(entry) => entry.key === key.key,
-			);
-			if (existingEntryIndex !== -1) {
-				if (
-					JSON.stringify(
-						newTranslationEntries[existingEntryIndex].translations,
-					) !== JSON.stringify(key.translations)
-				) {
-					console.info("The translations inside of the keys differ");
-				}
-				newTranslationEntries[existingEntryIndex] = key;
-			}
-		}
-		setTranslationEntries(newTranslationEntries);
-	};
+	// const updatePossibleLocationChanges = (keys: TranslationEntry[]) => {
+	// 	const newTranslationEntries = [...translation_entries];
+	// 	for (const key of keys) {
+	// 		const existingEntryIndex = newTranslationEntries.findIndex(
+	// 			(entry) => entry.key === key.key,
+	// 		);
+	// 		if (existingEntryIndex !== -1) {
+	// 			if (
+	// 				JSON.stringify(
+	// 					newTranslationEntries[existingEntryIndex].translations,
+	// 				) !== JSON.stringify(key.translations)
+	// 			) {
+	// 				console.info("The translations inside of the keys differ");
+	// 			}
+	// 			newTranslationEntries[existingEntryIndex] = key;
+	// 		}
+	// 	}
+	// 	setTranslationEntries(newTranslationEntries);
+	// };
 	const removeSelectedKeys = () => {
 		const ts_keys: string[] = [];
 		const json_keys: string[] = [];
 		const selectedRowData = table.getSelectedRowModel();
 		for (const row of selectedRowData.rows) {
-			//@ts-expect-error
+			//@ts-expect-error reasons
 			ts_keys.push(row.original.key);
-			//@ts-expect-error
+			//@ts-expect-error reasons
 			json_keys.push(row.original.value);
 		}
-		removeKeys(ts_keys, json_keys)
+		removeKeys(ts_keys, json_keys);
 	};
 
 	const table = useReactTable({
@@ -141,7 +134,7 @@ export default function TranslationTable<TData, TValue>({
 	// Setup
 	useEffect(() => {
 		const handleResize = () => {
-			const newPageSize = Math.floor(height / 80);
+			const newPageSize = Math.floor(window.innerHeight / 80);
 			if (newPageSize !== pageSize) {
 				table.setPageSize(newPageSize);
 				setPageSize(newPageSize);
@@ -160,7 +153,7 @@ export default function TranslationTable<TData, TValue>({
 	const rowsSelected = table.getIsSomeRowsSelected();
 
 	return (
-		<div ref={ref} className="h-screen">
+		<div  className="h-screen">
 			<div className="flex items-center py-2 justify-between">
 				<Input
 					placeholder="Filter keys..."
@@ -203,7 +196,7 @@ export default function TranslationTable<TData, TValue>({
 												: flexRender(
 														header.column.columnDef.header,
 														header.getContext(),
-												  )}
+													)}
 										</TableHead>
 									);
 								})}

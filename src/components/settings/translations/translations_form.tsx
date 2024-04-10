@@ -59,7 +59,7 @@ export default function TranslationForm() {
 					<FormField
 						control={form.control}
 						name="translate_new_strings"
-						render={({ field }) => (
+						render={() => (
 							<FormItem className="flex flex-row items-start space-x-3 space-y-0">
 								<FormControl>
 									<Checkbox
@@ -80,7 +80,7 @@ export default function TranslationForm() {
 					<FormField
 						control={form.control}
 						name="translate_updated_strings"
-						render={({ field }) => (
+						render={() => (
 							<FormItem className="flex flex-row items-start space-x-3 space-y-0">
 								<FormControl>
 									<Checkbox
@@ -133,7 +133,7 @@ export default function TranslationForm() {
 					<FormField
 						control={form.control}
 						name="default_language"
-						render={({ field }) => (
+						render={() => (
 							<FormItem className="w-[250px]">
 								<FormLabel>Default Language</FormLabel>
 								<FormControl className="w-full">

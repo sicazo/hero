@@ -1,6 +1,6 @@
 "use client";
 
-import {Link, useRouterState} from "@tanstack/react-router";
+import { Link, useRouterState } from "@tanstack/react-router";
 
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -13,8 +13,8 @@ interface SidebarNavProps extends React.HTMLAttributes<HTMLElement> {
 }
 
 export function TopNav({ className, items, ...props }: SidebarNavProps) {
-	const router = useRouterState()
-	const pathname = router.location.pathname
+	const router = useRouterState();
+	const pathname = router.location.pathname;
 
 	return (
 		<nav className={cn("flex space-x-2 ", className)} {...props}>

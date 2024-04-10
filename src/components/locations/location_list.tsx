@@ -2,7 +2,7 @@
 
 import { LocationCard } from "@/components/locations/location_card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Location } from "@/lib/bindings";
+import type { Location } from "@/lib/bindings";
 
 interface LocationListProps {
 	locations: Location[];

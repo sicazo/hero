@@ -15,15 +15,15 @@ import {
 	TooltipContent,
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { TranslationEntry } from "@/lib/procedures";
+import type { TranslationEntry } from "@/lib/procedures";
+import { rspc } from "@/lib/rspc";
 import { useLocationStore } from "@/lib/stores/location_store";
 import { useSettingsStore } from "@/lib/stores/settings_store";
 import { useTranslationStore } from "@/lib/stores/translation_store";
 import { DialogTrigger } from "@radix-ui/react-dialog";
-import { ColumnDef } from "@tanstack/react-table";
+import type { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown, Info, MoreVertical } from "lucide-react";
 import { toast } from "sonner";
-import {rspc} from "@/lib/rspc";
 
 export const columns: ColumnDef<TranslationEntry>[] = [
 	{
@@ -86,7 +86,7 @@ export const columns: ColumnDef<TranslationEntry>[] = [
 	},
 	{
 		accessorKey: "translations",
-		header: ({ column }) => {
+		header: () => {
 			// eslint-disable-next-line react-hooks/rules-of-hooks
 			const default_language = useSettingsStore(
 				(state) => state.translation_settings.default_language,
@@ -112,7 +112,7 @@ export const columns: ColumnDef<TranslationEntry>[] = [
 				(state) => state.translation_settings.default_language,
 			);
 			return (
-				//@ts-expect-error
+				//@ts-expect-error reason
 				<div className="">{row.original.translations[default_language]}</div>
 			);
 		},
@@ -121,27 +121,30 @@ export const columns: ColumnDef<TranslationEntry>[] = [
 		accessorKey: "actions",
 		header: "",
 		cell: ({ row }) => {
+			// eslint-disable-next-line react-hooks/rules-of-hooks
 			const { last_selected_location } = useLocationStore();
+
+			// eslint-disable-next-line react-hooks/rules-of-hooks
 			const { removeKeysFromTranslationEntries } = useTranslationStore();
 
-			const deleteMutation = rspc.useMutation(["translations.remove_keys"])
+			const deleteMutation = rspc.useMutation(["translations.remove_keys"]);
 
 			const deleteKeys = () => {
-
 				const mutation = deleteMutation.mutateAsync({
 					path: last_selected_location?.path as string,
 					ts_key: [row.original.value as string],
-					json_key: [row.original.value as string]
+					json_key: [row.original.value as string],
 				});
 
 				toast.promise(mutation, {
 					loading: "Removing key...",
 					success: "The Entry got successfully removed",
-					error: "Failed to delete the translation"
-				})
-				mutation.then(() => removeKeysFromTranslationEntries([row.original.key as string]))
-
-			}
+					error: "Failed to delete the translation",
+				});
+				mutation.then(() =>
+					removeKeysFromTranslationEntries([row.original.key as string]),
+				);
+			};
 
 			return (
 				<div className="flex w-auto">
@@ -167,6 +170,7 @@ export const columns: ColumnDef<TranslationEntry>[] = [
 												},
 												cancel: {
 													label: "No",
+													onClick: () => {}
 												},
 												duration: 15000,
 											},

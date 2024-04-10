@@ -13,7 +13,7 @@ export const useTranslationStore = create<
 	TranslationStoreState & TranslationStoreActions
 >()(
 	persist(
-		immer((set, get) => ({
+		immer((set) => ({
 			languages: [] as string[],
 			translation_entries: [] as TranslationEntry[],
 			setTranslationEntries: (x) => set({ translation_entries: x }),

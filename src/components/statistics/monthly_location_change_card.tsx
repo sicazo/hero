@@ -7,7 +7,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import { Location } from "@/lib/bindings";
+import type { Location } from "@/lib/procedures.ts";
 import { useLocationStore } from "@/lib/stores/location_store";
 import { useEffect, useState } from "react";
 import { Line, LineChart, ResponsiveContainer, Tooltip } from "recharts";
@@ -38,7 +38,7 @@ export default function MonthlyLocationChangeCard() {
 				// convert date string to Date object
 				const date = convertToJSDate(location.added_at as string);
 				const monthKey = `${date.getFullYear()}-${date.getMonth() + 1}`;
-				// @ts-ignore
+				// @ts-expect-error maybe undefined
 				changes[monthKey] = changes[monthKey] ? changes[monthKey] + 1 : 1;
 			}
 			const result = Object.entries(changes).map(([date, total]) => ({

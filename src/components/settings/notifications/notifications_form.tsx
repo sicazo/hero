@@ -38,7 +38,7 @@ export function NotificationsForm() {
 		defaultValues,
 	});
 
-	function onSubmit(data: NotificationsFormValues) {}
+	function onSubmit() {}
 
 	return (
 		<Form {...form}>
@@ -55,7 +55,7 @@ export function NotificationsForm() {
 						<FormField
 							control={form.control}
 							name="file_changes"
-							render={({ field }) => (
+							render={() => (
 								<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
 									<div className="space-y-0.5">
 										<FormLabel
@@ -91,7 +91,7 @@ export function NotificationsForm() {
 						<FormField
 							control={form.control}
 							name="finished_translation"
-							render={({ field }) => (
+							render={() => (
 								<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
 									<div className="space-y-0.5">
 										<FormLabel className="text-base" />
@@ -122,7 +122,7 @@ export function NotificationsForm() {
 						<FormField
 							control={form.control}
 							name="finished_scan"
-							render={({ field }) => (
+							render={() => (
 								<FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
 									<div className="space-y-0.5">
 										<FormLabel className="text-base" />

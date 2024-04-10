@@ -13,17 +13,15 @@ import {
 	FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { TranslationEntry, AddNewKeyBody} from "@/lib/procedures";
+import { type AddNewKeyBody } from "@/lib/procedures";
+import { rspc } from "@/lib/rspc";
 import { useLocationStore } from "@/lib/stores/location_store";
 import { useSettingsStore } from "@/lib/stores/settings_store";
 import { useTranslationStore } from "@/lib/stores/translation_store";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
-import axios from "axios";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import {z} from "zod";
-import {rspc} from "@/lib/rspc";
+import { z } from "zod";
 
 export default function AddNewKeyDialog() {
 	const { translation_entries, setTranslationEntries } = useTranslationStore();
@@ -59,7 +57,7 @@ export default function AddNewKeyDialog() {
 			.refine(
 				(translation) =>
 					!translation_entries.some(
-						//@ts-ignore
+						//@ts-expect-error may be undefined
 						(entry) => entry.translations[default_language] === translation,
 					),
 				"A Translation with that value is already existing.",
@@ -70,17 +68,17 @@ export default function AddNewKeyDialog() {
 		mode: "onChange",
 	});
 
-	const addNewMutation = rspc.useMutation(["translations.add_key"])
+	const addNewMutation = rspc.useMutation(["translations.add_key"]);
 
 	function onSubmit(values: z.infer<typeof formSchema>) {
-		let body: AddNewKeyBody = {
-			path: last_selected_location?.path!,
+		const body: AddNewKeyBody = {
+			path: last_selected_location?.path as string,
 			value: values.translation,
 			json_key: values.json_key,
-			ts_key: values.ts_key
-		}
+			ts_key: values.ts_key,
+		};
 
-		let mutation = addNewMutation.mutateAsync(body)
+		const mutation = addNewMutation.mutateAsync(body);
 		toast.promise(mutation, {
 			loading: "Adding translation....",
 			success: () => {
@@ -88,7 +86,7 @@ export default function AddNewKeyDialog() {
 			},
 			error: "There was an error",
 		});
-		mutation.then((data) => setTranslationEntries(data))
+		mutation.then((data) => setTranslationEntries(data));
 	}
 
 	return (

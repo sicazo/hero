@@ -13,13 +13,14 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 } from "@/components/ui/popover";
-import { Location } from "@/lib/procedures";
+import type { Location } from "@/lib/procedures";
+import { rspc } from "@/lib/rspc";
 import { useLocationStore } from "@/lib/stores/location_store";
 import { useTranslationStore } from "@/lib/stores/translation_store";
 import { cn } from "@/lib/utils";
 import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons";
-import React, { useEffect, useState } from "react";
-import {rspc} from "@/lib/rspc";
+import type React from "react";
+import { useEffect, useState } from "react";
 
 type PopoverTriggerProps = React.ComponentPropsWithoutRef<
 	typeof PopoverTrigger
@@ -36,14 +37,18 @@ export default function LocationSwitcher({ className }: LocationSwitcherProps) {
 	const { setTranslationEntries } = useTranslationStore();
 	const [open, setOpen] = useState(false);
 	const [selectedLocation, setSelectedLocation] = useState<Location>(
+		//@ts-expect-error possible undefined
 		(last_selected_location || locations[0]) as Location,
 	);
 	const [searchTerm, setSearchTerm] = useState("");
 
-	const  getData = rspc.useMutation(["translations.get_translations"])
-	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+	const getData = rspc.useMutation(["translations.get_translations"]);
 	useEffect(() => {
-		getData.mutateAsync(selectedLocation.path as string).then((data) =>setTranslationEntries(data) );
+		getData
+			.mutateAsync(selectedLocation.path as string)
+			.then((data) => setTranslationEntries(data));
+
+		//eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	return (
@@ -81,7 +86,9 @@ export default function LocationSwitcher({ className }: LocationSwitcherProps) {
 										setSelectedLocation(location);
 										setOpen(false);
 										setLastSelectedLocation(location);
-										getData.mutateAsync(selectedLocation.path as string).then((data) => setTranslationEntries(data));
+										getData
+											.mutateAsync(selectedLocation.path as string)
+											.then((data) => setTranslationEntries(data));
 									}}
 									className="text-sm"
 								>

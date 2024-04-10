@@ -20,7 +20,7 @@ import { useLocationStore } from "@/lib/stores/location_store";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { rspc } from "@/lib/rspc";
-import { dialog } from "@tauri-apps/api";
+import type { dialog } from "@tauri-apps/api";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";

@@ -7,11 +7,12 @@ import {client} from "../rspc";
 import {LocationStore, SettingsStore, TranslationStore} from "../procedures";
 
 
-const rspc_storage_handler: PersistStorage<any> = {
-    getItem: async (name: string) : Promise<StorageValue<any> | null> => {
+const rspc_storage_handler: PersistStorage<never> = {
+    //@ts-expect-error types
+    getItem: async (name: string) : Promise<SettingsStore | LocationStore | TranslationStore> => {
             return (await client.mutation(["stores.getStore", name]))
     },
-    setItem: async (name: string, value: StorageValue<any>): Promise<void> => {
+    setItem: async (name: string, value: StorageValue<never>): Promise<void> => {
         if (name === "settings_store") {
             await client.mutation(["stores.setStore", value as SettingsStore])
         } else if (name === "translation_store") {

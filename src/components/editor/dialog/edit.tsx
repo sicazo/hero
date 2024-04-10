@@ -11,12 +11,15 @@ import { DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import {TranslationEntry, UpdatedKeyValues, UpdateKeysBody} from "@/lib/procedures";
+import type {
+	TranslationEntry,
+	UpdateKeysBody,
+	UpdatedKeyValues,
+} from "@/lib/procedures";
+import { rspc } from "@/lib/rspc";
 import { useLocationStore } from "@/lib/stores/location_store";
 import { useEffect, useState } from "react";
-import {rspc} from "@/lib/rspc";
-import {undefined} from "zod";
-import {toast} from "sonner";
+import { toast } from "sonner";
 
 interface EditTranslationDialogProps {
 	translation: TranslationEntry;
@@ -29,45 +32,44 @@ export default function EditTranslationDialog({
 	const { last_selected_location } = useLocationStore();
 
 	useEffect(() => {
-		// @ts-ignore
+		// @ts-expect-error reasons
 		const orderedTranslations = Object.keys(translation.translations)
 			.sort()
 			.reduce((obj, key) => {
-				// @ts-ignore
+				// @ts-expect-error reasons
 				obj[key] = translation.translations[key];
 				return obj;
 			}, {});
 
 		setTranslationsJson(JSON.stringify(orderedTranslations, null, 2));
 	}, [translation]);
-	const updateMutation = rspc.useMutation(["translations.update_keys"])
+	const updateMutation = rspc.useMutation(["translations.update_keys"]);
 
 	const update = () => {
 		const newTranslationsJson = JSON.parse(translationsJson);
-		let newChangedValues: Map<string, string> = new Map();
+		const newChangedValues: {[key: string]: string} = {};
 
 		Object.keys(newTranslationsJson).forEach((key) => {
 			if (newTranslationsJson[key] !== translation.translations![key]) {
-				newChangedValues.set(key, newTranslationsJson[key])
+				newChangedValues[key] = newTranslationsJson[key];
 			}
 		});
 
-
-
-		let key: UpdatedKeyValues = {
-			json_key: translation.value!, translation_values: newChangedValues, ts_key: translation.key!
-
-		}
-		let body: UpdateKeysBody = {
-			key, path: last_selected_location?.path!
-
-		}
+		const key: UpdatedKeyValues = {
+			json_key: translation.value!,
+			translation_values: newChangedValues,
+			ts_key: translation.key!,
+		};
+		const body: UpdateKeysBody = {
+			key,
+			path: last_selected_location?.path as string,
+		};
 		toast.promise(updateMutation.mutateAsync(body), {
 			loading: "Updating...",
 			success: "Entry updated",
 			error: "There was an error updating the Entry",
-		})
-	}
+		});
+	};
 	return (
 		<>
 			<CardHeader>
@@ -119,10 +121,9 @@ export default function EditTranslationDialog({
 				<DialogTrigger>
 					<Button variant="ghost">Cancel</Button>
 				</DialogTrigger>
-<DialogTrigger>
-
-	<Button onClick={update}>Submit</Button>
-</DialogTrigger>
+				<DialogTrigger>
+					<Button onClick={update}>Submit</Button>
+				</DialogTrigger>
 			</CardFooter>
 		</>
 	);

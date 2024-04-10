@@ -14,11 +14,9 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Location } from "@/lib/procedures";
+import type { Location } from "@/lib/procedures";
 import { rspc } from "@/lib/rspc";
 import { useLocationStore } from "@/lib/stores/location_store";
-import { useMutation } from "@tanstack/react-query";
-import axios from "axios";
 import { toast } from "sonner";
 
 export function LocationCard({ location }: { location: Location }) {
@@ -39,7 +37,7 @@ export function LocationCard({ location }: { location: Location }) {
 				num_of_keys: data.keys,
 				num_of_untranslated_keys: data.untranslated_keys,
 			});
-		})
+		});
 	};
 
 	const removeLocationFromList = () => {

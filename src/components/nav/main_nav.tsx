@@ -1,10 +1,9 @@
+import { type LucideIcon, Settings2 } from "lucide-react";
 
-import { LucideIcon, Settings2 } from "lucide-react";
-
-import {Link, useRouterState} from "@tanstack/react-router"
-import {Tooltip, TooltipContent, TooltipTrigger} from "../ui/tooltip.tsx";
-import {cn} from "../../lib/utils.ts";
-import {buttonVariants} from "../ui/button.tsx";
+import { Link, useRouterState } from "@tanstack/react-router";
+import { cn } from "../../lib/utils.ts";
+import { buttonVariants } from "../ui/button.tsx";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip.tsx";
 
 interface NavProps {
 	isCollapsed: boolean;
@@ -17,8 +16,8 @@ interface NavProps {
 }
 
 export function Nav({ links, isCollapsed }: NavProps): JSX.Element {
-	const params = useRouterState()
-	const pathName = params.location.pathname
+	const params = useRouterState();
+	const pathName = params.location.pathname;
 	const isCurrentPath = (link: string) => {
 		if (pathName === link) {
 			return "default";
