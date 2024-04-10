@@ -25,8 +25,8 @@ export const useSettingsStore = create<
 	SettingsStoreState & SettingsStoreActions
 >()(
 	persist(
-		immer((set, get) => ({
-			nav_open: true,
+		immer((set) => ({
+			nav_open: false,
 			theme: "light",
 			notifications_enabled: false,
 			toast_rich_colors: true,
@@ -43,7 +43,7 @@ export const useSettingsStore = create<
 			},
 			resizable_panel_state: {
 				home_default_sizes: [4, 96],
-				home_nav_collapsed: true,
+				home_nav_collapsed: false,
 				home_collapsed_size: 4,
 			},
 

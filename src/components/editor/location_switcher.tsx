@@ -13,13 +13,11 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 } from "@/components/ui/popover";
-import { Location, TranslationEntry } from "@/lib/procedures";
+import { Location } from "@/lib/procedures";
 import { useLocationStore } from "@/lib/stores/location_store";
 import { useTranslationStore } from "@/lib/stores/translation_store";
 import { cn } from "@/lib/utils";
 import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons";
-import { useMutation } from "@tanstack/react-query";
-import axios from "axios";
 import React, { useEffect, useState } from "react";
 import {rspc} from "@/lib/rspc";
 
@@ -38,7 +36,6 @@ export default function LocationSwitcher({ className }: LocationSwitcherProps) {
 	const { setTranslationEntries } = useTranslationStore();
 	const [open, setOpen] = useState(false);
 	const [selectedLocation, setSelectedLocation] = useState<Location>(
-		//@ts-expect-error
 		(last_selected_location || locations[0]) as Location,
 	);
 	const [searchTerm, setSearchTerm] = useState("");

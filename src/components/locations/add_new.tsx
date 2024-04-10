@@ -21,7 +21,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { rspc } from "@/lib/rspc";
 import { dialog } from "@tauri-apps/api";
-import axios from "axios";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -35,7 +34,6 @@ export default function AddNewLocation(props: props) {
 	const getMyLoc = () => {
 		locations?.find((location) => location.path === form.getValues("path"));
 	};
-	// @ts-ignore
 	const addLocationFormSchema = z.object({
 		name: z
 			.string()
@@ -98,7 +96,6 @@ export default function AddNewLocation(props: props) {
 	}, []);
 
 	async function SelectPath() {
-		// @ts-ignore
 		let path = await tauriOpen?.open({
 			multiple: false,
 			defaultPath: ".",

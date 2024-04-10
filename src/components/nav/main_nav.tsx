@@ -1,8 +1,7 @@
-"use client";
 
 import { LucideIcon, Settings2 } from "lucide-react";
 
-import { Link} from "@tanstack/react-router"
+import {Link, useRouterState} from "@tanstack/react-router"
 import {Tooltip, TooltipContent, TooltipTrigger} from "../ui/tooltip.tsx";
 import {cn} from "../../lib/utils.ts";
 import {buttonVariants} from "../ui/button.tsx";
@@ -18,10 +17,15 @@ interface NavProps {
 }
 
 export function Nav({ links, isCollapsed }: NavProps): JSX.Element {
-	// const pathName = usePathname();
-	//TODO: move to react Router path stuff
-	let pathName = "/home"
+	const params = useRouterState()
+	const pathName = params.location.pathname
 	const isCurrentPath = (link: string) => {
+		if (pathName === link) {
+			return "default";
+		}
+		return "ghost";
+	};
+	const isSettingsPath = (link: string) => {
 		if (pathName.startsWith(link)) {
 			return "default";
 		}
@@ -40,7 +44,7 @@ export function Nav({ links, isCollapsed }: NavProps): JSX.Element {
 						<Tooltip key={index} delayDuration={0}>
 							<TooltipTrigger asChild>
 								<Link
-									href={link.link}
+									to={link.link}
 									className={cn(
 										buttonVariants({
 											variant: isCurrentPath(link.link),
@@ -68,7 +72,7 @@ export function Nav({ links, isCollapsed }: NavProps): JSX.Element {
 						<Link
 							// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
 							key={index}
-							href={link.link}
+							to={link.link}
 							className={cn(
 								buttonVariants({
 									variant: isCurrentPath(link.link),
@@ -108,14 +112,14 @@ export function Nav({ links, isCollapsed }: NavProps): JSX.Element {
 					<Tooltip delayDuration={0}>
 						<TooltipTrigger asChild>
 							<Link
-								href="/application/settings"
+								to="/settings"
 								className={cn(
 									buttonVariants({
-										variant: isCurrentPath("/application/settings"),
+										variant: isSettingsPath("/settings"),
 										size: "icon",
 									}),
 									"h-9 w-9",
-									isCurrentPath("/application/settings") === "default" &&
+									isSettingsPath("/settings") === "default" &&
 										"dark:bg-muted dark:text-muted-foreground dark:hover:bg-muted dark:hover:text-white",
 								)}
 							>
@@ -129,12 +133,12 @@ export function Nav({ links, isCollapsed }: NavProps): JSX.Element {
 					</Tooltip>
 				) : (
 					<Link
-						href="/application/settings"
+						to="/settings"
 						className={cn(
 							buttonVariants({
-								variant: isCurrentPath("/application/settings"),
+								variant: isSettingsPath("/settings"),
 							}),
-							isCurrentPath("/application/settings") === "default" &&
+							isSettingsPath("/settings") === "default" &&
 								"dark:bg-muted dark:hover:bg-muted dark:text-white dark:hover:text-white",
 							"justify-start",
 							"w-full",

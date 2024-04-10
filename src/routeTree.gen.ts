@@ -11,12 +11,20 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as SettingsImport } from './routes/settings'
 import { Route as IndexImport } from './routes/index'
 import { Route as SettingsIndexImport } from './routes/settings/index'
 import { Route as LocationsIndexImport } from './routes/locations/index'
 import { Route as EditorIndexImport } from './routes/editor/index'
+import { Route as SettingsNotificationsImport } from './routes/settings/notifications'
+import { Route as SettingsAppearanceImport } from './routes/settings/appearance'
 
 // Create/Update Routes
+
+const SettingsRoute = SettingsImport.update({
+  path: '/settings',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const IndexRoute = IndexImport.update({
   path: '/',
@@ -24,8 +32,8 @@ const IndexRoute = IndexImport.update({
 } as any)
 
 const SettingsIndexRoute = SettingsIndexImport.update({
-  path: '/settings/',
-  getParentRoute: () => rootRoute,
+  path: '/',
+  getParentRoute: () => SettingsRoute,
 } as any)
 
 const LocationsIndexRoute = LocationsIndexImport.update({
@@ -38,6 +46,16 @@ const EditorIndexRoute = EditorIndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const SettingsNotificationsRoute = SettingsNotificationsImport.update({
+  path: '/notifications',
+  getParentRoute: () => SettingsRoute,
+} as any)
+
+const SettingsAppearanceRoute = SettingsAppearanceImport.update({
+  path: '/appearance',
+  getParentRoute: () => SettingsRoute,
+} as any)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -45,6 +63,18 @@ declare module '@tanstack/react-router' {
     '/': {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
+    }
+    '/settings': {
+      preLoaderRoute: typeof SettingsImport
+      parentRoute: typeof rootRoute
+    }
+    '/settings/appearance': {
+      preLoaderRoute: typeof SettingsAppearanceImport
+      parentRoute: typeof SettingsImport
+    }
+    '/settings/notifications': {
+      preLoaderRoute: typeof SettingsNotificationsImport
+      parentRoute: typeof SettingsImport
     }
     '/editor/': {
       preLoaderRoute: typeof EditorIndexImport
@@ -56,7 +86,7 @@ declare module '@tanstack/react-router' {
     }
     '/settings/': {
       preLoaderRoute: typeof SettingsIndexImport
-      parentRoute: typeof rootRoute
+      parentRoute: typeof SettingsImport
     }
   }
 }
@@ -65,9 +95,13 @@ declare module '@tanstack/react-router' {
 
 export const routeTree = rootRoute.addChildren([
   IndexRoute,
+  SettingsRoute.addChildren([
+    SettingsAppearanceRoute,
+    SettingsNotificationsRoute,
+    SettingsIndexRoute,
+  ]),
   EditorIndexRoute,
   LocationsIndexRoute,
-  SettingsIndexRoute,
 ])
 
 /* prettier-ignore-end */

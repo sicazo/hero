@@ -19,7 +19,7 @@ async fn main() {
             db: db.clone(),
         }))
         .setup(|_app| {
-            create_storage().expect("error while creating storage");
+            // create_storage().expect("error while creating storage");
             // thread::spawn(move || init().unwrap());
             Ok(())
         })

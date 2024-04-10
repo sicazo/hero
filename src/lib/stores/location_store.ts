@@ -16,7 +16,7 @@ export const useLocationStore = create<
 	LocationStoreState & LocationStoreActions
 >()(
 	persist(
-		immer((set, get) => ({
+		immer((set) => ({
 			last_selected_location: null,
 			locations: [],
 			addLocation: (x: Location) => {
