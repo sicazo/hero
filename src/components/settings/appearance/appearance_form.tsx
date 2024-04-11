@@ -13,9 +13,10 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
 import { useSettingsStore } from "@/lib/stores/settings_store";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useTheme } from "next-themes";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+import {useTheme} from "@/components/theme/theme_provider.tsx";
+import {Theme} from "@/lib/procedures.ts";
 
 const appearanceFormSchema = z.object({
 	toast_rich_colors: z.boolean(),
@@ -87,7 +88,7 @@ export default function AppearanceForm() {
 							<FormMessage />
 							<RadioGroup
 								onValueChange={(theme) => {
-									setTheme(theme);
+									setTheme(theme as Theme);
 									// @ts-expect-error reasons
 									settings.setTheme(theme);
 								}}

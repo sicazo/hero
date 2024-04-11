@@ -12,13 +12,15 @@ import { cn } from "@/lib/utils";
 import { Outlet, createRootRoute } from "@tanstack/react-router";
 import { Database, Home, PencilRuler } from "lucide-react";
 import { useEffect, useState } from "react";
+import {useTheme} from "@/components/theme/theme_provider.tsx";
+import {Theme} from "@/lib/procedures.ts";
 
 export const Route = createRootRoute({
 	component: Layout,
 });
 
 function Layout() {
-	const { toast_rich_colors } = useSettingsStore();
+	const { toast_rich_colors , theme} = useSettingsStore();
 	const { home_default_sizes, home_nav_collapsed, home_collapsed_size } =
 		useSettingsStore((state) => state.resizable_panel_state);
 
@@ -26,13 +28,19 @@ function Layout() {
 		(state) => state.updateNavCollapsed,
 	);
 	const [isCollapsed, setIsCollapsed] = useState(home_nav_collapsed);
+	const {setTheme} = useTheme()
 
 	useEffect(() => {
 		useLocationStore.persist.rehydrate();
 		useSettingsStore.persist.rehydrate();
 	}, []);
 
+	useEffect(() => {
+		setTheme(theme as Theme)
+	},[theme])
+
 	return (
+		// <ThemeProvider defaultTheme={"dark"}>
 		<div className="h-screen w-screen flex">
 			<TooltipProvider>
 				<ResizablePanelGroup
@@ -97,5 +105,6 @@ function Layout() {
 				<Toaster richColors={toast_rich_colors} />
 			</TooltipProvider>
 		</div>
+		// </ThemeProvider>
 	);
 }

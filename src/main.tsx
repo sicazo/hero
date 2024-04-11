@@ -6,6 +6,7 @@ import {rspc, client, queryClient} from "@/lib/rspc.ts";
 
 
 import {routeTree} from "./routeTree.gen"
+import {ThemeProvider} from "@/components/theme/theme_provider.tsx";
 
 const router = createRouter({ routeTree })
 
@@ -23,7 +24,10 @@ if (!rootElement.innerHTML) {
     root.render(
         <StrictMode>
             <rspc.Provider client={client} queryClient={queryClient}>
-                <RouterProvider router={router} />
+                <ThemeProvider defaultTheme={"dark"}>
+                    <RouterProvider router={router} />
+                </ThemeProvider>
+
             </rspc.Provider>
 
         </StrictMode>
