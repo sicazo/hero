@@ -26,4 +26,6 @@ dist-ssr
 node_modules
 target
 .idea
+
+crates/db/src/prisma.rs
 .env

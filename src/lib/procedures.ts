@@ -18,38 +18,38 @@ export type Procedures = {
         { key: "test", input: never, result: string }
 };
 
-export type LocationStore = { state: LocationStoreState; version: number }
-
 export type LocationStoreState = { last_selected_location?: Location | null; locations?: Location[] }
-
-export type AddNewKeyBody = { path: string; ts_key: string; json_key: string; value: string }
-
-export type Store = SettingsStore | LocationStore | TranslationStore
-
-export type TranslationSettings = { translate_new_strings?: boolean; translate_updated_strings?: boolean; default_language?: string; translation_command?: string }
-
-export type UpdatedKeyValues = { ts_key: string; json_key: string; translation_values: { [key: string]: string } }
 
 export type UpdateKeysBody = { path: string; key: UpdatedKeyValues }
 
-export type Notifications = { file_changes?: boolean; finished_translation?: boolean; finished_scan?: boolean }
+export type TranslationStoreState = { languages?: string[]; translation_entries: TranslationEntry[] }
 
-export type ResizablePanelState = { home_default_sizes?: number[]; home_nav_collapsed?: boolean; home_collapsed_size?: number }
+export type LocationStore = { state: LocationStoreState; version: number }
 
 export type RemoveTranslationBody = { path: string; ts_key: string[]; json_key: string[] }
 
-export type SettingsStoreState = { nav_open?: boolean; theme: Theme; notifications_enabled?: boolean; toast_rich_colors?: boolean; enabled_notification_types: Notifications; translation_settings: TranslationSettings; resizable_panel_state: ResizablePanelState }
-
-export type TranslationStoreState = { languages?: string[]; translation_entries: TranslationEntry[] }
-
 export type Theme = "light" | "dark"
+
+export type Notifications = { file_changes?: boolean; finished_translation?: boolean; finished_scan?: boolean }
 
 export type SettingsStore = { state: SettingsStoreState; version: number }
 
+export type AddNewKeyBody = { path: string; ts_key: string; json_key: string; value: string }
+
+export type TranslationStore = { state: TranslationStoreState; version: number }
+
+export type ResizablePanelState = { home_default_sizes?: number[]; home_nav_collapsed?: boolean; home_collapsed_size?: number }
+
 export type Location = { tag?: string; name?: string; path?: string; is_favourite?: boolean; num_of_keys?: number; num_of_untranslated_keys?: number; added_at?: string }
 
-export type TranslationEntry = { key?: string; value?: string; translations?: { [key: string]: string }; in_use?: boolean }
+export type UpdatedKeyValues = { ts_key: string; json_key: string; translation_values: { [key: string]: string } }
 
 export type ScanResponse = { keys: number; untranslated_keys: number }
 
-export type TranslationStore = { state: TranslationStoreState; version: number }
+export type SettingsStoreState = { nav_open?: boolean; theme: Theme; notifications_enabled?: boolean; toast_rich_colors?: boolean; enabled_notification_types: Notifications; translation_settings: TranslationSettings; resizable_panel_state: ResizablePanelState }
+
+export type TranslationEntry = { key?: string; value?: string; translations?: { [key: string]: string }; in_use?: boolean }
+
+export type TranslationSettings = { translate_new_strings?: boolean; translate_updated_strings?: boolean; default_language?: string; translation_command?: string }
+
+export type Store = SettingsStore | LocationStore | TranslationStore

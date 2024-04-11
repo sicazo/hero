@@ -1,4 +1,4 @@
-use crate::prisma::PrismaClient;
+use prisma::PrismaClient;
 use prisma::settings;
 use prisma_client_rust::migrations::MigrateDeployError;
 use std::fs;
