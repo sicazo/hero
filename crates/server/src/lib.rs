@@ -38,7 +38,7 @@ pub async fn init() -> Result<(), Box<dyn std::error::Error>> {
 
 pub fn get_router() -> RspcRouter<RouterCtx> {
     RspcRouter::<RouterCtx>::new()
-        .config(Config::new().export_ts_bindings("../../ui/lib/procedures.ts"))
+        .config(Config::new().export_ts_bindings("../../src/lib/procedures.ts"))
         .query("hi", |t| t(|_ctx, _input: ()| "hello world"))
         .merge("stores.", get_storage_router())
         .merge("translations.", get_translation_router())
