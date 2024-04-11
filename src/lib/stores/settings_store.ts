@@ -26,7 +26,7 @@ export const useSettingsStore = create<
 	persist(
 		immer((set) => ({
 			nav_open: false,
-			theme: "light",
+			theme: "dark",
 			notifications_enabled: false,
 			toast_rich_colors: true,
 			enabled_notification_types: {
@@ -42,7 +42,7 @@ export const useSettingsStore = create<
 			},
 			resizable_panel_state: {
 				home_default_sizes: [4, 96],
-				home_nav_collapsed: false,
+				home_nav_collapsed: true,
 				home_collapsed_size: 4,
 			},
 
@@ -91,7 +91,6 @@ export const useSettingsStore = create<
 			name: "settings_store",
 			// storage: createJSONStorage(() => storage),
 			storage: rspc_storage_handler,
-			skipHydration: true,
 		},
 	),
 );

@@ -1,6 +1,5 @@
-import { TranslationEntry, TranslationStoreState } from "@/lib/procedures";
+import { TranslationEntry  } from "@/lib/procedures";
 import { create } from "zustand";
-import { createJSONStorage, persist } from "zustand/middleware";
 import { immer } from "zustand/middleware/immer";
 
 interface TranslationStoreActions {
@@ -8,12 +7,20 @@ interface TranslationStoreActions {
 	removeKeysFromTranslationEntries: (x: string[]) => void;
 }
 
+interface State {
+	languages: string[]; translation_entries: TranslationEntry[]
+}
+
 export const useTranslationStore = create<
-	TranslationStoreState & TranslationStoreActions
+	State & TranslationStoreActions
 >()(
-	persist(
 		immer((set) => ({
-			languages: [] as string[],
+			languages: [
+				"de-DE", "de-AT", "de-CH", "de-LU", "nl-NL", "nl-BE", "en-GB", "en-US", "es-ES", "fr-FR",
+				"fr-BE", "fr-CH", "it-IT", "it-CH", "pl-PL", "pt-PT", "hu-HU", "hr-HR", "sr-La", "sl-SI",
+				"el-GR", "bg-BG", "ro-RO", "tr-TR", "da-DK", "fi-FI", "nb-NO", "sv-SE", "sk-SK", "cs-CZ",
+				"uk-UA", "et-EE", "lt-LT", "lv-LV",
+			] as string[],
 			translation_entries: [] as TranslationEntry[],
 			setTranslationEntries: (x) => set({ translation_entries: x }),
 			removeKeysFromTranslationEntries: (x) =>
@@ -26,11 +33,7 @@ export const useTranslationStore = create<
 					}
 					state.translation_entries = new_entries;
 				}),
-		})),
-		{
-			name: "translation_store",
-			storage: createJSONStorage(() => localStorage),
-			skipHydration: false,
-		},
+		})
+
 	),
 );

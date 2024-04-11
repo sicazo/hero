@@ -58,7 +58,6 @@ export const useLocationStore = create<
 			name: "location_store",
 			// storage: createJSONStorage(() => storage),
 			storage: rspc_storage_handler,
-			skipHydration: true,
 		},
 	),
 );
