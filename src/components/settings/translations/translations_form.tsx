@@ -17,6 +17,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { clsx } from "clsx";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+import {toast} from "sonner";
 
 const translationFormSchema = z.object({
 	translate_new_strings: z.boolean().default(false),
@@ -26,7 +27,7 @@ const translationFormSchema = z.object({
 		.string()
 		.refine((value) => value.startsWith("yarn run translate") || value === "", {
 			message:
-				'The translation command has to be in the format "yarn translate <translation_key>", or an empty string if you don\'t want to use it.',
+				'The translation command has to be in the format "yarn run translate <translation_key>", or an empty string if you don\'t want to use it.',
 		})
 		.optional(),
 });
@@ -50,6 +51,7 @@ export default function TranslationForm() {
 			...translation_settings,
 			translation_command: values.translation_command,
 		});
+		toast.success("Settings updated successfully")
 	}
 	return (
 		<Form {...form}>

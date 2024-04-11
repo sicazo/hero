@@ -22,6 +22,7 @@ function Notifications() {
 					<Switch
 						checked={notifications_enabled}
 						onCheckedChange={() => setNotifications(!notifications_enabled)}
+						disabled
 					/>
 				</div>
 			</div>
