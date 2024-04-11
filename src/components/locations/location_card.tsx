@@ -6,7 +6,7 @@ import {
 } from "@radix-ui/react-icons";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -17,6 +17,7 @@ import type { Location } from "@/lib/procedures";
 import { rspc } from "@/lib/rspc";
 import { useLocationStore } from "@/lib/stores/location_store";
 import { toast } from "sonner";
+import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip.tsx";
 
 export function LocationCard({ location }: { location: Location }) {
 	const { updateFavorite, removeLocation, updateLocation } = useLocationStore();
@@ -46,11 +47,29 @@ export function LocationCard({ location }: { location: Location }) {
 
 	return (
 		<Card className="m-5 my-2">
-			<CardHeader className="grid grid-cols-[1fr_85px] items-start gap-4 space-y-0">
+			<CardHeader className="grid grid-cols-[1fr_125px] items-start gap-2 space-y-0">
 				<div className="space-y-1">
-					<CardTitle>{location.name}</CardTitle>
+					<CardTitle className="mb-2">{location.name}</CardTitle>
+					<CardDescription>{location.path}</CardDescription>
 				</div>
 				<div className="flex w-[40px] rounded-md bg-secondary items-center text-secondary-foreground space-x-2">
+					<Tooltip>
+						<TooltipTrigger>
+							<Button
+								variant="secondary"
+								className="px-3 shadow-none cursor-default"
+								disabled
+							>
+								{location.tag}
+							</Button>
+						</TooltipTrigger>
+						<TooltipContent side={"bottom"}>
+								The type of the Location. <br />
+							FE for Frontend and BE for Backend
+						</TooltipContent>
+
+					</Tooltip>
+
 					<Button
 						variant="secondary"
 						className="px-3 shadow-none"
@@ -81,12 +100,13 @@ export function LocationCard({ location }: { location: Location }) {
 					</DropdownMenu>
 				</div>
 			</CardHeader>
-			<CardContent>
+			<CardContent className="-mt-2 flex justify-between">
 				<div className="flex space-x-4 text-sm text-muted-foreground">
 					<div>Keys: {location.num_of_keys}</div>
 					<div>Untranslated Keys: {location.num_of_untranslated_keys}</div>
 					<div>Added: {location.added_at?.split(",")[0]}</div>
 				</div>
+
 			</CardContent>
 		</Card>
 	);

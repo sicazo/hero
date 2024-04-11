@@ -23,11 +23,10 @@ function Layout() {
 	const { home_default_sizes, home_nav_collapsed, home_collapsed_size } =
 		useSettingsStore((state) => state.resizable_panel_state);
 
-	const default_nav_state = home_nav_collapsed === undefined ? true : home_nav_collapsed
+	const default_nav_state =
+		home_nav_collapsed === undefined ? true : home_nav_collapsed;
 	const [isCollapsed] = useState(default_nav_state);
 	const { setTheme } = useTheme();
-
-
 
 	useEffect(() => {
 		setTheme(theme as Theme);
