@@ -18,3 +18,4 @@ tokio = { workspace = true }
 rspc = { workspace = true }
 specta = {workspace = true}
 db = {path = "../db"}
+quick-xml = {workspace = true}

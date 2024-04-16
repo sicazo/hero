@@ -1,4 +1,5 @@
-use crate::{PathType, TranslationHandler};
+#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+use crate::{frontend::PathType, TranslationHandler};
 use local_storage::stores::settings_store::SettingsStore;
 use local_storage::stores::translation_store::TranslationEntry;
 use serde::Serialize;
@@ -40,6 +41,7 @@ fn run_translation_command(dir_path: &str, translation_command: String) {
     };
     let command = format!("{} {}", translation_command, locales_path);
     println!("{}", command);
+
     let output = Command::new(program)
         .current_dir(dir_path)
         .args(&["-c", &command])

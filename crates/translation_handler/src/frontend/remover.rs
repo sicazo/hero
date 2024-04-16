@@ -1,4 +1,4 @@
-use crate::{PathType, TranslationHandler};
+use crate::{frontend::PathType, TranslationHandler};
 use glob::glob;
 use local_storage::stores::translation_store::TranslationEntry;
 use serde_json::Value;
