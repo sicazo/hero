@@ -1,4 +1,4 @@
-use quick_xml::{events::Event, reader::Reader, name::QName};
+use quick_xml::{events::Event, name::QName, reader::Reader};
 
 pub fn test() {
     let xml = r#"
@@ -37,25 +37,37 @@ pub fn test() {
     reader.trim_text(true);
 
     let mut buf = Vec::new();
+    let mut inside_data = false;
+    let mut inside_name = false;
+
     loop {
         match reader.read_event_into(&mut buf) {
             Ok(Event::Start(ref e)) if e.name() == QName(b"data") => {
-                // Iterate through attributes of the <data> tag
                 for attr in e.attributes().filter_map(|a| a.ok()) {
                     if attr.key == QName(b"name") {
-                        let name_value = attr.unescape_and_decode_value(&reader).unwrap();
-                        println!("Name attribute: {}", name_value);  // Output the name attribute
+                        let name_value = attr.decode_and_unescape_value(&reader).unwrap();
+                        println!("Name attribute: {}", name_value);
+                        inside_data = true;
                     }
                 }
             }
-            Ok(Event::Eof) => break, // exits the loop when reaching the end of the file
-            Err(e) => {
-                // Handle any errors that might occur
-                println!("Error at position {}: {:?}", reader.buffer_position(), e);
-                break;
+            Ok(Event::Start(ref e)) if e.name() == QName(b"value") && inside_data => {
+                inside_name = true;
             }
-            _ => (), // Other events are ignored for this task
+            Ok(Event::End(ref e)) if e.name() == QName(b"value") && inside_data => {
+                inside_name = false;
+            }
+            Ok(Event::End(ref e)) if e.name() == QName(b"data") => {
+                inside_data = false;
+            }
+            Ok(Event::Text(e)) if inside_name => {
+                let value_content = e.unescape().unwrap();
+                println!("Value tag content: {}", value_content);
+            }
+            Ok(Event::Eof) => break,
+            Err(e) => panic!("Error at position {}: {:?}", reader.buffer_position(), e),
+            _ => (),
         }
-    buf.clear();
+        buf.clear();
     }
 }
