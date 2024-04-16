@@ -29,3 +29,5 @@ target
 
 crates/db/src/prisma.rs
 .env
+my_git
+org_git

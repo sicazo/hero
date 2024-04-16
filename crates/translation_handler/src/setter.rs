@@ -6,6 +6,7 @@ use serde_json::ser::PrettyFormatter;
 use std::fs::{read_to_string, OpenOptions};
 use std::io::{Read, Seek, SeekFrom, Write};
 use std::process::Command;
+use db::prisma::settings::Data;
 
 impl TranslationHandler {
     pub async fn add_new_key(
@@ -13,8 +14,8 @@ impl TranslationHandler {
         ts_key: String,
         json_key: String,
         en_gb_value: String,
+        settings: Data,
     ) -> Result<Vec<TranslationEntry>, std::io::Error> {
-        let settings = SettingsStore::get_translation_values();
         let messages_ts_path = PathType::MessageTsFile.create_path(path.clone());
 
         add_key_to_messages_ts(messages_ts_path, ts_key.clone(), json_key.clone())?;

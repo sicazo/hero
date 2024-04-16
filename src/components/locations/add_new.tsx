@@ -23,6 +23,7 @@ import type { dialog } from "@tauri-apps/api";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import {toast} from "sonner";
 
 interface props {
 	setAddNew: (value: boolean) => void;
@@ -66,19 +67,25 @@ export default function AddNewLocation(props: props) {
 		const path = data.path.replace("/messages.ts", "");
 		const new_path = path.replace("\\messages.ts", "");
 
-		rspcLocation.mutate(new_path);
-		if (rspcLocation.isSuccess) {
+		const mutation = rspcLocation.mutateAsync(new_path);
+		mutation.then((response) => {
 			addLocation({
 				tag: "FE",
 				name: data.name,
 				path: new_path,
 				is_favourite: false,
-				num_of_keys: rspcLocation.data.keys,
-				num_of_untranslated_keys: rspcLocation.data.untranslated_keys,
+				num_of_keys: response.keys,
+				num_of_untranslated_keys: response.untranslated_keys,
 				added_at: new Date().toLocaleString(),
 			});
 			props.setAddNew(false);
-		}
+		})
+		toast.promise(mutation, {
+			loading: "Adding location",
+			error: "Error adding location",
+			success: "The Location got successfully added"
+		})
+
 	}
 
 	const [tauriOpen, setTauriOpen] = useState<typeof dialog>();

@@ -20,14 +20,7 @@ export default function MonthlyLocationChangeCard() {
 	const [monthlyChanges, setMonthlyChanges] = useState<MonthlyLocationChange[]>(
 		[],
 	);
-	function convertToJSDate(dateString: string) {
-		const [datePart, timePart] = dateString.split(", ");
 
-		const [day, month, year] = datePart.split("/");
-		const formattedDateString = `${year}-${month}-${day}T${timePart}`;
-
-		return new Date(formattedDateString);
-	}
 
 	useEffect(() => {
 		const changes: Partial<Record<string, number>> = {};
@@ -35,7 +28,7 @@ export default function MonthlyLocationChangeCard() {
 		if (length > 0) {
 			for (const location of locations as Location[]) {
 				// convert date string to Date object
-				const date = convertToJSDate(location.added_at as string);
+				const date = new Date(location.added_at as string);
 				const monthKey = `${date.getFullYear()}-${date.getMonth() + 1}`;
 				// @ts-expect-error maybe undefined
 				changes[monthKey] = changes[monthKey] ? changes[monthKey] + 1 : 1;
