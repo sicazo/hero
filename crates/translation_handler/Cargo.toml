@@ -17,3 +17,4 @@ serde = { workspace = true }
 tokio = { workspace = true }
 rspc = { workspace = true }
 specta = {workspace = true}
+db = {path = "../db"}

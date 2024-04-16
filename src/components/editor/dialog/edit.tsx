@@ -19,6 +19,7 @@ import { rspc } from "@/lib/rspc";
 import { useLocationStore } from "@/lib/stores/location_store";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import {useTranslationStore} from "@/lib/stores/translation_store.ts";
 
 interface EditTranslationDialogProps {
 	translation: TranslationEntry;
@@ -29,6 +30,7 @@ export default function EditTranslationDialog({
 }: EditTranslationDialogProps) {
 	const [translationsJson, setTranslationsJson] = useState("");
 	const { last_selected_location } = useLocationStore();
+	const {languages} = useTranslationStore();
 
 	useEffect(() => {
 		// @ts-expect-error reasons
@@ -46,13 +48,22 @@ export default function EditTranslationDialog({
 
 	const update = () => {
 		const newTranslationsJson = JSON.parse(translationsJson);
+        const filteredTranslationsJson : {[key: string]: string} = {};
 		const newChangedValues: {[key: string]: string} = {};
 
-		Object.keys(newTranslationsJson).forEach((key) => {
-			if (newTranslationsJson[key] !== translation.translations![key]) {
-				newChangedValues[key] = newTranslationsJson[key];
-			}
-		});
+        languages.forEach((language) => {
+            if(language in newTranslationsJson){
+                filteredTranslationsJson[language] = newTranslationsJson[language];
+            }else{
+                filteredTranslationsJson[language] = "";
+            }
+        });
+
+        Object.keys(filteredTranslationsJson).forEach((key) => {
+            if (filteredTranslationsJson[key] !== translation.translations![key]) {
+                newChangedValues[key] = filteredTranslationsJson[key];
+            }
+        });
 
 		const key: UpdatedKeyValues = {
 			json_key: translation.value!,

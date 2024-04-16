@@ -9,6 +9,7 @@ use translation_handler::updater::UpdatedKeyValues;
 use translation_handler::TranslationHandler;
 
 use rspc::{Router as RspcRouter, RouterBuilder as RspcRouterBuilder};
+use db::prisma::{PrismaClient, settings};
 
 #[derive(Deserialize)]
 pub struct PathBody {
@@ -62,12 +63,20 @@ pub fn get_translation_router() -> RspcRouterBuilder<RouterCtx> {
             })
         })
         .mutation("add_key", |t| {
-            t(|_ctx, input: AddNewKeyBody| async move {
+            t(|ctx, input: AddNewKeyBody| async move {
+                let db: &PrismaClient = &ctx.db;
+                let settings = db
+                    .settings()
+                    .find_unique(settings::id::equals(1))
+                    .exec()
+                    .await?
+                    .unwrap();
                 let keys = TranslationHandler::add_new_key(
                     input.path.clone(),
                     input.ts_key.clone(),
                     input.json_key.clone(),
                     input.value.clone(),
+                    settings.clone()
                 )
                 .await
                 .map_err(|error| {

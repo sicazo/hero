@@ -35,7 +35,6 @@ const translationFormSchema = z.object({
 export default function TranslationForm() {
 	const { updateTranslationSettings, translation_settings } =
 		useSettingsStore();
-	console.log(translation_settings);
 
 	const form = useForm<z.infer<typeof translationFormSchema>>({
 		resolver: zodResolver(translationFormSchema),
@@ -93,6 +92,7 @@ export default function TranslationForm() {
 													!translation_settings.translate_updated_strings,
 											})
 										}
+									disabled
 									/>
 								</FormControl>
 								<FormLabel>Translate updated translation strings</FormLabel>
