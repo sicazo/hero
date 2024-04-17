@@ -21,3 +21,4 @@ specta = { workspace = true }
 futures = "0.3.30"
 prisma-client-rust = { workspace = true }
 async-stream = { workspace = true }
+chrono = {workspace = true}

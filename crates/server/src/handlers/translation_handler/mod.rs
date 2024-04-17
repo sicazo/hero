@@ -1,3 +1,7 @@
+pub mod frontend;
+pub mod backend;
+
+
 use db::context::RouterCtx;
 use local_storage::stores::translation_store::TranslationEntry;
 use serde::{Deserialize, Serialize};
@@ -10,7 +14,7 @@ use db::prisma::{PrismaClient, settings};
 
 #[derive(Deserialize)]
 pub struct PathBody {
-    pub(crate) path: String,
+    pub path: String,
 }
 
 #[derive(Deserialize, specta::Type)]
@@ -75,10 +79,10 @@ pub fn get_translation_router() -> RspcRouterBuilder<RouterCtx> {
                     input.value.clone(),
                     settings.clone()
                 )
-                .await
-                .map_err(|error| {
-                    rspc::Error::new(rspc::ErrorCode::InternalServerError, error.to_string())
-                })?;
+                    .await
+                    .map_err(|error| {
+                        rspc::Error::new(rspc::ErrorCode::InternalServerError, error.to_string())
+                    })?;
 
                 Ok(keys)
             })

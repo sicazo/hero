@@ -43,3 +43,4 @@ prisma-client-rust-cli = { git = "https://github.com/Brendonovich/prisma-client-
     "rspc",
 ] }
 quick-xml = "0.31.0"
+chrono = "0.4.38"

@@ -10,6 +10,7 @@ interface LocationStoreActions {
 	updateFavorite: (x: Location) => void;
 	setLastSelectedLocation: (x: Location) => void;
 	updateLocation: (x: Location) => void;
+	setLocations: (x: Location[]) => void;
 }
 export const useLocationStore = create<
 	LocationStoreState & LocationStoreActions
@@ -18,6 +19,11 @@ export const useLocationStore = create<
 		immer((set) => ({
 			last_selected_location: null,
 			locations: [],
+			setLocations: (x: Location[]) => {
+				set((state) => {
+					state.locations = x
+				})
+			},
 			addLocation: (x: Location) => {
 				set((state) => {
 					state.locations?.push(x);

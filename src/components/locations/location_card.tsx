@@ -6,41 +6,41 @@ import {
 } from "@radix-ui/react-icons";
 
 import { Button } from "@/components/ui/button";
-import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import type { Location } from "@/lib/procedures";
-import { rspc } from "@/lib/rspc";
+import type { Location, LocationStore } from "@/lib/procedures";
+import { client, rspc } from "@/lib/rspc";
 import { useLocationStore } from "@/lib/stores/location_store";
 import { toast } from "sonner";
-import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip.tsx";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip.tsx";
 
 export function LocationCard({ location }: { location: Location }) {
-	const { updateFavorite, removeLocation, updateLocation } = useLocationStore();
+	const { updateFavorite, removeLocation, setLocations } = useLocationStore();
 
-	const check = rspc.useMutation(["locations.add_location"]);
+	const check = rspc.useMutation(["locations.rescan_location"]);
 
 	const rescanLocation = () => {
-		const checkPromise = check.mutateAsync(location.path as string);
+		const checkPromise = check.mutateAsync({ path: location.path as string, tag: location.tag });
+		checkPromise.then(async () => {
+			await client.mutation(["stores.getStore", "location_store"]).then((data) => {
+				const store = data as LocationStore;
+				setLocations(store.state.locations as Location[])
+			})
+		})
 		toast.promise(checkPromise, {
 			loading: "Scanning...",
 			success: "Location rescanned",
 			error: "There was an error rescanning the location",
 		});
-		checkPromise.then((data) => {
-			updateLocation({
-				...location,
-				num_of_keys: data.keys,
-				num_of_untranslated_keys: data.untranslated_keys,
-			});
-		});
 	};
 
 	const removeLocationFromList = () => {
+		//TODO: remove location in backend
 		removeLocation(location);
 		toast.success("Removed location");
 	};
@@ -64,7 +64,7 @@ export function LocationCard({ location }: { location: Location }) {
 							</Button>
 						</TooltipTrigger>
 						<TooltipContent side={"bottom"}>
-								The type of the Location. <br />
+							The type of the Location. <br />
 							FE for Frontend and BE for Backend
 						</TooltipContent>
 
@@ -104,7 +104,7 @@ export function LocationCard({ location }: { location: Location }) {
 				<div className="flex space-x-4 text-sm text-muted-foreground">
 					<div>Keys: {location.num_of_keys}</div>
 					<div>Untranslated Keys: {location.num_of_untranslated_keys}</div>
-					<div>Added: {location.added_at?.split(",")[0]}</div>
+					<div>Added: {location.added_at?.split(" ")[0]}</div>
 				</div>
 
 			</CardContent>

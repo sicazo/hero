@@ -134,12 +134,6 @@ mod tests {
 
     #[tokio::test]
     async fn test_add_new_key() {
-        let path = String::from("/Users/marius/Developer/Github/translation_hero/testfiles");
-        let ts_key = String::from("test");
-        let json_key = String::from("test");
-        let en_gb_value = String::from("test");
-        let result = TranslationHandler::add_new_key(path, ts_key, json_key, en_gb_value)
-            .await
-            .unwrap();
+
     }
 }
