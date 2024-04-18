@@ -28,7 +28,7 @@ struct RescanInput {
 pub fn get_location_router() -> RouterBuilder<RouterCtx> {
     Router::<RouterCtx>::new()
         .mutation("add_location", |t| {
-            t(|ctx, input: ScanInput| async move {
+            t(|ctx, input: ScanInput| async move{
                 let db = &ctx.db;
                 let now = Local::now();
 
@@ -75,7 +75,7 @@ pub fn get_location_router() -> RouterBuilder<RouterCtx> {
                     {
                         let db = &ctx.db;
                         let now = Local::now();
-                        let locations = db
+                        let loc_count = db
                             .location()
                             .create_many(
                                 resources_paths
@@ -95,12 +95,13 @@ pub fn get_location_router() -> RouterBuilder<RouterCtx> {
                             )
                             .skip_duplicates()
                             .exec()
-                            .await?;
+                            .await;
+
+                        let locations: Vec<Data> = Vec::new();
 
                         return Ok(locations);
                     };
-
-                    Err(Vec::new())
+                    Err(rspc::Error::new(rspc::ErrorCode::InternalServerError, "error".to_string()))
                 }
             })
         })
