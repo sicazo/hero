@@ -7,7 +7,7 @@ pub fn get_translations_from_location(location_path: &str) {
     println!("{:?}", response);
 }
 
-pub fn get_resources_from_csproj(path: &str) -> Option<String> {
+pub fn get_resources_from_csproj(path: &str) -> Option<Vec<String>> {
     if !path.ends_with(".csproj") {
         return None
     }
@@ -15,6 +15,6 @@ pub fn get_resources_from_csproj(path: &str) -> Option<String> {
     let response = XmlReader::get_resources(path);
     println!("{:?}", response);
 
-    Some("test".to_string())
+    Some(response)
 
 }

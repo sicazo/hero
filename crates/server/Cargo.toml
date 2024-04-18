@@ -19,6 +19,11 @@ rspc = { workspace = true }
 db = { path = "../db" }
 specta = { workspace = true }
 futures = "0.3.30"
-prisma-client-rust = { workspace = true }
+prisma-client-rust = { workspace = true , features = [
+    "sqlite",
+    "migrations",
+    "rspc",
+    "sqlite-create-many"
+]}
 async-stream = { workspace = true }
 chrono = {workspace = true}

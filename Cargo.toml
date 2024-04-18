@@ -36,11 +36,13 @@ prisma-client-rust = { git = "https://github.com/Brendonovich/prisma-client-rust
     "sqlite",
     "migrations",
     "rspc",
+    "sqlite-create-many"
 ] }
 prisma-client-rust-cli = { git = "https://github.com/Brendonovich/prisma-client-rust", rev = "8faf98013d0d2c7fab68fad387305a55979e777d", features = [
     "sqlite",
     "migrations",
     "rspc",
+    "sqlite-create-many"
 ] }
 quick-xml = "0.31.0"
 chrono = "0.4.38"

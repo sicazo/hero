@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use chrono::prelude::*;
 use db::prisma::location::{self, Data};
 use db::{context::RouterCtx, prisma::PrismaClient};
@@ -59,21 +61,46 @@ pub fn get_location_router() -> RouterBuilder<RouterCtx> {
                         keys.len() as i32,
                         untranslated_keys as i32,
                     )
-                    .await?;
-                    return Ok(location);
-                } else {
-                    let db = &ctx.db;
-                    let location = location_database_upsert(
-                        db,
-                        input.name,
-                        input.path,
-                        "BE".to_string(),
-                        2,
-                        2,
-                    )
-                    .await?;
+                    .await
+                    .expect("failed to upsert FE location");
+                    let mut response: Vec<Data> = Vec::new();
+                    response.push(location);
 
-                    return Ok(location);
+                    return Ok(response);
+                } else {
+                    if let Some(resources_paths) =
+                        translation_handler::backend::getter::get_resources_from_csproj(
+                            input.path.clone().as_str(),
+                        )
+                    {
+                        let db = &ctx.db;
+                        let now = Local::now();
+                        let locations = db
+                            .location()
+                            .create_many(
+                                resources_paths
+                                    .iter()
+                                    .map(|path| {
+                                        location::create_unchecked(
+                                            "BE".to_string(),
+                                            path.clone(),
+                                            path.clone(),
+                                            2,
+                                            2,
+                                            now.to_string(),
+                                            vec![],
+                                        )
+                                    })
+                                    .collect(),
+                            )
+                            .skip_duplicates()
+                            .exec()
+                            .await?;
+
+                        return Ok(locations);
+                    };
+
+                    Err(Vec::new())
                 }
             })
         })
