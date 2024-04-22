@@ -88,11 +88,19 @@ pub fn get_translation_router() -> RspcRouterBuilder<RouterCtx> {
         })
         .mutation("remove_keys", |t| {
             t(|ctx, input: RemoveTranslationBody| async move {
-                TranslationHandler::remove_key(input.path, input.ts_key, input.json_key)
-                    .await
-                    .map_err(|error| {
-                        rspc::Error::new(rspc::ErrorCode::InternalServerError, error.to_string())
-                    })
+
+                let db: &PrismaClient = &ctx.db;
+                let loc = db
+                    .location()
+                    .find_unique(location::path::equals(input.path.clone()))
+                    .exec()
+                    .await?.expect("no location with this path found");
+
+                // TranslationHandler::remove_key(input.path, input.ts_key, input.json_key)
+                //     .await
+                //     .map_err(|error| {
+                //         rspc::Error::new(rspc::ErrorCode::InternalServerError, error.to_string())
+                //     })
             })
         })
         .mutation("update_keys", |t| {
