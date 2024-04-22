@@ -74,9 +74,10 @@ pub fn get_location_router() -> RouterBuilder<RouterCtx> {
                             input.path.clone().as_str(),
                         )
                     {
+                        println!("{:?}", resources_paths);
                         let db = &ctx.db;
                         let now = Local::now();
-                        let _ = db
+                        let loc_count = db
                             .location()
                             .create_many(
                                 resources_paths
@@ -85,15 +86,12 @@ pub fn get_location_router() -> RouterBuilder<RouterCtx> {
                                        let loc_translations = translation_handler::backend::getter::get_translations_from_location(path.clone().as_str());
                                         let full_path = Path::new(path);
                                         let parent = full_path.parent().unwrap().file_name().unwrap().to_string_lossy();
-                                        let num_of_untranslated_keys = get_num_of_untranslated_keys(loc_translations.len() as i32, full_path.clone());
-
-                                            location::create_unchecked(
-
+                                        location::create_unchecked(
                                             "BE".to_string(),
                                             parent.to_string(),
                                             path.clone(),
                                             loc_translations.len() as i32,
-                                            num_of_untranslated_keys,
+                                            2,
                                             now.to_string(),
                                             vec![],
                                         )
@@ -206,26 +204,4 @@ async fn location_database_upsert(
         )
         .exec()
         .await
-}
-
-fn get_num_of_untranslated_keys(translations_len: i32, path: &Path) -> i32 {
-    if let (Some(stem), Some(ext)) = (path.file_stem(), path.extension()) {
-        let stem_str = stem.to_string_lossy();
-        let ext_str = ext.to_string_lossy();
-
-        // Create the new filename with locale
-        let new_filename = format!("{}.{}.{}", stem_str, "en-GB", ext_str);
-        if let Some(parent_path) = path.parent() {
-            let new = parent_path.join(new_filename);
-            if new.exists() {
-                let translations =
-                    translation_handler::backend::getter::get_translations_from_location(
-                        new.as_os_str().to_str().unwrap(),
-                    );
-                return translations_len - translations.len() as i32;
-            }
-        }
-        return 0i32;
-    };
-    0i32
 }
