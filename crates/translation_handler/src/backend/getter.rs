@@ -1,5 +1,7 @@
 use crate::backend::xml_reader::XmlReader;
-use std::collections::BTreeMap;
+use crate::TranslationHandler;
+use local_storage::stores::translation_store::TranslationEntry;
+use std::collections::{BTreeMap, HashMap};
 use std::fs::read_to_string;
 use std::path::Path;
 
@@ -27,4 +29,22 @@ pub fn get_resources_from_csproj(path: &str) -> Option<Vec<String>> {
             && path.exists()
     });
     Some(response)
+}
+
+impl TranslationHandler {
+    pub async fn get_backend_translations(path: &str) -> Vec<TranslationEntry> {
+        let keys = get_translations_from_location(path);
+        let mut temp: HashMap<String, String> = HashMap::new();
+        temp.insert("en-GB".to_string(), "test".to_string());
+        let translation_entries = keys
+            .iter()
+            .map(|(key, value)| TranslationEntry {
+                key: key.to_owned(),
+                value: value.to_owned(),
+                translations: temp.clone(),
+                in_use: true,
+            })
+            .collect();
+        translation_entries
+    }
 }

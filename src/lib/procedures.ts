@@ -25,19 +25,15 @@ export type UpdatedKeyValues = { ts_key: string; json_key: string; translation_v
 
 export type LocationStoreState = { last_selected_location?: Location | null; locations?: Location[] }
 
-export type RemoveTranslationBody = { path: string; ts_key: string[]; json_key: string[] }
-
 export type TranslationStoreState = { languages?: string[]; translation_entries: TranslationEntry[] }
+
+export type UpdateKeysBody = { path: string; key: UpdatedKeyValues }
 
 export type ScanInput = { path: string; name: string }
 
 export type LocationStore = { state: LocationStoreState; version: number }
 
-export type AddNewKeyBody = { path: string; ts_key: string; json_key: string; value: string }
-
 export type Theme = "light" | "dark"
-
-export type UpdateKeysBody = { path: string; key: UpdatedKeyValues }
 
 export type Notifications = { file_changes?: boolean; finished_translation?: boolean; finished_scan?: boolean }
 
@@ -45,9 +41,13 @@ export type RescanInput = { path: string; tag: string }
 
 export type SettingsStore = { state: SettingsStoreState; version: number }
 
+export type AddNewKeyBody = { path: string; ts_key: string; json_key: string; value: string }
+
 export type TranslationStore = { state: TranslationStoreState; version: number }
 
 export type ResizablePanelState = { home_default_sizes?: number[]; home_nav_collapsed?: boolean; home_collapsed_size?: number }
+
+export type RemoveTranslationBody = { path: string; ts_key: string[]; json_key: string[] }
 
 export type Location = { tag?: string; name?: string; path?: string; is_favourite?: boolean; num_of_keys?: number; num_of_untranslated_keys?: number; added_at?: string }
 

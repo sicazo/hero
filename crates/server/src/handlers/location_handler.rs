@@ -39,7 +39,7 @@ pub fn get_location_router() -> RouterBuilder<RouterCtx> {
 
                     let keys = TranslationHandler::get_key_values_from_messages_ts(&path).await;
 
-                    let key_value = TranslationHandler::get_translations(&path).await;
+                    let key_value = TranslationHandler::get_frontend_translations(&path).await;
 
                     let untranslated_keys = key_value
                         .into_iter()
@@ -118,7 +118,7 @@ pub fn get_location_router() -> RouterBuilder<RouterCtx> {
                     let keys =
                         TranslationHandler::get_key_values_from_messages_ts(&input.path).await;
 
-                    let key_value = TranslationHandler::get_translations(&input.path).await;
+                    let key_value = TranslationHandler::get_frontend_translations(&input.path).await;
 
                     let untranslated_keys = key_value
                         .into_iter()
@@ -148,7 +148,7 @@ pub fn get_location_router() -> RouterBuilder<RouterCtx> {
                     let keys =
                         TranslationHandler::get_key_values_from_messages_ts(&input.path).await;
 
-                    let key_value = TranslationHandler::get_translations(&input.path).await;
+                    let key_value = TranslationHandler::get_frontend_translations(&input.path).await;
 
                     let untranslated_keys = key_value
                         .into_iter()

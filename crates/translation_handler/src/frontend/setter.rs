@@ -27,7 +27,8 @@ impl TranslationHandler {
             run_translation_command(&path.clone(), settings.translation_command);
         }
 
-        let translations = TranslationHandler::get_translations(path.clone().as_str()).await;
+        let translations =
+            TranslationHandler::get_frontend_translations(path.clone().as_str()).await;
 
         Ok(translations)
     }

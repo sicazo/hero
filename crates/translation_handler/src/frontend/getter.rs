@@ -120,7 +120,7 @@ impl TranslationHandler {
         translation_entries
     }
 
-    pub async fn get_translations(path: &str) -> Vec<TranslationEntry> {
+    pub async fn get_frontend_translations(path: &str) -> Vec<TranslationEntry> {
         let keys = Self::get_key_values_from_messages_ts(path).await;
         let translation_entries = Self::read_lang_files_in_locales(path, keys);
         translation_entries

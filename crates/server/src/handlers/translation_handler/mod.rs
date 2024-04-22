@@ -1,15 +1,33 @@
-pub mod backend;
-pub mod frontend;
-
 use db::context::RouterCtx;
 use local_storage::stores::translation_store::TranslationEntry;
+use prisma_client_rust::QueryError;
 use serde::{Deserialize, Serialize};
 use tracing::info;
 use translation_handler::frontend::updater::UpdatedKeyValues;
 use translation_handler::TranslationHandler;
 
-use db::prisma::{settings, PrismaClient};
+use db::prisma::{location, settings, PrismaClient};
 use rspc::{Router as RspcRouter, RouterBuilder as RspcRouterBuilder};
+
+enum LocationType {
+    Frontend,
+    Backend,
+}
+async fn match_location_type(db: &PrismaClient, path: String) -> Result<LocationType, QueryError> {
+    match db
+        .location()
+        .find_unique(location::path::equals(path))
+        .exec()
+        .await?
+        .unwrap()
+        .tag
+        .as_str()
+    {
+        "FE" => return Ok(LocationType::Frontend),
+        "BE" => return Ok(LocationType::Backend),
+        _ => unreachable!(),
+    }
+}
 
 #[derive(Deserialize)]
 pub struct PathBody {
@@ -50,11 +68,25 @@ pub struct UpdateKeysBody {
 pub fn get_translation_router() -> RspcRouterBuilder<RouterCtx> {
     RspcRouter::<RouterCtx>::new()
         .mutation("get_translations", |t| {
-            t(|_ctx, path: String| async move { TranslationHandler::get_translations(&path).await })
+            t(|ctx, path: String| async move {
+                match match_location_type(&ctx.db, path.clone())
+                    .await
+                    .expect("failed to find location in database")
+                {
+                    LocationType::Frontend => {
+                        TranslationHandler::get_frontend_translations(&path).await
+                    }
+                    LocationType::Backend => {
+                        TranslationHandler::get_backend_translations(&path).await
+                    }
+                }
+            })
         })
         .query("get_number_of_keys", |t| {
             t(|_ctx, path: String| async move {
-                TranslationHandler::get_translations(&path).await.len() as u32
+                TranslationHandler::get_frontend_translations(&path)
+                    .await
+                    .len() as u32
             })
         })
         .query("get_languages", |t| {
@@ -88,19 +120,11 @@ pub fn get_translation_router() -> RspcRouterBuilder<RouterCtx> {
         })
         .mutation("remove_keys", |t| {
             t(|ctx, input: RemoveTranslationBody| async move {
-
-                let db: &PrismaClient = &ctx.db;
-                let loc = db
-                    .location()
-                    .find_unique(location::path::equals(input.path.clone()))
-                    .exec()
-                    .await?.expect("no location with this path found");
-
-                // TranslationHandler::remove_key(input.path, input.ts_key, input.json_key)
-                //     .await
-                //     .map_err(|error| {
-                //         rspc::Error::new(rspc::ErrorCode::InternalServerError, error.to_string())
-                //     })
+                TranslationHandler::remove_key(input.path, input.ts_key, input.json_key)
+                    .await
+                    .map_err(|error| {
+                        rspc::Error::new(rspc::ErrorCode::InternalServerError, error.to_string())
+                    })
             })
         })
         .mutation("update_keys", |t| {
