@@ -20,6 +20,7 @@ import { cn } from "@/lib/utils";
 import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons";
 import type React from "react";
 import { useEffect, useState } from "react";
+import {toast} from "sonner";
 
 type PopoverTriggerProps = React.ComponentPropsWithoutRef<
 	typeof PopoverTrigger
@@ -42,6 +43,15 @@ export default function LocationSwitcher({ className }: LocationSwitcherProps) {
 	const [searchTerm, setSearchTerm] = useState("");
 
 	const getData = rspc.useMutation(["translations.get_translations"]);
+	const getNewData = async (path: string) => {
+		const mutation = getData.mutateAsync(path)
+		toast.promise(mutation, {
+			loading: "Loading translations...",
+			success: "Translation loaded",
+			error: "Error loading translations from location"
+		})
+		mutation.then((data) => setTranslationEntries(data));
+	}
 	useEffect(() => {
 		getData
 			.mutateAsync(selectedLocation.path as string)
@@ -85,9 +95,8 @@ export default function LocationSwitcher({ className }: LocationSwitcherProps) {
 										setSelectedLocation(location);
 										setOpen(false);
 										setLastSelectedLocation(location);
-										getData
-											.mutateAsync(selectedLocation.path as string)
-											.then((data) => setTranslationEntries(data));
+										getNewData(location.path as string)
+
 									}}
 									className="text-sm"
 								>

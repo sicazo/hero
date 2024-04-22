@@ -34,16 +34,20 @@ pub fn get_resources_from_csproj(path: &str) -> Option<Vec<String>> {
 impl TranslationHandler {
     pub async fn get_backend_translations(path: &str) -> Vec<TranslationEntry> {
         let keys = get_translations_from_location(path);
-        let mut temp: HashMap<String, String> = HashMap::new();
-        temp.insert("en-GB".to_string(), "test".to_string());
         let translation_entries = keys
             .iter()
-            .map(|(key, value)| TranslationEntry {
-                key: key.to_owned(),
-                value: value.to_owned(),
-                translations: temp.clone(),
-                in_use: true,
-            })
+            .map(|(key, value)|
+                     {
+                         let mut temp: HashMap<String, String> = HashMap::new();
+                         temp.insert("en-GB".to_string(), value.to_string());
+                         TranslationEntry {
+                             key: key.to_owned(),
+                             value: key.to_owned(),
+                             translations: temp.clone(),
+                             in_use: true,
+                         }
+                     }
+                )
             .collect();
         translation_entries
     }

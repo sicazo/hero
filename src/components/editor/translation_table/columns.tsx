@@ -24,7 +24,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown, Info, MoreVertical } from "lucide-react";
 import { toast } from "sonner";
 
-export const columns: ColumnDef<TranslationEntry>[] = [
+export const frontend_columns: ColumnDef<TranslationEntry>[] = [
 	{
 		id: "select",
 		header: ({ table }) => (
@@ -115,6 +115,144 @@ export const columns: ColumnDef<TranslationEntry>[] = [
 				<div className="">{row.original.translations[default_language]}</div>
 			);
 		},
+	},
+	{
+		accessorKey: "actions",
+		header: "",
+		cell: ({ row }) => {
+			// eslint-disable-next-line react-hooks/rules-of-hooks
+			const { last_selected_location } = useLocationStore();
+
+			// eslint-disable-next-line react-hooks/rules-of-hooks
+			const { removeKeysFromTranslationEntries } = useTranslationStore();
+
+			const deleteMutation = rspc.useMutation(["translations.remove_keys"]);
+
+			const deleteKeys = () => {
+				const mutation = deleteMutation.mutateAsync({
+					path: last_selected_location?.path as string,
+					ts_key: [row.original.value as string],
+					json_key: [row.original.value as string],
+				});
+
+				toast.promise(mutation, {
+					loading: "Removing key...",
+					success: "The Entry got successfully removed",
+					error: "Failed to delete the translation",
+				});
+				mutation.then(() =>
+					removeKeysFromTranslationEntries([row.original.key as string]),
+				);
+			};
+
+			return (
+				<div className="flex w-auto">
+					<Dialog>
+						<DropdownMenu>
+							<DropdownMenuTrigger asChild>
+								<Button variant="ghost" className="mx-2">
+									<MoreVertical className=" w-4" />
+								</Button>
+							</DropdownMenuTrigger>
+							<DropdownMenuContent className="mx-2">
+								<DialogTrigger asChild>
+									<DropdownMenuItem>Edit</DropdownMenuItem>
+								</DialogTrigger>
+								<DropdownMenuItem
+									onClick={() =>
+										toast.warning(
+											"Are you sure you want to delete this translation?",
+											{
+												action: {
+													label: "Yes",
+													onClick: () => deleteKeys(),
+												},
+												cancel: {
+													label: "No",
+													onClick: () => {}
+												},
+												duration: 15000,
+											},
+										)
+									}
+								>
+									Delete
+								</DropdownMenuItem>
+							</DropdownMenuContent>
+						</DropdownMenu>
+						<DialogContent className="w-[80vw]">
+							<EditTranslationDialog translation={row.original} />
+						</DialogContent>
+					</Dialog>
+				</div>
+			);
+		},
+		enableSorting: false,
+		enableHiding: false,
+		enableResizing: false,
+		size: 100,
+	},
+];
+
+
+
+export const backend_columns: ColumnDef<TranslationEntry>[] = [
+	{
+		id: "select",
+		header: ({ table }) => (
+			<Checkbox
+				checked={
+					table.getIsAllPageRowsSelected() ||
+					(table.getIsSomePageRowsSelected() && "indeterminate")
+				}
+				onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+				aria-label="Select all"
+			/>
+		),
+		cell: ({ row }) => (
+			<Checkbox
+				checked={row.getIsSelected()}
+				onCheckedChange={(value) => row.toggleSelected(!!value)}
+				aria-label="Select row"
+			/>
+		),
+		enableSorting: false,
+		enableHiding: false,
+	},
+	// {
+	// 	accessorKey: "in_use",
+	// 	header: "In Use",
+	// },
+	{
+		accessorKey: "key",
+		header: ({ column }) => {
+			return (
+				<Button
+					variant="ghost"
+					onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+				>
+					Key
+					<ArrowUpDown className="ml-2 h-4 w-4" />
+				</Button>
+			);
+		},
+		cell: ({ row }) => <div className="ml-4">{row.original.key}</div>,
+	},
+	{
+		accessorKey: "default_value",
+		header: ({ column }) => (
+			<Button
+				variant="ghost"
+				className="m-0 p-0"
+				onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+			>
+				Default Value
+				<ArrowUpDown className="ml-2 h-4 w-4" />
+			</Button>
+		),
+		cell: ({ row }) => <div className="ml-4">{row.original.key}</div>,
+		enableSorting: true,
+		sortDescFirst: false,
 	},
 	{
 		accessorKey: "actions",

@@ -1,6 +1,6 @@
-import AddNewKeyDialog from "@/components/editor/dialog/add_new_key.tsx";
+import { AddNewFrontendKeyDialog, AddNewBackendKeyDialog } from "@/components/editor/dialog/add_new_key.tsx";
 import LocationSwitcher from "@/components/editor/location_switcher.tsx";
-import { columns } from "@/components/editor/translation_table/columns.tsx";
+import { frontend_columns, backend_columns } from "@/components/editor/translation_table/columns.tsx";
 import TranslationTable from "@/components/editor/translation_table/table.tsx";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -17,7 +17,8 @@ export const Route = createFileRoute("/editor/")({
 
 function Editor() {
 	const { translation_entries } = useTranslationStore();
-	const { locations } = useLocationStore();
+	const { locations ,last_selected_location} = useLocationStore();
+	const columns = (last_selected_location && last_selected_location?.tag === "FE") ? frontend_columns : backend_columns;
 
 	if (locations?.length === 0) {
 		return (
@@ -39,7 +40,7 @@ function Editor() {
 			<Dialog>
 				<TranslationTable columns={columns} data={translation_entries} />
 				<DialogContent>
-					<AddNewKeyDialog />
+					{last_selected_location && last_selected_location?.tag ===  "FE" ? <AddNewFrontendKeyDialog /> : <AddNewBackendKeyDialog />}
 				</DialogContent>
 			</Dialog>
 		</div>
