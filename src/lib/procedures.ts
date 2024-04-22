@@ -4,20 +4,22 @@ export type Procedures = {
     queries: 
         { key: "hi", input: never, result: string } | 
         { key: "translations.get_languages", input: string, result: string[] } | 
-        { key: "translations.get_number_of_keys", input: string, result: number },
+        { key: "translations.get_number_of_keys", input: string, result: ApiResponse },
     mutations: 
         { key: "locations.add_location", input: ScanInput, result: Location[] } | 
         { key: "locations.rescan_location", input: RescanInput, result: Location } | 
         { key: "stores.getStore", input: string, result: Store } | 
         { key: "stores.removeStore", input: string, result: null } | 
         { key: "stores.setStore", input: Store, result: null } | 
-        { key: "translations.add_key", input: AddNewKeyBody, result: TranslationEntry[] } | 
-        { key: "translations.get_translations", input: string, result: TranslationEntry[] } | 
+        { key: "translations.add_key", input: AddNewKeyBody, result: ApiResponse } | 
+        { key: "translations.get_translations", input: string, result: ApiResponse } | 
         { key: "translations.remove_keys", input: RemoveTranslationBody, result: null } | 
         { key: "translations.update_keys", input: UpdateKeysBody, result: null },
     subscriptions: 
         { key: "test", input: never, result: string }
 };
+
+export type ApiResponse = { NumberOfKeysResponse: NumberOfKeysResponse } | { TranslationResponse: TranslationsResponse }
 
 export type Location = { id: number; tag: string; name: string; path: string; is_favourite: boolean; num_of_keys: number; num_of_untranslated_keys: number; added_at: string }
 
@@ -25,19 +27,15 @@ export type UpdatedKeyValues = { ts_key: string; json_key: string; translation_v
 
 export type LocationStoreState = { last_selected_location?: Location | null; locations?: Location[] }
 
-export type RemoveTranslationBody = { path: string; ts_key: string[]; json_key: string[] }
-
 export type TranslationStoreState = { languages?: string[]; translation_entries: TranslationEntry[] }
 
 export type ScanInput = { path: string; name: string }
 
 export type LocationStore = { state: LocationStoreState; version: number }
 
-export type AddNewKeyBody = { path: string; ts_key: string; json_key: string; value: string }
-
 export type Theme = "light" | "dark"
 
-export type UpdateKeysBody = { path: string; key: UpdatedKeyValues }
+export type NumberOfKeysResponse = { num_of_keys: number }
 
 export type Notifications = { file_changes?: boolean; finished_translation?: boolean; finished_scan?: boolean }
 
@@ -49,12 +47,20 @@ export type TranslationStore = { state: TranslationStoreState; version: number }
 
 export type ResizablePanelState = { home_default_sizes?: number[]; home_nav_collapsed?: boolean; home_collapsed_size?: number }
 
+export type AddNewKeyBody = { path: string; ts_key: string; json_key: string; value: string }
+
 export type Location = { tag?: string; name?: string; path?: string; is_favourite?: boolean; num_of_keys?: number; num_of_untranslated_keys?: number; added_at?: string }
 
 export type SettingsStoreState = { nav_open?: boolean; theme: Theme; notifications_enabled?: boolean; toast_rich_colors?: boolean; enabled_notification_types: Notifications; translation_settings: TranslationSettings; resizable_panel_state: ResizablePanelState }
 
+export type UpdateKeysBody = { path: string; key: UpdatedKeyValues }
+
+export type TranslationsResponse = { keys: TranslationEntry[] }
+
 export type TranslationEntry = { key?: string; value?: string; translations?: { [key: string]: string }; in_use?: boolean }
 
 export type TranslationSettings = { translate_new_strings?: boolean; translate_updated_strings?: boolean; default_language?: string; translation_command?: string }
+
+export type RemoveTranslationBody = { path: string; ts_key: string[]; json_key: string[] }
 
 export type Store = SettingsStore | LocationStore | TranslationStore

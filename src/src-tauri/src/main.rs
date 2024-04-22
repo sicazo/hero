@@ -14,6 +14,7 @@ async fn main() {
     tauri::Builder::default()
         .plugin(rspc_tauri::plugin(router.arced(), move |_| RouterCtx {
             db: db.clone(),
+            location: None
         }))
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
