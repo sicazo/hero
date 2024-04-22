@@ -63,7 +63,7 @@ async fn update_translation_file(
     for line_res in reader.lines() {
         let mut line = line_res?;
         if line.contains(&format!("\"{}\":", &key)) {
-            let key_value_regex = regex::Regex::new(r#"(\w+): '(.*)'|"(.*?)": "(.*)""#).unwrap();;
+            let key_value_regex = regex::Regex::new(r#"(\w+): '(.*)'|"(.*?)": "(.*)""#).unwrap();
             if let Some(capture) = key_value_regex.captures(line.clone().as_str()) {
                 let old_value = &capture[4];
                 line = line.replace(old_value, value.as_str());

@@ -58,13 +58,13 @@ export default function LocationSwitcher({ className }: LocationSwitcherProps) {
 					role="combobox"
 					aria-expanded={open}
 					aria-label="Select a location"
-					className={cn("w-[170px] justify-between", className)}
+					className={cn("justify-between", className)}
 				>
 					{selectedLocation?.name}
 					<CaretSortIcon className="ml-auto h-4 w-4 shrink-0 opacity-50" />
 				</Button>
 			</PopoverTrigger>
-			<PopoverContent className="w-[170px]">
+			<PopoverContent className="">
 				<Command>
 					<CommandList>
 						<CommandInput

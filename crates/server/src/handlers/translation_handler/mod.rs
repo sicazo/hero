@@ -1,6 +1,5 @@
-pub mod frontend;
 pub mod backend;
-
+pub mod frontend;
 
 use db::context::RouterCtx;
 use local_storage::stores::translation_store::TranslationEntry;
@@ -9,8 +8,8 @@ use tracing::info;
 use translation_handler::frontend::updater::UpdatedKeyValues;
 use translation_handler::TranslationHandler;
 
+use db::prisma::{settings, PrismaClient};
 use rspc::{Router as RspcRouter, RouterBuilder as RspcRouterBuilder};
-use db::prisma::{PrismaClient, settings};
 
 #[derive(Deserialize)]
 pub struct PathBody {
@@ -77,12 +76,12 @@ pub fn get_translation_router() -> RspcRouterBuilder<RouterCtx> {
                     input.ts_key.clone(),
                     input.json_key.clone(),
                     input.value.clone(),
-                    settings.clone()
+                    settings.clone(),
                 )
-                    .await
-                    .map_err(|error| {
-                        rspc::Error::new(rspc::ErrorCode::InternalServerError, error.to_string())
-                    })?;
+                .await
+                .map_err(|error| {
+                    rspc::Error::new(rspc::ErrorCode::InternalServerError, error.to_string())
+                })?;
 
                 Ok(keys)
             })

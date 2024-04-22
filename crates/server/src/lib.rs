@@ -1,5 +1,8 @@
 use db::context::RouterCtx;
-use handlers::{storage_handler::get_storage_router, translation_handler::get_translation_router, location_handler::get_location_router};
+use handlers::{
+    location_handler::get_location_router, storage_handler::get_storage_router,
+    translation_handler::get_translation_router,
+};
 use rspc::{Config, Router as RspcRouter};
 use tokio::time::{sleep, Duration};
 

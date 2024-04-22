@@ -1,11 +1,10 @@
-use std::collections::BTreeMap;
 use quick_xml::events::Event;
 use quick_xml::name::QName;
 use quick_xml::Reader;
+use std::collections::BTreeMap;
+use std::path::{Path, PathBuf};
 
 pub struct XmlReader;
-
-
 
 impl XmlReader {
     pub fn read_name_attributes_and_value_tags(input_string: &str) -> BTreeMap<String, String> {
@@ -42,7 +41,6 @@ impl XmlReader {
                     let value_content = e.unescape().unwrap();
                     return_values.insert(attribute_name, value_content.to_string());
                     attribute_name = String::new();
-
                 }
                 Ok(Event::Eof) => break,
                 Err(e) => panic!("Error at position {}: {:?}", reader.buffer_position(), e),
@@ -51,13 +49,14 @@ impl XmlReader {
             buf.clear();
         }
         return_values
-
     }
 
-    pub fn get_resources(input_string: &str) -> Vec<String> {
+    pub fn get_resources(input_string: &str, original_path: &str) -> Vec<String> {
         let mut resources: Vec<String> = Vec::new();
         let mut reader = Reader::from_str(input_string);
         reader.trim_text(true);
+        let path = Path::new(original_path);
+        let parent_folder = path.parent().unwrap();
 
         let mut buf = Vec::new();
 
@@ -67,7 +66,9 @@ impl XmlReader {
                     for attr in e.attributes().filter_map(|a| a.ok()) {
                         if attr.key == QName(b"Update") {
                             let name_value = attr.decode_and_unescape_value(&reader).unwrap();
-                            resources.push(name_value.to_string());
+                            let mut path_buf = PathBuf::from(parent_folder);
+                            path_buf = path_buf.join(name_value.to_string());
+                            resources.push(path_buf.to_str().to_owned().unwrap().to_string());
                         }
                     }
                 }
@@ -78,13 +79,9 @@ impl XmlReader {
             buf.clear();
         }
 
-
         resources
     }
 }
-
-
-
 
 #[cfg(test)]
 mod tests {
@@ -102,8 +99,14 @@ mod tests {
         let response = super::XmlReader::read_name_attributes_and_value_tags(xml);
 
         assert_eq!(2, response.len());
-        assert_eq!(Some(&"Building Location".to_string()), response.get("Label_Building_Location"));
-        assert_eq!(Some(&"Background Color".to_string()), response.get("Label_BackgroundColor"));
+        assert_eq!(
+            Some(&"Building Location".to_string()),
+            response.get("Label_Building_Location")
+        );
+        assert_eq!(
+            Some(&"Background Color".to_string()),
+            response.get("Label_BackgroundColor")
+        );
         assert_eq!(None, response.get("Wrong Input"));
     }
 
@@ -131,4 +134,3 @@ mod tests {
         assert_eq!(r#"Sms\SmsTextResources.resx"#, response[2]);
     }
 }
-

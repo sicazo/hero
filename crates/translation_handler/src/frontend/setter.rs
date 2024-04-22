@@ -1,5 +1,6 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 use crate::{frontend::PathType, TranslationHandler};
+use db::prisma::settings::Data;
 use local_storage::stores::settings_store::SettingsStore;
 use local_storage::stores::translation_store::TranslationEntry;
 use serde::Serialize;
@@ -7,7 +8,6 @@ use serde_json::ser::PrettyFormatter;
 use std::fs::{read_to_string, OpenOptions};
 use std::io::{Read, Seek, SeekFrom, Write};
 use std::process::Command;
-use db::prisma::settings::Data;
 
 impl TranslationHandler {
     pub async fn add_new_key(
@@ -133,7 +133,5 @@ mod tests {
     use super::*;
 
     #[tokio::test]
-    async fn test_add_new_key() {
-
-    }
+    async fn test_add_new_key() {}
 }

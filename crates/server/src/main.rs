@@ -1,5 +1,3 @@
 mod handlers;
 
-
-fn main() {
-}
+fn main() {}

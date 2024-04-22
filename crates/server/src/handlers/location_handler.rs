@@ -1,3 +1,4 @@
+use std::path::Path;
 use std::sync::Arc;
 
 use chrono::prelude::*;
@@ -73,6 +74,7 @@ pub fn get_location_router() -> RouterBuilder<RouterCtx> {
                             input.path.clone().as_str(),
                         )
                     {
+                        println!("{:?}", resources_paths);
                         let db = &ctx.db;
                         let now = Local::now();
                         let loc_count = db
@@ -81,11 +83,14 @@ pub fn get_location_router() -> RouterBuilder<RouterCtx> {
                                 resources_paths
                                     .iter()
                                     .map(|path| {
+                                       let loc_translations = translation_handler::backend::getter::get_translations_from_location(path.clone().as_str());
+                                        let full_path = Path::new(path);
+                                        let parent = full_path.parent().unwrap().file_name().unwrap().to_string_lossy();
                                         location::create_unchecked(
                                             "BE".to_string(),
+                                            parent.to_string(),
                                             path.clone(),
-                                            path.clone(),
-                                            2,
+                                            loc_translations.len() as i32,
                                             2,
                                             now.to_string(),
                                             vec![],

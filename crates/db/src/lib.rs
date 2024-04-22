@@ -1,5 +1,5 @@
-use prisma::PrismaClient;
 use prisma::settings;
+use prisma::PrismaClient;
 use prisma_client_rust::migrations::MigrateDeployError;
 use std::fs;
 use std::path::PathBuf;

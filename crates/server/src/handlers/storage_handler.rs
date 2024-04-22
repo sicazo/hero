@@ -188,11 +188,7 @@ pub fn get_storage_router() -> RspcRouterBuilder<RouterCtx> {
                     }
                     "location_store" => {
                         let db: &PrismaClient = &ctx.db;
-                        let locations = db
-                            .location()
-                            .find_many(vec![])
-                            .exec()
-                            .await?;
+                        let locations = db.location().find_many(vec![]).exec().await?;
                         Ok(Store::LocationStore(locations.into()))
                     }
                     &_ => todo!(),
