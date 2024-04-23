@@ -7,6 +7,7 @@ use serde::Serialize;
 use serde_json::ser::PrettyFormatter;
 use std::fs::{read_to_string, OpenOptions};
 use std::io::{Read, Seek, SeekFrom, Write};
+use std::os::windows::process::CommandExt;
 use std::process::Command;
 
 impl TranslationHandler {
@@ -46,6 +47,7 @@ fn run_translation_command(dir_path: &str, translation_command: String) {
     let output = Command::new(program)
         .current_dir(dir_path)
         .args(&["-c", &command])
+        .creation_flags(0x08000000)
         .output()
         .expect("failed to execute mkdir");
     println!("output: {:?}", output);
@@ -103,8 +105,8 @@ fn add_translation_to_default_language(
     file.read_to_string(&mut content)
         .expect("Failed to read file");
 
-    content.lines().enumerate().for_each(|(index, line)| {
-        let mut trimmed_line = line.to_owned();
+    content.lines().enumerate().for_each(|(_index, line)| {
+        let trimmed_line = line.to_owned();
 
         if trimmed_line != "{" && trimmed_line != "}" {
             let mut updated_line = line.to_owned();

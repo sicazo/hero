@@ -169,11 +169,11 @@ export const AddNewFrontendKeyDialog = ()=> {
 
 
 export const AddNewBackendKeyDialog = ()=> {
-	const { translation_entries, setTranslationEntries } = useTranslationStore();
-	const { default_language } = useSettingsStore(
-		(state) => state.translation_settings,
-	);
-	const { last_selected_location } = useLocationStore();
+	const { translation_entries  } = useTranslationStore();
+	// const { default_language } = useSettingsStore(
+	// 	(state) => state.translation_settings,
+	// );
+	// const { last_selected_location } = useLocationStore();
 
 	const formSchema = z.object({
 		key: z
@@ -213,9 +213,10 @@ export const AddNewBackendKeyDialog = ()=> {
 		mode: "onChange",
 	});
 
-	const addNewMutation = rspc.useMutation(["translations.add_key"]);
-	//
-	function onSubmit(values: z.infer<typeof formSchema>) {
+	// const addNewMutation = rspc.useMutation(["translations.add_key"]);
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	function onSubmit() {
+		// values: z.infer<typeof formSchema>
 	// 	const body: AddNewKeyBody = {
 	// 		path: last_selected_location?.path as string,
 	// 		value: values.translation,

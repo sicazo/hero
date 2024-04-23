@@ -16,9 +16,9 @@ pub fn get_router() -> RspcRouter<RouterCtx> {
         .merge("translations.", get_translation_router())
         .merge("locations.", get_location_router())
         .subscription("test", |t| {
-            t(|ctx, input: ()| {
+            t(|_ctx, _input: ()| {
                 async_stream::stream! {
-                    for i in 0..5 {
+                    for _i in 0..5 {
                         yield "ping".to_string();
                         sleep(Duration::from_secs(1)).await;
                     }

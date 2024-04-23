@@ -1,10 +1,8 @@
 use std::path::Path;
-use std::sync::Arc;
 
 use chrono::prelude::*;
 use db::prisma::location::{self, Data};
 use db::{context::RouterCtx, prisma::PrismaClient};
-use prisma_client_rust::QueryError::Deserialize;
 use prisma_client_rust::{chrono, QueryError};
 use rspc::{Router, RouterBuilder};
 use translation_handler::TranslationHandler;
@@ -31,7 +29,6 @@ pub fn get_location_router() -> RouterBuilder<RouterCtx> {
         .mutation("add_location", |t| {
             t(|ctx, input: ScanInput| async move{
                 let db = &ctx.db;
-                let now = Local::now();
 
                 if input.path.contains("messages.ts") {
                     let path = input.path.replace("/messages.ts", "");
@@ -77,7 +74,7 @@ pub fn get_location_router() -> RouterBuilder<RouterCtx> {
                         println!("{:?}", resources_paths);
                         let db = &ctx.db;
                         let now = Local::now();
-                        let loc_count = db
+                        let _loc_count = db
                             .location()
                             .create_many(
                                 resources_paths
@@ -130,7 +127,6 @@ pub fn get_location_router() -> RouterBuilder<RouterCtx> {
                         })
                         .count();
 
-                    let mut location_name = String::from("New");
 
                     let location = location_database_upsert(
                         db,

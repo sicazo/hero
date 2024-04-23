@@ -2,7 +2,6 @@ use db::context::RouterCtx;
 use local_storage::stores::translation_store::TranslationEntry;
 use prisma_client_rust::QueryError;
 use serde::{Deserialize, Serialize};
-use tracing::info;
 use translation_handler::frontend::updater::UpdatedKeyValues;
 use translation_handler::TranslationHandler;
 
@@ -119,7 +118,7 @@ pub fn get_translation_router() -> RspcRouterBuilder<RouterCtx> {
             })
         })
         .mutation("remove_keys", |t| {
-            t(|ctx, input: RemoveTranslationBody| async move {
+            t(|_ctx, input: RemoveTranslationBody| async move {
                 TranslationHandler::remove_key(input.path, input.ts_key, input.json_key)
                     .await
                     .map_err(|error| {
@@ -128,7 +127,7 @@ pub fn get_translation_router() -> RspcRouterBuilder<RouterCtx> {
             })
         })
         .mutation("update_keys", |t| {
-            t(|ctx, input: UpdateKeysBody| async move {
+            t(|_ctx, input: UpdateKeysBody| async move {
                 TranslationHandler::update_keys(input.path, input.key)
                     .await
                     .map_err(|error| {

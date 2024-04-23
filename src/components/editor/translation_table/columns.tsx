@@ -239,7 +239,7 @@ export const backend_columns: ColumnDef<TranslationEntry>[] = [
 		cell: ({ row }) => <div className="ml-4">{row.original.key}</div>,
 	},
 	{
-		accessorKey: "default_value",
+		accessorKey: "default",
 		header: ({ column }) => (
 			<Button
 				variant="ghost"

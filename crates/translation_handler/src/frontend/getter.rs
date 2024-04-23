@@ -112,7 +112,7 @@ impl TranslationHandler {
             if entry
                 .translations
                 .iter()
-                .all(|(key, value)| value == &"".to_owned())
+                .all(|(_key, value)| value == &"".to_owned())
             {
                 entry.in_use = false;
             }

@@ -156,14 +156,14 @@ pub fn get_storage_router() -> RspcRouterBuilder<RouterCtx> {
 
                         futures::future::join_all(futures_vec).await;
                     }
-                    Store::TranslationStore(store) => {
+                    Store::TranslationStore(_store) => {
                         todo!()
                     }
                 }
             })
         })
         .mutation("removeStore", |t| {
-            t(|ctx, store: String| async move {
+            t(|_ctx, store: String| async move {
                 match store.as_str() {
                     "settings_store" => {}
                     "translation_store" => {}

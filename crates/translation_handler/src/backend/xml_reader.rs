@@ -7,10 +7,12 @@ use std::path::{Path, PathBuf};
 pub struct XmlReader;
 
 impl XmlReader {
-    pub fn read_name_attributes_and_value_tags(input_string: &str) -> BTreeMap<String, String> {
+    pub fn read_name_attributes_and_value_tags(
+        input_string: &str,
+    ) -> BTreeMap<String, BTreeMap<String, String>> {
         let mut reader = Reader::from_str(input_string);
         reader.trim_text(true);
-        let mut return_values: BTreeMap<String, String> = BTreeMap::new();
+        let mut return_values: BTreeMap<String, BTreeMap<String, String>> = BTreeMap::new();
 
         let mut buf = Vec::new();
         let mut inside_data = false;
@@ -39,7 +41,9 @@ impl XmlReader {
                 }
                 Ok(Event::Text(e)) if inside_name => {
                     let value_content = e.unescape().unwrap();
-                    return_values.insert(attribute_name, value_content.to_string());
+                    let mut inner_map: BTreeMap<String, String> = BTreeMap::new();
+                    inner_map.insert("default".to_string(), value_content.to_string());
+                    return_values.insert(attribute_name, inner_map);
                     attribute_name = String::new();
                 }
                 Ok(Event::Eof) => break,

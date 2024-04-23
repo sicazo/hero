@@ -4,11 +4,11 @@ use local_storage::stores::translation_store::TranslationEntry;
 use serde::Deserialize;
 use serde_json::{Map, Value};
 use std::collections::HashMap;
+use std::fs;
 use std::fs::OpenOptions;
 use std::io::{BufRead, BufReader, Write};
 use std::path::Path;
-use std::{fs, io};
-use tracing::{error, info};
+use tracing::error;
 
 #[derive(Deserialize, Clone, specta::Type)]
 pub struct UpdatedKeyValues {
