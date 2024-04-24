@@ -167,14 +167,15 @@ pub fn get_translation_router() -> RspcRouterBuilder<RouterCtx> {
                     .expect("failed to find location in database")
                 {
                     LocationType::Frontend => {
-                        let settings = &ctx
+                        let settings: &settings::Data = &ctx
                             .db
                             .settings()
                             .find_unique(settings::id::equals(1))
                             .exec()
                             .await?
                             .unwrap();
-                        TranslationHandler::update_keys(input.path, input.key, settings.clone())
+
+                        TranslationHandler::update_keys(input.path, input.key, settings.clone().to_owned())
                             .await
                             .map_err(|error| {
                                 rspc::Error::new(

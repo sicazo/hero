@@ -1,12 +1,11 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 use crate::{frontend::PathType, TranslationHandler};
 use db::prisma::settings::Data;
-use local_storage::stores::settings_store::SettingsStore;
 use local_storage::stores::translation_store::TranslationEntry;
-use serde::Serialize;
-use serde_json::ser::PrettyFormatter;
-use std::fs::{read_to_string, OpenOptions};
-use std::io::{Read, Seek, SeekFrom, Write};
+use std::fs::OpenOptions;
+use std::io::{Read, Write};
+
+#[cfg(target_os = "windows")]
 use std::os::windows::process::CommandExt;
 use std::process::Command;
 
@@ -44,10 +43,17 @@ pub fn run_translation_command(dir_path: &str, translation_command: String) {
     let command = format!("{} {}", translation_command, locales_path);
     println!("{}", command);
 
+    #[cfg(target_os = "windows")]
     let output = Command::new(program)
         .current_dir(dir_path)
         .args(&["-c", &command])
         .creation_flags(0x08000000)
+        .output()
+        .expect("failed to execute mkdir");
+    #[cfg(not(target_os = "windows"))]
+    let output = Command::new(program)
+        .current_dir(dir_path)
+        .args(&["-c", &command])
         .output()
         .expect("failed to execute mkdir");
     println!("output: {:?}", output);
