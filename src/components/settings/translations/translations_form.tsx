@@ -92,7 +92,7 @@ export default function TranslationForm() {
 													!translation_settings.translate_updated_strings,
 											})
 										}
-									disabled
+										disabled
 									/>
 								</FormControl>
 								<FormLabel>Translate updated translation strings</FormLabel>

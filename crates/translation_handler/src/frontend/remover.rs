@@ -23,7 +23,7 @@ impl TranslationHandler {
     }
 }
 
-fn remove_key_from_language_jsons(
+pub fn remove_key_from_language_jsons(
     locales_path: String,
     keys: Vec<String>,
 ) -> Result<(), std::io::Error> {

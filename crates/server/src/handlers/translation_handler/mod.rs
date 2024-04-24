@@ -82,10 +82,18 @@ pub fn get_translation_router() -> RspcRouterBuilder<RouterCtx> {
             })
         })
         .query("get_number_of_keys", |t| {
-            t(|_ctx, path: String| async move {
-                TranslationHandler::get_frontend_translations(&path)
+            t(|ctx, path: String| async move {
+                match match_location_type(&ctx.db, path.clone())
                     .await
-                    .len() as u32
+                    .expect("failed to find location in database")
+                {
+                    LocationType::Frontend => TranslationHandler::get_frontend_translations(&path)
+                        .await
+                        .len() as u32,
+                    LocationType::Backend => TranslationHandler::get_backend_translations(&path)
+                        .await
+                        .len() as u32,
+                }
             })
         })
         .query("get_languages", |t| {
@@ -95,44 +103,90 @@ pub fn get_translation_router() -> RspcRouterBuilder<RouterCtx> {
         })
         .mutation("add_key", |t| {
             t(|ctx, input: AddNewKeyBody| async move {
-                let db: &PrismaClient = &ctx.db;
-                let settings = db
-                    .settings()
-                    .find_unique(settings::id::equals(1))
-                    .exec()
-                    .await?
-                    .unwrap();
-                let keys = TranslationHandler::add_new_key(
-                    input.path.clone(),
-                    input.ts_key.clone(),
-                    input.json_key.clone(),
-                    input.value.clone(),
-                    settings.clone(),
-                )
-                .await
-                .map_err(|error| {
-                    rspc::Error::new(rspc::ErrorCode::InternalServerError, error.to_string())
-                })?;
+                match match_location_type(&ctx.db, input.path.clone())
+                    .await
+                    .expect("failed to find location in database")
+                {
+                    LocationType::Frontend => {
+                        let db: &PrismaClient = &ctx.db;
+                        let settings = db
+                            .settings()
+                            .find_unique(settings::id::equals(1))
+                            .exec()
+                            .await?
+                            .unwrap();
+                        let keys = TranslationHandler::add_new_key(
+                            input.path.clone(),
+                            input.ts_key.clone(),
+                            input.json_key.clone(),
+                            input.value.clone(),
+                            settings.clone(),
+                        )
+                        .await
+                        .map_err(|error| {
+                            rspc::Error::new(
+                                rspc::ErrorCode::InternalServerError,
+                                error.to_string(),
+                            )
+                        })?;
 
-                Ok(keys)
+                        Ok(keys)
+                    }
+                    LocationType::Backend => {
+                        unimplemented!()
+                    }
+                }
             })
         })
         .mutation("remove_keys", |t| {
-            t(|_ctx, input: RemoveTranslationBody| async move {
-                TranslationHandler::remove_key(input.path, input.ts_key, input.json_key)
+            t(|ctx, input: RemoveTranslationBody| async move {
+                match match_location_type(&ctx.db, input.path.clone())
                     .await
-                    .map_err(|error| {
-                        rspc::Error::new(rspc::ErrorCode::InternalServerError, error.to_string())
-                    })
+                    .expect("failed to find location in database")
+                {
+                    LocationType::Frontend => {
+                        TranslationHandler::remove_key(input.path, input.ts_key, input.json_key)
+                            .await
+                            .map_err(|error| {
+                                rspc::Error::new(
+                                    rspc::ErrorCode::InternalServerError,
+                                    error.to_string(),
+                                )
+                            })
+                    }
+                    LocationType::Backend => {
+                        unimplemented!()
+                    }
+                }
             })
         })
         .mutation("update_keys", |t| {
-            t(|_ctx, input: UpdateKeysBody| async move {
-                TranslationHandler::update_keys(input.path, input.key)
+            t(|ctx, input: UpdateKeysBody| async move {
+                match match_location_type(&ctx.db, input.path.clone())
                     .await
-                    .map_err(|error| {
-                        rspc::Error::new(rspc::ErrorCode::InternalServerError, error.to_string())
-                    })
+                    .expect("failed to find location in database")
+                {
+                    LocationType::Frontend => {
+                        let settings = &ctx
+                            .db
+                            .settings()
+                            .find_unique(settings::id::equals(1))
+                            .exec()
+                            .await?
+                            .unwrap();
+                        TranslationHandler::update_keys(input.path, input.key, settings.clone())
+                            .await
+                            .map_err(|error| {
+                                rspc::Error::new(
+                                    rspc::ErrorCode::InternalServerError,
+                                    error.to_string(),
+                                )
+                            })
+                    }
+                    LocationType::Backend => {
+                        unimplemented!()
+                    }
+                }
             })
         })
 }

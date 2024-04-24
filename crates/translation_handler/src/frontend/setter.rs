@@ -34,7 +34,7 @@ impl TranslationHandler {
         Ok(translations)
     }
 }
-fn run_translation_command(dir_path: &str, translation_command: String) {
+pub fn run_translation_command(dir_path: &str, translation_command: String) {
     let locales_path = PathType::TranslationDirectory.create_path(dir_path.to_string());
     let program = if cfg!(target_os = "windows") {
         "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
@@ -88,7 +88,7 @@ fn add_key_to_messages_ts(
 
     Ok(())
 }
-fn add_translation_to_default_language(
+pub fn add_translation_to_default_language(
     path: String,
     json_key: String,
     en_gb_value: String,
