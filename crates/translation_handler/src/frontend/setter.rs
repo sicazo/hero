@@ -10,7 +10,7 @@ use std::os::windows::process::CommandExt;
 use std::process::Command;
 
 impl TranslationHandler {
-    pub async fn add_new_key(
+    pub async fn add_new_frontend_key(
         path: String,
         ts_key: String,
         json_key: String,

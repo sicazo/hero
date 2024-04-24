@@ -115,7 +115,7 @@ pub fn get_translation_router() -> RspcRouterBuilder<RouterCtx> {
                             .exec()
                             .await?
                             .unwrap();
-                        let keys = TranslationHandler::add_new_key(
+                        let keys = TranslationHandler::add_new_frontend_key(
                             input.path.clone(),
                             input.ts_key.clone(),
                             input.json_key.clone(),
@@ -133,7 +133,28 @@ pub fn get_translation_router() -> RspcRouterBuilder<RouterCtx> {
                         Ok(keys)
                     }
                     LocationType::Backend => {
-                        unimplemented!()
+                        let db: &PrismaClient = &ctx.db;
+                        let settings = db
+                            .settings()
+                            .find_unique(settings::id::equals(1))
+                            .exec()
+                            .await?
+                            .unwrap();
+                        let keys = TranslationHandler::add_new_backend_key(
+                            input.path.clone(),
+                            input.ts_key.clone(),
+                            input.value.clone(),
+                            settings.clone(),
+                        )
+                            .await
+                            .map_err(|error| {
+                                rspc::Error::new(
+                                    rspc::ErrorCode::InternalServerError,
+                                    error.to_string(),
+                                )
+                            })?;
+
+                        Ok(keys)
                     }
                 }
             })
