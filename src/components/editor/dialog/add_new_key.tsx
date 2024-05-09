@@ -170,10 +170,8 @@ export const AddNewFrontendKeyDialog = ()=> {
 
 export const AddNewBackendKeyDialog = ()=> {
 	const { translation_entries  } = useTranslationStore();
-	// const { default_language } = useSettingsStore(
-	// 	(state) => state.translation_settings,
-	// );
-	// const { last_selected_location } = useLocationStore();
+
+	const { last_selected_location } = useLocationStore();
 
 	const formSchema = z.object({
 		key: z
@@ -213,26 +211,28 @@ export const AddNewBackendKeyDialog = ()=> {
 		mode: "onChange",
 	});
 
-	// const addNewMutation = rspc.useMutation(["translations.add_key"]);
+	const addNewMutation = rspc.useMutation(["translations.add_key"]);
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	function onSubmit() {
-		// values: z.infer<typeof formSchema>
-	// 	const body: AddNewKeyBody = {
-	// 		path: last_selected_location?.path as string,
-	// 		value: values.translation,
-	// 		json_key: values.json_key,
-	// 		ts_key: values.ts_key,
-	// 	};
-	//
-	// 	const mutation = addNewMutation.mutateAsync(body);
-	// 	toast.promise(mutation, {
-	// 		loading: "Adding translation....",
-	// 		success: () => {
-	// 			return `${values.ts_key} has been added`;
-	// 		},
-	// 		error: "There was an error",
-	// 	});
-	// 	mutation.then((data) => setTranslationEntries(data));
+	function onSubmit(
+		values: z.infer<typeof formSchema>
+	) {
+		console.log("submitting")
+		const body: AddNewKeyBody = {
+			path: last_selected_location?.path as string,
+			value: values.default_value,
+			json_key: values.key,
+			ts_key: values.key,
+		};
+
+		const mutation = addNewMutation.mutateAsync(body);
+		toast.promise(mutation, {
+			loading: "Adding translation....",
+			success: () => {
+				return `${values.key} has been added`;
+			},
+			error: "There was an error",
+		});
+		// mutation.then((data) => setTranslationEntries(data));
 	}
 
 	return (

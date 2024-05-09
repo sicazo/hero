@@ -44,5 +44,5 @@ prisma-client-rust-cli = { git = "https://github.com/Brendonovich/prisma-client-
     "rspc",
     "sqlite-create-many"
 ] }
-quick-xml = "0.31.0"
+quick-xml = { version = "0.31.0" ,features = ["serialize"]}
 chrono = "0.4.38"

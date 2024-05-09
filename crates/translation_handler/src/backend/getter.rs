@@ -1,4 +1,4 @@
-use crate::backend::xml_reader::XmlReader;
+use crate::backend::xml::XmlReader;
 use crate::TranslationHandler;
 use glob::glob;
 use local_storage::stores::translation_store::TranslationEntry;

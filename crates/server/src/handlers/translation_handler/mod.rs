@@ -146,13 +146,13 @@ pub fn get_translation_router() -> RspcRouterBuilder<RouterCtx> {
                             input.value.clone(),
                             settings.clone(),
                         )
-                            .await
-                            .map_err(|error| {
-                                rspc::Error::new(
-                                    rspc::ErrorCode::InternalServerError,
-                                    error.to_string(),
-                                )
-                            })?;
+                        .await
+                        .map_err(|error| {
+                            rspc::Error::new(
+                                rspc::ErrorCode::InternalServerError,
+                                error.to_string(),
+                            )
+                        })?;
 
                         Ok(keys)
                     }
@@ -196,14 +196,18 @@ pub fn get_translation_router() -> RspcRouterBuilder<RouterCtx> {
                             .await?
                             .unwrap();
 
-                        TranslationHandler::update_keys(input.path, input.key, settings.clone().to_owned())
-                            .await
-                            .map_err(|error| {
-                                rspc::Error::new(
-                                    rspc::ErrorCode::InternalServerError,
-                                    error.to_string(),
-                                )
-                            })
+                        TranslationHandler::update_keys(
+                            input.path,
+                            input.key,
+                            settings.clone().to_owned(),
+                        )
+                        .await
+                        .map_err(|error| {
+                            rspc::Error::new(
+                                rspc::ErrorCode::InternalServerError,
+                                error.to_string(),
+                            )
+                        })
                     }
                     LocationType::Backend => {
                         unimplemented!()

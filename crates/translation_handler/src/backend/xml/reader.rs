@@ -1,10 +1,9 @@
+use crate::backend::xml::XmlReader;
 use quick_xml::events::Event;
 use quick_xml::name::QName;
 use quick_xml::Reader;
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
-
-pub struct XmlReader;
 
 impl XmlReader {
     pub fn read_name_attributes_and_value_tags(
