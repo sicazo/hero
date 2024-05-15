@@ -165,8 +165,18 @@ pub fn get_translation_router() -> RspcRouterBuilder<RouterCtx> {
                     .await
                     .expect("failed to find location in database")
                 {
-                    LocationType::Frontend => {
-                        TranslationHandler::remove_key(input.path, input.ts_key, input.json_key)
+                    LocationType::Frontend => TranslationHandler::remove_frontend_key(
+                        input.path,
+                        input.ts_key,
+                        input.json_key,
+                    )
+                    .await
+                    .map_err(|error| {
+                        rspc::Error::new(rspc::ErrorCode::InternalServerError, error.to_string())
+                    }),
+                    LocationType::Backend => {
+                        println!("removing bakend key");
+                        TranslationHandler::remove_backend_key(input.path, input.ts_key)
                             .await
                             .map_err(|error| {
                                 rspc::Error::new(
@@ -174,9 +184,6 @@ pub fn get_translation_router() -> RspcRouterBuilder<RouterCtx> {
                                     error.to_string(),
                                 )
                             })
-                    }
-                    LocationType::Backend => {
-                        unimplemented!()
                     }
                 }
             })

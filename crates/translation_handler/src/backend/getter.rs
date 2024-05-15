@@ -1,4 +1,4 @@
-use crate::backend::xml::XmlReader;
+use crate::backend::xml::XmlHandler;
 use crate::TranslationHandler;
 use glob::glob;
 use local_storage::stores::translation_store::TranslationEntry;
@@ -10,7 +10,7 @@ pub fn get_translations_from_location(
     location_path: &str,
 ) -> BTreeMap<String, BTreeMap<String, String>> {
     let xml = read_to_string(location_path).expect("failed to read file");
-    let response = XmlReader::read_name_attributes_and_value_tags(&xml);
+    let response = XmlHandler::read_name_attributes_and_value_tags(&xml);
     response
 }
 
@@ -19,7 +19,7 @@ pub fn get_resources_from_csproj(path: &str) -> Option<Vec<String>> {
         return None;
     }
     let xml = read_to_string(path).expect("failed to read file");
-    let mut response = XmlReader::get_resources(&xml, path);
+    let mut response = XmlHandler::get_resources(&xml, path);
     response.retain(|file| {
         let path = std::path::Path::new(file);
         let filename = path

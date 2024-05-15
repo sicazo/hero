@@ -1,4 +1,4 @@
-use crate::backend::xml::XmlReader;
+use crate::backend::xml::XmlHandler;
 use crate::TranslationHandler;
 use db::prisma::settings;
 use local_storage::stores::translation_store::TranslationEntry;
@@ -12,9 +12,9 @@ impl TranslationHandler {
         value: String,
         settings: settings::Data,
     ) -> Result<Vec<TranslationEntry>, std::io::Error> {
-        XmlReader::write_key_value(path.clone(), key, value)
+        XmlHandler::write_key_value(path.clone(), key, value)
             .expect("Failed to add new key_value pair");
-        let translations = XmlReader::read_name_attributes_and_value_tags(path.clone().as_str());
+        let translations = XmlHandler::read_name_attributes_and_value_tags(path.clone().as_str());
         let translation_entries = translations
             .iter()
             .map(|(key, value)| {

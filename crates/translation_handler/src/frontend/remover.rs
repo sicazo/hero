@@ -9,7 +9,7 @@ use std::io::{Read, Write};
 use tracing::{error, info};
 
 impl TranslationHandler {
-    pub async fn remove_key(
+    pub async fn remove_frontend_key(
         path: String,
         ts_keys: Vec<String>,
         json_keys: Vec<String>,

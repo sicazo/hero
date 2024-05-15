@@ -1,17 +1,19 @@
+use crate::backend::xml::XmlHandler;
+use quick_xml::name::QName;
+use quick_xml::{
+    events::{BytesEnd, BytesStart, BytesText, Event},
+    Reader, Writer,
+};
 use std::fs::{File, OpenOptions};
 use std::io::{BufReader, BufWriter, Cursor, Write};
-use crate::backend::xml::XmlReader;
-use quick_xml::{Reader, Writer, events::{BytesText, BytesStart, BytesEnd, Event}};
-use quick_xml::name::QName;
 
-
-impl XmlReader {
+impl XmlHandler {
     pub fn write_key_value(
         file_path: String,
         key: String,
         value: String,
     ) -> Result<(), Box<dyn std::error::Error>> {
-      let file = File::open(file_path.clone())?;
+        let file = File::open(file_path.clone())?;
         let file_reader = BufReader::new(file);
 
         let mut reader = Reader::from_reader(file_reader);
@@ -19,19 +21,22 @@ impl XmlReader {
 
         let mut writer = Writer::new(Cursor::new(Vec::new()));
         let mut buf = Vec::new();
-        let first_element = format!("    <data name={} xml:space=\"preserve\">\n",key);
-        let second_element = format!("    <value>{}</value>\n", value);
-        let third_element = "  </data>\n".to_string();
-
+        let data_opening_tag = format!("    <data name={} xml:space=\"preserve\">\n", key);
+        let value_tag = format!("    <value>{}</value>\n", value);
+        let data_closing_tag = "  </data>\n".to_string();
 
         while let Ok(event) = reader.read_event_into(&mut buf) {
             match event {
                 Event::End(ref e) if e.name() == QName(b"root") => {
-                    writer.write_event(Event::Text(BytesText::from_escaped(first_element.clone())))?;
-                    writer.write_event(Event::Text(BytesText::from_escaped(second_element.clone())))?;
-                    writer.write_event(Event::Text(BytesText::from_escaped(third_element.clone())))?;
+                    writer.write_event(Event::Text(BytesText::from_escaped(
+                        data_opening_tag.clone(),
+                    )))?;
+                    writer.write_event(Event::Text(BytesText::from_escaped(value_tag.clone())))?;
+                    writer.write_event(Event::Text(BytesText::from_escaped(
+                        data_closing_tag.clone(),
+                    )))?;
                     writer.write_event(Event::End(e.to_owned()))?;
-                },
+                }
                 Event::Eof => {
                     break;
                 }
@@ -42,7 +47,7 @@ impl XmlReader {
             buf.clear();
         }
 
-       let result = writer.into_inner().into_inner();
+        let result = writer.into_inner().into_inner();
         let file = OpenOptions::new()
             .write(true)
             .truncate(true)
@@ -52,6 +57,5 @@ impl XmlReader {
         file_writer.write_all(&*result)?;
 
         Ok(())
-
     }
 }

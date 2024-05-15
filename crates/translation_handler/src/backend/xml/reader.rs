@@ -1,11 +1,11 @@
-use crate::backend::xml::XmlReader;
+use crate::backend::xml::XmlHandler;
 use quick_xml::events::Event;
 use quick_xml::name::QName;
 use quick_xml::Reader;
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 
-impl XmlReader {
+impl XmlHandler {
     pub fn read_name_attributes_and_value_tags(
         input_string: &str,
     ) -> BTreeMap<String, BTreeMap<String, String>> {
@@ -99,7 +99,7 @@ mod tests {
             </data>
             "#;
 
-        let response = super::XmlReader::read_name_attributes_and_value_tags(xml);
+        let response = super::XmlHandler::read_name_attributes_and_value_tags(xml);
 
         assert_eq!(2, response.len());
         assert_eq!(
@@ -130,7 +130,7 @@ mod tests {
         </EmbeddedResource>
         "#;
 
-        let response = super::XmlReader::get_resources(xml);
+        let response = super::XmlHandler::get_resources(xml);
         assert_eq!(3, response.len());
         assert_eq!(r#"Quotes\QuoteResources.en-US.resx"#, response[0]);
         assert_eq!(r#"Quotes\QuoteResources.resx"#, response[1]);
