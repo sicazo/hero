@@ -175,7 +175,6 @@ pub fn get_translation_router() -> RspcRouterBuilder<RouterCtx> {
                         rspc::Error::new(rspc::ErrorCode::InternalServerError, error.to_string())
                     }),
                     LocationType::Backend => {
-                        println!("removing bakend key");
                         TranslationHandler::remove_backend_key(input.path, input.ts_key)
                             .await
                             .map_err(|error| {

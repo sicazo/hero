@@ -74,7 +74,7 @@ export default function LocationSwitcher({ className }: LocationSwitcherProps) {
 					<CaretSortIcon className="ml-auto h-4 w-4 shrink-0 opacity-50" />
 				</Button>
 			</PopoverTrigger>
-			<PopoverContent className="">
+			<PopoverContent className="mt-5 ml-0" side="right">
 				<Command>
 					<CommandList>
 						<CommandInput
