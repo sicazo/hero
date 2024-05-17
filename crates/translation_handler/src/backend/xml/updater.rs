@@ -7,7 +7,6 @@ use quick_xml::{
 use std::fs::{File, OpenOptions};
 use std::io::{BufReader, BufWriter, Cursor, Write};
 
-
 impl XmlHandler {
     pub fn update_value(
         file_path: String,
@@ -54,8 +53,9 @@ impl XmlHandler {
                         tag_depth -= 1;
                         if tag_depth == 0 {
                             if !value_replaced {
-                                writer
-                                    .write_event(&Event::Text(BytesText::from_escaped(&value_tag.clone())))?;
+                                writer.write_event(&Event::Text(BytesText::from_escaped(
+                                    &value_tag.clone(),
+                                )))?;
                                 value_replaced = true;
                             }
                             inside_searched_tag = false;
