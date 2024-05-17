@@ -39,10 +39,18 @@ export function LocationCard({ location }: { location: Location }) {
 		});
 	};
 
+	const remove = rspc.useMutation(["locations.delete_location"])
+
 	const removeLocationFromList = () => {
-		//TODO: remove location in backend
-		removeLocation(location);
-		toast.success("Removed location");
+		const removePromise = remove.mutateAsync(location)
+		removePromise.then(() => {
+			removeLocation(location);
+		}).catch((err) => console.log(err))
+		toast.promise(removePromise, {
+			loading: "Removing...",
+			success: "Location removed",
+			error: "There was an error removing the location",
+		});
 	};
 
 	return (
