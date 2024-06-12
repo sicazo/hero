@@ -54,8 +54,6 @@ export default function EditTranslationDialog({
         languages.forEach((language) => {
             if(language in newTranslationsJson){
                 filteredTranslationsJson[language] = newTranslationsJson[language];
-            }else{
-                filteredTranslationsJson[language] = "";
             }
         });
 

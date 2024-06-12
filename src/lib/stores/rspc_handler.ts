@@ -9,7 +9,6 @@ import {LocationStore, SettingsStore, TranslationStore} from "@/lib/procedures";
 const rspc_storage_handler: PersistStorage<any> = {
     getItem: async (name: string) : Promise<StorageValue<any> | null> => {
         const data = await client.mutation(["stores.getStore", name])
-        console.log(data)
         return data
     },
     setItem: async (name: string, value: StorageValue<any>): Promise<void> => {

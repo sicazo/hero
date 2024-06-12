@@ -156,14 +156,14 @@ pub fn get_storage_router() -> RspcRouterBuilder<RouterCtx> {
 
                         futures::future::join_all(futures_vec).await;
                     }
-                    Store::TranslationStore(store) => {
+                    Store::TranslationStore(_store) => {
                         todo!()
                     }
                 }
             })
         })
         .mutation("removeStore", |t| {
-            t(|ctx, store: String| async move {
+            t(|_ctx, store: String| async move {
                 match store.as_str() {
                     "settings_store" => {}
                     "translation_store" => {}
@@ -188,11 +188,7 @@ pub fn get_storage_router() -> RspcRouterBuilder<RouterCtx> {
                     }
                     "location_store" => {
                         let db: &PrismaClient = &ctx.db;
-                        let locations = db
-                            .location()
-                            .find_many(vec![])
-                            .exec()
-                            .await?;
+                        let locations = db.location().find_many(vec![]).exec().await?;
                         Ok(Store::LocationStore(locations.into()))
                     }
                     &_ => todo!(),

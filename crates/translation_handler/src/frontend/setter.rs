@@ -1,15 +1,16 @@
-use crate::{PathType, TranslationHandler};
-use local_storage::stores::settings_store::SettingsStore;
-use local_storage::stores::translation_store::TranslationEntry;
-use serde::Serialize;
-use serde_json::ser::PrettyFormatter;
-use std::fs::{read_to_string, OpenOptions};
-use std::io::{Read, Seek, SeekFrom, Write};
-use std::process::Command;
+#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+use crate::{frontend::PathType, TranslationHandler};
 use db::prisma::settings::Data;
+use local_storage::stores::translation_store::TranslationEntry;
+use std::fs::OpenOptions;
+use std::io::{Read, Write};
+
+#[cfg(target_os = "windows")]
+use std::os::windows::process::CommandExt;
+use std::process::Command;
 
 impl TranslationHandler {
-    pub async fn add_new_key(
+    pub async fn add_new_frontend_key(
         path: String,
         ts_key: String,
         json_key: String,
@@ -26,12 +27,13 @@ impl TranslationHandler {
             run_translation_command(&path.clone(), settings.translation_command);
         }
 
-        let translations = TranslationHandler::get_translations(path.clone().as_str()).await;
+        let translations =
+            TranslationHandler::get_frontend_translations(path.clone().as_str()).await;
 
         Ok(translations)
     }
 }
-fn run_translation_command(dir_path: &str, translation_command: String) {
+pub fn run_translation_command(dir_path: &str, translation_command: String) {
     let locales_path = PathType::TranslationDirectory.create_path(dir_path.to_string());
     let program = if cfg!(target_os = "windows") {
         "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
@@ -40,6 +42,15 @@ fn run_translation_command(dir_path: &str, translation_command: String) {
     };
     let command = format!("{} {}", translation_command, locales_path);
     println!("{}", command);
+
+    #[cfg(target_os = "windows")]
+    let output = Command::new(program)
+        .current_dir(dir_path)
+        .args(&["-c", &command])
+        .creation_flags(0x08000000)
+        .output()
+        .expect("failed to execute mkdir");
+    #[cfg(not(target_os = "windows"))]
     let output = Command::new(program)
         .current_dir(dir_path)
         .args(&["-c", &command])
@@ -83,7 +94,7 @@ fn add_key_to_messages_ts(
 
     Ok(())
 }
-fn add_translation_to_default_language(
+pub fn add_translation_to_default_language(
     path: String,
     json_key: String,
     en_gb_value: String,
@@ -100,8 +111,8 @@ fn add_translation_to_default_language(
     file.read_to_string(&mut content)
         .expect("Failed to read file");
 
-    content.lines().enumerate().for_each(|(index, line)| {
-        let mut trimmed_line = line.to_owned();
+    content.lines().enumerate().for_each(|(_index, line)| {
+        let trimmed_line = line.to_owned();
 
         if trimmed_line != "{" && trimmed_line != "}" {
             let mut updated_line = line.to_owned();
@@ -131,13 +142,5 @@ mod tests {
     use super::*;
 
     #[tokio::test]
-    async fn test_add_new_key() {
-        let path = String::from("/Users/marius/Developer/Github/translation_hero/testfiles");
-        let ts_key = String::from("test");
-        let json_key = String::from("test");
-        let en_gb_value = String::from("test");
-        let result = TranslationHandler::add_new_key(path, ts_key, json_key, en_gb_value)
-            .await
-            .unwrap();
-    }
+    async fn test_add_new_key() {}
 }

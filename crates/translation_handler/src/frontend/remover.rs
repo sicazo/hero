@@ -1,4 +1,4 @@
-use crate::{PathType, TranslationHandler};
+use crate::{frontend::PathType, TranslationHandler};
 use glob::glob;
 use local_storage::stores::translation_store::TranslationEntry;
 use serde_json::Value;
@@ -9,7 +9,7 @@ use std::io::{Read, Write};
 use tracing::{error, info};
 
 impl TranslationHandler {
-    pub async fn remove_key(
+    pub async fn remove_frontend_key(
         path: String,
         ts_keys: Vec<String>,
         json_keys: Vec<String>,
@@ -23,7 +23,7 @@ impl TranslationHandler {
     }
 }
 
-fn remove_key_from_language_jsons(
+pub fn remove_key_from_language_jsons(
     locales_path: String,
     keys: Vec<String>,
 ) -> Result<(), std::io::Error> {
