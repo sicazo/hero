@@ -1,4 +1,3 @@
-
 import {
 	Card,
 	CardContent,
@@ -21,7 +20,6 @@ export default function MonthlyLocationChangeCard() {
 		[],
 	);
 
-
 	useEffect(() => {
 		const changes: Partial<Record<string, number>> = {};
 		const length = locations?.length as number;
@@ -30,7 +28,6 @@ export default function MonthlyLocationChangeCard() {
 				// convert date string to Date object
 				const date = new Date(location.added_at as string);
 				const monthKey = `${date.getFullYear()}-${date.getMonth() + 1}`;
-				// @ts-expect-error maybe undefined
 				changes[monthKey] = changes[monthKey] ? changes[monthKey] + 1 : 1;
 			}
 			const result = Object.entries(changes).map(([date, total]) => ({

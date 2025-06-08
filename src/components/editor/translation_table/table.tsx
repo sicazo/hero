@@ -1,4 +1,3 @@
-
 import {
 	type ColumnDef,
 	type ColumnFiltersState,
@@ -49,12 +48,10 @@ export default function TranslationTable<TData, TValue>({
 	>({ value: false });
 	const [pageSize, setPageSize] = useState(initialStatePageSize);
 	const { last_selected_location } = useLocationStore();
-	const {
-		removeKeysFromTranslationEntries,
-	} = useTranslationStore();
+	const { removeKeysFromTranslationEntries } = useTranslationStore();
 
 	// Requests
-	const removeKeyMutation = rspc.useMutation(["translations.remove_keys"]);
+	const removeKeyMutation = rspc.useMutation("translations.remove_keys");
 
 	const removeKeys = (ts_keys: string[], json_keys: string[]) => {
 		const mutation = removeKeyMutation.mutateAsync({
@@ -152,7 +149,7 @@ export default function TranslationTable<TData, TValue>({
 	const rowsSelected = table.getIsSomeRowsSelected();
 
 	return (
-		<div  className="h-screen">
+		<div className="h-screen">
 			<div className="flex items-center py-2 justify-between">
 				<Input
 					placeholder="Filter keys..."

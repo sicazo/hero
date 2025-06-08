@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { CardContent, CardFooter } from "@/components/ui/card";
 import { DialogTrigger } from "@/components/ui/dialog";
@@ -11,7 +10,7 @@ import {
 	FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { type AddNewKeyBody } from "@/lib/procedures";
+import type { AddNewKeyBody } from "@/lib/procedures";
 import { rspc } from "@/lib/rspc";
 import { useLocationStore } from "@/lib/stores/location_store";
 import { useSettingsStore } from "@/lib/stores/settings_store";
@@ -21,7 +20,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
-export const AddNewFrontendKeyDialog = ()=> {
+export const AddNewFrontendKeyDialog = () => {
 	const { translation_entries, setTranslationEntries } = useTranslationStore();
 	const { default_language } = useSettingsStore(
 		(state) => state.translation_settings,
@@ -66,7 +65,7 @@ export const AddNewFrontendKeyDialog = ()=> {
 		mode: "onChange",
 	});
 
-	const addNewMutation = rspc.useMutation(["translations.add_key"]);
+	const addNewMutation = rspc.useMutation("translations.add_key");
 
 	function onSubmit(values: z.infer<typeof formSchema>) {
 		const body: AddNewKeyBody = {
@@ -165,11 +164,10 @@ export const AddNewFrontendKeyDialog = ()=> {
 			</Form>
 		</>
 	);
-}
+};
 
-
-export const AddNewBackendKeyDialog = ()=> {
-	const { translation_entries  } = useTranslationStore();
+export const AddNewBackendKeyDialog = () => {
+	const { translation_entries } = useTranslationStore();
 
 	const { last_selected_location } = useLocationStore();
 
@@ -211,12 +209,10 @@ export const AddNewBackendKeyDialog = ()=> {
 		mode: "onChange",
 	});
 
-	const addNewMutation = rspc.useMutation(["translations.add_key"]);
+	const addNewMutation = rspc.useMutation("translations.add_key");
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	function onSubmit(
-		values: z.infer<typeof formSchema>
-	) {
-		console.log("submitting")
+	function onSubmit(values: z.infer<typeof formSchema>) {
+		console.log("submitting");
 		const body: AddNewKeyBody = {
 			path: last_selected_location?.path as string,
 			value: values.default_value,
@@ -313,4 +309,4 @@ export const AddNewBackendKeyDialog = ()=> {
 			</Form>
 		</>
 	);
-}
+};

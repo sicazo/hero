@@ -1,4 +1,3 @@
-
 import EditTranslationDialog from "@/components/editor/dialog/edit";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -126,7 +125,7 @@ export const frontend_columns: ColumnDef<TranslationEntry>[] = [
 			// eslint-disable-next-line react-hooks/rules-of-hooks
 			const { removeKeysFromTranslationEntries } = useTranslationStore();
 
-			const deleteMutation = rspc.useMutation(["translations.remove_keys"]);
+			const deleteMutation = rspc.useMutation("translations.remove_keys");
 
 			const deleteKeys = () => {
 				const mutation = deleteMutation.mutateAsync({
@@ -169,7 +168,7 @@ export const frontend_columns: ColumnDef<TranslationEntry>[] = [
 												},
 												cancel: {
 													label: "No",
-													onClick: () => {}
+													onClick: () => {},
 												},
 												duration: 15000,
 											},
@@ -193,8 +192,6 @@ export const frontend_columns: ColumnDef<TranslationEntry>[] = [
 		size: 100,
 	},
 ];
-
-
 
 export const backend_columns: ColumnDef<TranslationEntry>[] = [
 	{
@@ -264,7 +261,7 @@ export const backend_columns: ColumnDef<TranslationEntry>[] = [
 			// eslint-disable-next-line react-hooks/rules-of-hooks
 			const { removeKeysFromTranslationEntries } = useTranslationStore();
 
-			const deleteMutation = rspc.useMutation(["translations.remove_keys"]);
+			const deleteMutation = rspc.useMutation("translations.remove_keys");
 
 			const deleteKeys = () => {
 				const mutation = deleteMutation.mutateAsync({
@@ -307,7 +304,7 @@ export const backend_columns: ColumnDef<TranslationEntry>[] = [
 												},
 												cancel: {
 													label: "No",
-													onClick: () => {}
+													onClick: () => {},
 												},
 												duration: 15000,
 											},

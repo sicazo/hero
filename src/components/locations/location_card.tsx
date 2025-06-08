@@ -1,4 +1,3 @@
-
 import {
 	DotsVerticalIcon,
 	StarFilledIcon,
@@ -6,7 +5,13 @@ import {
 } from "@radix-ui/react-icons";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -17,21 +22,30 @@ import type { Location, LocationStore } from "@/lib/procedures";
 import { client, rspc } from "@/lib/rspc";
 import { useLocationStore } from "@/lib/stores/location_store";
 import { toast } from "sonner";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip.tsx";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipTrigger,
+} from "@/components/ui/tooltip.tsx";
 
 export function LocationCard({ location }: { location: Location }) {
 	const { updateFavorite, removeLocation, setLocations } = useLocationStore();
 
-	const check = rspc.useMutation(["locations.rescan_location"]);
+	const check = rspc.useMutation("locations.rescan_location");
 
 	const rescanLocation = () => {
-		const checkPromise = check.mutateAsync({ path: location.path as string, tag: location.tag });
+		const checkPromise = check.mutateAsync({
+			path: location.path as string,
+			tag: location.tag,
+		});
 		checkPromise.then(async () => {
-			await client.mutation(["stores.getStore", "location_store"]).then((data) => {
-				const store = data as LocationStore;
-				setLocations(store.state.locations as Location[])
-			})
-		})
+			await client
+				.mutation(["stores.getStore", "location_store"])
+				.then((data) => {
+					const store = data as LocationStore;
+					setLocations(store.state.locations as Location[]);
+				});
+		});
 		toast.promise(checkPromise, {
 			loading: "Scanning...",
 			success: "Location rescanned",
@@ -39,13 +53,15 @@ export function LocationCard({ location }: { location: Location }) {
 		});
 	};
 
-	const remove = rspc.useMutation(["locations.delete_location"])
+	const remove = rspc.useMutation("locations.delete_location");
 
 	const removeLocationFromList = () => {
-		const removePromise = remove.mutateAsync(location)
-		removePromise.then(() => {
-			removeLocation(location);
-		}).catch((err) => console.log(err))
+		const removePromise = remove.mutateAsync(location);
+		removePromise
+			.then(() => {
+				removeLocation(location);
+			})
+			.catch((err) => console.log(err));
 		toast.promise(removePromise, {
 			loading: "Removing...",
 			success: "Location removed",
@@ -75,7 +91,6 @@ export function LocationCard({ location }: { location: Location }) {
 							The type of the Location. <br />
 							FE for Frontend and BE for Backend
 						</TooltipContent>
-
 					</Tooltip>
 
 					<Button
@@ -114,7 +129,6 @@ export function LocationCard({ location }: { location: Location }) {
 					<div>Untranslated Keys: {location.num_of_untranslated_keys}</div>
 					<div>Added: {location.added_at?.split(" ")[0]}</div>
 				</div>
-
 			</CardContent>
 		</Card>
 	);
