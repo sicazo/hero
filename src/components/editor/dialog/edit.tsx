@@ -29,7 +29,7 @@ export default function EditTranslationDialog({
 }: EditTranslationDialogProps) {
   const [translationsJson, setTranslationsJson] = useState("");
   const { last_selected_location} = useLocationStore();
-  const { languages, setTranslationEntries } = useTranslationStore();
+  const { languages } = useTranslationStore();
 
   useEffect(() => {
     // @ts-expect-error reasons
