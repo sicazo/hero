@@ -1,11 +1,12 @@
 use crate::{frontend::PathType, TranslationHandler};
 use glob::glob;
 use local_storage::stores::translation_store::TranslationEntry;
+use regex::Regex;
 use serde_json::Value;
 use std::collections::HashMap;
-use std::fs;
 use std::fs::OpenOptions;
 use std::io::{Read, Write};
+use std::{fs, io};
 use tracing::{error, info};
 
 impl TranslationHandler {
@@ -70,40 +71,53 @@ pub fn remove_key_from_language_jsons(
 }
 
 fn remove_key_from_messages_ts(path: String, keys: Vec<String>) -> Result<(), std::io::Error> {
-    info!(target: "remover", "Removing keys from message.ts");
+    println!("Removing keys from message.ts at {}", path);
     let mut file = OpenOptions::new().read(true).open(path.clone())?;
 
     let mut content = String::new();
+    file.read_to_string(&mut content)?;
 
-    file.read_to_string(&mut content)
-        .expect("Failed to read file");
+    let re = Regex::new(r"(?s)\s*export\s+default\s+defineLocales\s*\(").unwrap();
+    let json_start = re.find(&content).map(|m| m.end()).ok_or_else(|| {
+        println!("didnt find json start");
+        io::Error::new(
+            io::ErrorKind::InvalidData,
+            "Could not find 'export default defineLocales(' pattern",
+        )
+    })?;
 
-    let json_start = content.find("export default defineLocales(").unwrap()
-        + "export default defineLocales(".len();
-    let json_end = content.find("locales,").unwrap();
+    let json_end = content[json_start..]
+        .find("locales")
+        .map(|i| json_start + i)
+        .ok_or_else(|| {
+            println!("didnt find json end");
+            io::Error::new(
+                io::ErrorKind::InvalidData,
+                "Could not find 'locales,' in file",
+            )
+        })?;
+
     let key_value_pairs = &content[json_start..json_end];
-    let mut new_entries: String = String::from("");
+    let mut new_entries = String::new();
 
+    let key_value_regex = Regex::new(r#"\s*(\w+)\s*:\s*(?:"([^"]*)"|'([^']*)')\s*,?\s*"#).unwrap();
     let newline = if std::env::consts::OS == "windows" {
         "\r\n"
     } else {
         "\n"
     };
 
-    key_value_pairs.lines().for_each(|line| {
-        let key_value_regex = regex::Regex::new(r#"(\w+): '(.*)'|"(\w+): "(.*)""#).unwrap();
-        match key_value_regex.captures(line) {
-            None => new_entries.push_str(&*(line.to_owned() + newline)),
+    key_value_pairs
+        .lines()
+        .for_each(|line| match key_value_regex.captures(line) {
+            None => new_entries.push_str(&format!("{}{}", line, newline)),
             Some(capture) => {
-                if !keys
-                    .iter()
-                    .any(|key| &capture.get(1).unwrap().as_str().to_string() == key)
-                {
-                    new_entries.push_str(&*(line.to_owned() + newline));
+                let key = capture.get(1).unwrap().as_str();
+                if !keys.iter().any(|k| k == key) {
+                    new_entries.push_str(&format!("{}{}", line, newline));
                 }
             }
-        }
-    });
+        });
 
     if new_entries.ends_with(newline) {
         new_entries.pop();
@@ -112,15 +126,17 @@ fn remove_key_from_messages_ts(path: String, keys: Vec<String>) -> Result<(), st
         }
     }
 
-    let new_file =
-        (&content[0..json_start]).to_owned() + new_entries.as_str() + &content[json_end..];
+    let new_file = format!(
+        "{}{}{}",
+        &content[..json_start],
+        new_entries,
+        &content[json_end..]
+    );
 
-    let mut file = OpenOptions::new()
-        .write(true)
-        .truncate(true)
-        .open(path.clone())?;
-
+    let mut file = OpenOptions::new().write(true).truncate(true).open(path)?;
     file.write_all(new_file.as_bytes())?;
+    file.flush()?;
 
+    info!(target: "remover", "Successfully removed keys and updated file");
     Ok(())
 }

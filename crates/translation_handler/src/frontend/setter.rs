@@ -117,7 +117,7 @@ pub fn add_translation_to_default_language(
         if trimmed_line != "{" && trimmed_line != "}" {
             let mut updated_line = line.to_owned();
             if !updated_line.ends_with(",") {
-                updated_line.push(',');
+                updated_line.push_str(", ");
             }
             lines.push(updated_line);
         } else if trimmed_line == "}" {
