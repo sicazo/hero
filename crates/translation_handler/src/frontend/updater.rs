@@ -11,7 +11,7 @@ use std::fs;
 use std::fs::OpenOptions;
 use std::io::{BufRead, BufReader, Write};
 use std::path::Path;
-use tracing::error;
+use tracing::{error, info};
 
 #[derive(Deserialize, Clone, specta::Type, Debug)]
 pub struct UpdatedKeyValues {
@@ -26,6 +26,7 @@ impl TranslationHandler {
         updated_key: UpdatedKeyValues,
         settings: settings::Data,
     ) -> Result<(), std::io::Error> {
+        info!("Updating key {} ", updated_key.ts_key );
         let translations_directory_path = PathType::TranslationDirectory.create_path(path.clone());
         let json_files = glob(format!("{}/*.json", translations_directory_path).as_str())
             .expect("Failed to read glob pattern");
@@ -96,7 +97,7 @@ async fn update_translation_file(
                 found = true;
             }
         }
-        lines.push(line);
+        lines.push(format!("{}", line.trim_end_matches("\r\n").trim_end_matches("\n")));
     }
 
     if !found {
@@ -105,7 +106,7 @@ async fn update_translation_file(
         let mut file = OpenOptions::new().write(true).truncate(true).open(path)?;
 
         for line in lines {
-            writeln!(file, "{}", line)?;
+            write!(file, "{}\r\n", line)?;
         }
     }
     Ok(())

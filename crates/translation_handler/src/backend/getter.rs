@@ -1,5 +1,6 @@
 use crate::backend::xml::XmlHandler;
 use crate::TranslationHandler;
+
 use glob::glob;
 use local_storage::stores::translation_store::TranslationEntry;
 use std::collections::{BTreeMap, HashMap};
@@ -93,8 +94,7 @@ impl TranslationHandler {
                     }
                 }
                 Err(_) => {
-                    // You can decide to do something in case of an error here (for example, log the error)
-                }
+                   }
             }
         }
 

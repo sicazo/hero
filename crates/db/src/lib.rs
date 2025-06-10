@@ -14,6 +14,7 @@ pub fn get_db_path() -> PathBuf {
             std::io::Error::new(std::io::ErrorKind::NotFound, "Config directory not found")
         })
         .expect("unable to get path");
+    println!("Config dir: {:?}", config_dir.display());
     config_dir.join("hero")
 }
 

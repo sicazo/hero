@@ -1,7 +1,7 @@
 import EditTranslationDialog from "@/components/editor/dialog/edit";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -18,10 +18,10 @@ import { rspc } from "@/lib/rspc";
 import { useLocationStore } from "@/lib/stores/location_store";
 import { useSettingsStore } from "@/lib/stores/settings_store";
 import { useTranslationStore } from "@/lib/stores/translation_store";
-import { DialogTrigger } from "@radix-ui/react-dialog";
 import type { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown, Info, MoreVertical } from "lucide-react";
 import { toast } from "sonner";
+import { useState } from "react";
 
 export const frontend_columns: ColumnDef<TranslationEntry>[] = [
 	{
@@ -46,10 +46,6 @@ export const frontend_columns: ColumnDef<TranslationEntry>[] = [
 		enableSorting: false,
 		enableHiding: false,
 	},
-	// {
-	// 	accessorKey: "in_use",
-	// 	header: "In Use",
-	// },
 	{
 		accessorKey: "key",
 		header: ({ column }) => {
@@ -85,7 +81,6 @@ export const frontend_columns: ColumnDef<TranslationEntry>[] = [
 	{
 		accessorKey: "translations",
 		header: () => {
-			// eslint-disable-next-line react-hooks/rules-of-hooks
 			const default_language = useSettingsStore(
 				(state) => state.translation_settings.default_language,
 			);
@@ -105,7 +100,6 @@ export const frontend_columns: ColumnDef<TranslationEntry>[] = [
 			);
 		},
 		cell: ({ row }) => {
-			// eslint-disable-next-line react-hooks/rules-of-hooks
 			const default_language = useSettingsStore(
 				(state) => state.translation_settings.default_language,
 			);
@@ -119,13 +113,10 @@ export const frontend_columns: ColumnDef<TranslationEntry>[] = [
 		accessorKey: "actions",
 		header: "",
 		cell: ({ row }) => {
-			// eslint-disable-next-line react-hooks/rules-of-hooks
 			const { last_selected_location } = useLocationStore();
-
-			// eslint-disable-next-line react-hooks/rules-of-hooks
 			const { removeKeysFromTranslationEntries } = useTranslationStore();
-
 			const deleteMutation = rspc.useMutation("translations.remove_keys");
+			const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
 			const deleteKeys = () => {
 				const mutation = deleteMutation.mutateAsync({
@@ -139,14 +130,15 @@ export const frontend_columns: ColumnDef<TranslationEntry>[] = [
 					success: "The Entry got successfully removed",
 					error: "Failed to delete the translation",
 				});
-				mutation.then(() =>
-					removeKeysFromTranslationEntries([row.original.key as string]),
-				);
+				mutation.then(() => {
+					removeKeysFromTranslationEntries([row.original.key as string]);
+					setIsDeleteDialogOpen(false);
+				});
 			};
 
 			return (
 				<div className="flex w-auto">
-					<Dialog>
+					<Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
 						<DropdownMenu>
 							<DropdownMenuTrigger asChild>
 								<Button variant="ghost" className="mx-2">
@@ -157,30 +149,37 @@ export const frontend_columns: ColumnDef<TranslationEntry>[] = [
 								<DialogTrigger asChild>
 									<DropdownMenuItem>Edit</DropdownMenuItem>
 								</DialogTrigger>
-								<DropdownMenuItem
-									onClick={() =>
-										toast.warning(
-											"Are you sure you want to delete this translation?",
-											{
-												action: {
-													label: "Yes",
-													onClick: () => deleteKeys(),
-												},
-												cancel: {
-													label: "No",
-													onClick: () => {},
-												},
-												duration: 15000,
-											},
-										)
-									}
-								>
-									Delete
-								</DropdownMenuItem>
+								<DialogTrigger asChild>
+									<DropdownMenuItem>
+										Delete
+									</DropdownMenuItem>
+								</DialogTrigger>
 							</DropdownMenuContent>
 						</DropdownMenu>
 						<DialogContent className="w-[80vw]">
-							<EditTranslationDialog translation={row.original} />
+							{isDeleteDialogOpen ? (
+								<>
+									<DialogHeader>
+										<DialogTitle>Confirm Deletion</DialogTitle>
+									</DialogHeader>
+									<div className="py-4">
+										<p>Are you sure you want to delete this translation?</p>
+									</div>
+									<DialogFooter>
+										<Button
+											variant="outline"
+											onClick={() => setIsDeleteDialogOpen(false)}
+										>
+											Cancel
+										</Button>
+										<Button variant="destructive" onClick={deleteKeys}>
+											Delete
+										</Button>
+									</DialogFooter>
+								</>
+							) : (
+								<EditTranslationDialog translation={row.original} />
+							)}
 						</DialogContent>
 					</Dialog>
 				</div>
@@ -216,10 +215,6 @@ export const backend_columns: ColumnDef<TranslationEntry>[] = [
 		enableSorting: false,
 		enableHiding: false,
 	},
-	// {
-	// 	accessorKey: "in_use",
-	// 	header: "In Use",
-	// },
 	{
 		accessorKey: "key",
 		header: ({ column }) => {
@@ -255,13 +250,10 @@ export const backend_columns: ColumnDef<TranslationEntry>[] = [
 		accessorKey: "actions",
 		header: "",
 		cell: ({ row }) => {
-			// eslint-disable-next-line react-hooks/rules-of-hooks
 			const { last_selected_location } = useLocationStore();
-
-			// eslint-disable-next-line react-hooks/rules-of-hooks
 			const { removeKeysFromTranslationEntries } = useTranslationStore();
-
 			const deleteMutation = rspc.useMutation("translations.remove_keys");
+			const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
 			const deleteKeys = () => {
 				const mutation = deleteMutation.mutateAsync({
@@ -275,14 +267,15 @@ export const backend_columns: ColumnDef<TranslationEntry>[] = [
 					success: "The Entry got successfully removed",
 					error: "Failed to delete the translation",
 				});
-				mutation.then(() =>
-					removeKeysFromTranslationEntries([row.original.key as string]),
-				);
+				mutation.then(() => {
+					removeKeysFromTranslationEntries([row.original.key as string]);
+					setIsDeleteDialogOpen(false);
+				});
 			};
 
 			return (
 				<div className="flex w-auto">
-					<Dialog>
+					<Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
 						<DropdownMenu>
 							<DropdownMenuTrigger asChild>
 								<Button variant="ghost" className="mx-2">
@@ -293,30 +286,37 @@ export const backend_columns: ColumnDef<TranslationEntry>[] = [
 								<DialogTrigger asChild>
 									<DropdownMenuItem>Edit</DropdownMenuItem>
 								</DialogTrigger>
-								<DropdownMenuItem
-									onClick={() =>
-										toast.warning(
-											"Are you sure you want to delete this translation?",
-											{
-												action: {
-													label: "Yes",
-													onClick: () => deleteKeys(),
-												},
-												cancel: {
-													label: "No",
-													onClick: () => {},
-												},
-												duration: 15000,
-											},
-										)
-									}
-								>
-									Delete
-								</DropdownMenuItem>
+								<DialogTrigger asChild>
+									<DropdownMenuItem>
+										Delete
+									</DropdownMenuItem>
+								</DialogTrigger>
 							</DropdownMenuContent>
 						</DropdownMenu>
 						<DialogContent className="w-[80vw]">
-							<EditTranslationDialog translation={row.original} />
+							{isDeleteDialogOpen ? (
+								<>
+									<DialogHeader>
+										<DialogTitle>Confirm Deletion</DialogTitle>
+									</DialogHeader>
+									<div className="py-4">
+										<p>Are you sure you want to delete this translation?</p>
+									</div>
+									<DialogFooter>
+										<Button
+											variant="outline"
+											onClick={() => setIsDeleteDialogOpen(false)}
+										>
+											Cancel
+										</Button>
+										<Button variant="destructive" onClick={deleteKeys}>
+											Delete
+										</Button>
+									</DialogFooter>
+								</>
+							) : (
+								<EditTranslationDialog translation={row.original} />
+							)}
 						</DialogContent>
 					</Dialog>
 				</div>

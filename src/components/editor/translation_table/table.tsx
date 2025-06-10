@@ -13,7 +13,7 @@ import {
 import { TranslationTableViewOptions } from "@/components/editor/translation_table/column_toggle";
 import TranslationTablePagination from "@/components/editor/translation_table/pagination";
 import { Button } from "@/components/ui/button";
-import { DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import {
 	Table,
@@ -47,6 +47,7 @@ export default function TranslationTable<TData, TValue>({
 		Record<string, boolean>
 	>({ value: false });
 	const [pageSize, setPageSize] = useState(initialStatePageSize);
+	const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 	const { last_selected_location } = useLocationStore();
 	const { removeKeysFromTranslationEntries } = useTranslationStore();
 
@@ -68,27 +69,6 @@ export default function TranslationTable<TData, TValue>({
 		mutation.then(() => removeKeysFromTranslationEntries(ts_keys));
 	};
 
-	// Functions
-
-	// const updatePossibleLocationChanges = (keys: TranslationEntry[]) => {
-	// 	const newTranslationEntries = [...translation_entries];
-	// 	for (const key of keys) {
-	// 		const existingEntryIndex = newTranslationEntries.findIndex(
-	// 			(entry) => entry.key === key.key,
-	// 		);
-	// 		if (existingEntryIndex !== -1) {
-	// 			if (
-	// 				JSON.stringify(
-	// 					newTranslationEntries[existingEntryIndex].translations,
-	// 				) !== JSON.stringify(key.translations)
-	// 			) {
-	// 				console.info("The translations inside of the keys differ");
-	// 			}
-	// 			newTranslationEntries[existingEntryIndex] = key;
-	// 		}
-	// 	}
-	// 	setTranslationEntries(newTranslationEntries);
-	// };
 	const removeSelectedKeys = () => {
 		const ts_keys: string[] = [];
 		const json_keys: string[] = [];
@@ -100,6 +80,7 @@ export default function TranslationTable<TData, TValue>({
 			json_keys.push(row.original.value);
 		}
 		removeKeys(ts_keys, json_keys);
+		setIsDeleteDialogOpen(false);
 	};
 
 	const table = useReactTable({
@@ -145,7 +126,6 @@ export default function TranslationTable<TData, TValue>({
 	useEffect(() => {}, []);
 
 	// Misc
-
 	const rowsSelected = table.getIsSomeRowsSelected();
 
 	return (
@@ -167,15 +147,36 @@ export default function TranslationTable<TData, TValue>({
 							</Button>
 						</DialogTrigger>
 					</div>
-					<Button
-						disabled={!rowsSelected}
-						className="h-10"
-						variant="destructive"
-						onClick={removeSelectedKeys}
-					>
-						{removeKeyMutation.isPending ? "..." : "Delete Selected Keys"}
-					</Button>
-
+					<Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+						<DialogTrigger asChild>
+							<Button
+								disabled={!rowsSelected}
+								className="h-10"
+								variant="destructive"
+							>
+								{removeKeyMutation.isPending ? "..." : "Delete Selected Keys"}
+							</Button>
+						</DialogTrigger>
+						<DialogContent>
+							<DialogHeader>
+								<DialogTitle>Confirm Deletion</DialogTitle>
+							</DialogHeader>
+							<div className="py-4">
+								<p>Are you sure you want to delete the selected translation keys?</p>
+							</div>
+							<DialogFooter>
+								<Button
+									variant="outline"
+									onClick={() => setIsDeleteDialogOpen(false)}
+								>
+									Cancel
+								</Button>
+								<Button variant="destructive" onClick={removeSelectedKeys}>
+									Delete
+								</Button>
+							</DialogFooter>
+						</DialogContent>
+					</Dialog>
 					<TranslationTableViewOptions table={table} />
 				</div>
 			</div>

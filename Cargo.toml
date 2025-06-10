@@ -1,12 +1,12 @@
 [workspace]
 resolver = "2"
 members = [
-    "src/src-tauri",
-    "crates/server",
-    "crates/translation_handler",
-    "crates/local_storage",
-    "crates/prisma-cli",
-    "crates/db",
+  "src/src-tauri",
+  "crates/server",
+  "crates/translation_handler",
+  "crates/local_storage",
+  "crates/prisma-cli",
+  "crates/db",
 ]
 
 
@@ -19,30 +19,31 @@ tracing = "0.1.40"
 glob = "0.3.1"
 regex = "1.10.2"
 tauri = { version = "1.5.3", features = [
-    "path-all",
-    "os-all",
-    "updater",
-    "window-all",
-    "dialog-all",
-    "notification-all",
+  "path-all",
+  "os-all",
+  "updater",
+  "window-all",
+  "dialog-all",
+  "notification-all",
 ] }
-
+tracing-subscriber = "0.3.19"
 
 async-stream = "0.3.5"
 rspc = "0.2.0"
 rspc-tauri = "0.0.1"
 specta = "1.0.5"
 prisma-client-rust = { git = "https://github.com/Brendonovich/prisma-client-rust", rev = "8faf98013d0d2c7fab68fad387305a55979e777d", features = [
-    "sqlite",
-    "migrations",
-    "rspc",
-    "sqlite-create-many"
+  "sqlite",
+  "migrations",
+  "rspc",
+  "sqlite-create-many",
 ] }
 prisma-client-rust-cli = { git = "https://github.com/Brendonovich/prisma-client-rust", rev = "8faf98013d0d2c7fab68fad387305a55979e777d", features = [
-    "sqlite",
-    "migrations",
-    "rspc",
-    "sqlite-create-many"
+  "sqlite",
+  "migrations",
+  "rspc",
+  "sqlite-create-many",
 ] }
-quick-xml = { version = "0.31.0" ,features = ["serialize"]}
+quick-xml = { version = "0.31.0", features = ["serialize"] }
 chrono = "0.4.38"
+

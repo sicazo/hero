@@ -73,19 +73,25 @@ fn add_key_to_messages_ts(
         .expect("Failed to read file");
 
     content.lines().enumerate().for_each(|(index, line)| {
-        if line.contains("},") {
-            check_line = index - 1;
-            lines.push(format!("    {}: '{}'", ts_key, json_key));
-        }
-        lines.push(String::from(line))
-    });
-    lines[check_line] = if !lines[check_line].ends_with(',') {
-        format!("{},", lines[check_line])
-    } else {
-        lines[check_line].clone()
-    };
+        // Always push the current line
+        lines.push(String::from(line));
 
-    let lines_content: String = lines.join("\n");
+        // Check if the current line is a key-value pair (ends with ',')
+        if line.trim().ends_with("',") {
+            // Safely check if the next two lines exist
+            if index + 2 < content.lines().count() {
+                // Check if the next line is empty and the one after is "},"
+                if content.lines().nth(index + 1).unwrap().trim().is_empty()
+                    && content.lines().nth(index + 2).unwrap().trim() == "},"
+                {
+                    // Insert the new key-value pair with proper indentation
+                    lines.push(format!("    {}: '{}',", ts_key, json_key));
+                }
+            }
+        }
+    });
+
+    let lines_content: String = lines.join("\r\n");
     let mut file = OpenOptions::new()
         .write(true)
         .truncate(true)
@@ -127,7 +133,7 @@ pub fn add_translation_to_default_language(
             lines.push(trimmed_line);
         }
     });
-    let lines_content: String = lines.join("\n");
+    let lines_content: String = lines.join("\r\n");
     let mut file = OpenOptions::new()
         .write(true)
         .truncate(true)

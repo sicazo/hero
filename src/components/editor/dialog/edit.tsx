@@ -28,8 +28,8 @@ export default function EditTranslationDialog({
   translation,
 }: EditTranslationDialogProps) {
   const [translationsJson, setTranslationsJson] = useState("");
-  const { last_selected_location } = useLocationStore();
-  const { languages } = useTranslationStore();
+  const { last_selected_location} = useLocationStore();
+  const { languages, setTranslationEntries } = useTranslationStore();
 
   useEffect(() => {
     // @ts-expect-error reasons
@@ -71,6 +71,8 @@ export default function EditTranslationDialog({
       key,
       path: last_selected_location?.path as string,
     };
+    
+    
     toast.promise(updateMutation.mutateAsync(body), {
       loading: "Updating...",
       success: () => {
@@ -79,6 +81,7 @@ export default function EditTranslationDialog({
       },
       error: "There was an error updating the Entry",
     });
+    
   };
   return (
     <>

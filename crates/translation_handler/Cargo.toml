@@ -16,6 +16,7 @@ local_storage = { path = "../local_storage" }
 serde = { workspace = true }
 tokio = { workspace = true }
 rspc = { workspace = true }
-specta = {workspace = true}
-db = {path = "../db"}
-quick-xml = {workspace = true}
+specta = { workspace = true }
+db = { path = "../db" }
+quick-xml = { workspace = true }
+tracing-subscriber = { workspace = true }

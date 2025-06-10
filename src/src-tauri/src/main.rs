@@ -10,7 +10,7 @@ async fn main() {
 
     // Database Setup
     let db = load_and_migrate().await.expect("failed to create db");
-
+    tracing_subscriber::fmt().init();
     tauri::Builder::default()
         .plugin(rspc_tauri::plugin(router.arced(), move |_| RouterCtx {
             db: db.clone(),
