@@ -116,75 +116,76 @@ export const frontend_columns: ColumnDef<TranslationEntry>[] = [
 			const { last_selected_location } = useLocationStore();
 			const { removeKeysFromTranslationEntries } = useTranslationStore();
 			const deleteMutation = rspc.useMutation("translations.remove_keys");
-			const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-
+			const [isEditOpen, setIsEditOpen] = useState(false);
+			const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+		  
 			const deleteKeys = () => {
-				const mutation = deleteMutation.mutateAsync({
-					path: last_selected_location?.path as string,
-					ts_key: [row.original.value as string],
-					json_key: [row.original.value as string],
-				});
-
-				toast.promise(mutation, {
-					loading: "Removing key...",
-					success: "The Entry got successfully removed",
-					error: "Failed to delete the translation",
-				});
-				mutation.then(() => {
-					removeKeysFromTranslationEntries([row.original.key as string]);
-					setIsDeleteDialogOpen(false);
-				});
+			  const mutation = deleteMutation.mutateAsync({
+				path: last_selected_location?.path as string,
+				ts_key: [row.original.value as string],
+				json_key: [row.original.value as string],
+			  });
+			  toast.promise(mutation, {
+				loading: "Removing key...",
+				success: "The Entry got successfully removed",
+				error: "Failed to delete the translation",
+			  });
+			  mutation.then(() => {
+				removeKeysFromTranslationEntries([row.original.key as string]);
+				setIsDeleteOpen(false);
+			  });
 			};
-
+		  
 			return (
-				<div className="flex w-auto">
-					<Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-						<DropdownMenu>
-							<DropdownMenuTrigger asChild>
-								<Button variant="ghost" className="mx-2">
-									<MoreVertical className=" w-4" />
-								</Button>
-							</DropdownMenuTrigger>
-							<DropdownMenuContent className="mx-2">
-								<DialogTrigger asChild>
-									<DropdownMenuItem>Edit</DropdownMenuItem>
-								</DialogTrigger>
-								<DialogTrigger asChild>
-									<DropdownMenuItem>
-										Delete
-									</DropdownMenuItem>
-								</DialogTrigger>
-							</DropdownMenuContent>
-						</DropdownMenu>
-						<DialogContent className="w-[80vw]">
-							{isDeleteDialogOpen ? (
-								<>
-									<DialogHeader>
-										<DialogTitle>Confirm Deletion</DialogTitle>
-									</DialogHeader>
-									<div className="py-4">
-										<p>Are you sure you want to delete this translation?</p>
-									</div>
-									<DialogFooter>
-										<Button
-											variant="outline"
-											onClick={() => setIsDeleteDialogOpen(false)}
-										>
-											Cancel
-										</Button>
-										<Button variant="destructive" onClick={deleteKeys}>
-											Delete
-										</Button>
-									</DialogFooter>
-								</>
-							) : (
-								<EditTranslationDialog translation={row.original} />
-							)}
-						</DialogContent>
-					</Dialog>
-				</div>
+			  <div className="flex items-center">
+				<DropdownMenu>
+				  <DropdownMenuTrigger asChild>
+					<Button variant="ghost" className="mx-2">
+					  <MoreVertical className="w-4" />
+					</Button>
+				  </DropdownMenuTrigger>
+				  <DropdownMenuContent className="mx-2">
+					<DropdownMenuItem onSelect={() => setIsEditOpen(true)}>
+					  Edit
+					</DropdownMenuItem>
+					<DropdownMenuItem onSelect={() => setIsDeleteOpen(true)}>
+					  Delete
+					</DropdownMenuItem>
+				  </DropdownMenuContent>
+				</DropdownMenu>
+		  
+				{/* Edit Dialog */}
+				<Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
+				  <DialogContent className="w-[80vw]">
+					<EditTranslationDialog translation={row.original} />
+				  </DialogContent>
+				</Dialog>
+		  
+				{/* Delete Confirmation Dialog */}
+				<Dialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
+				  <DialogContent className="w-[80vw]">
+					<DialogHeader>
+					  <DialogTitle>Confirm Deletion</DialogTitle>
+					</DialogHeader>
+					<div className="py-4">
+					  <p>Are you sure you want to delete this translation?</p>
+					</div>
+					<DialogFooter>
+					  <Button
+						variant="outline"
+						onClick={() => setIsDeleteOpen(false)}
+					  >
+						Cancel
+					  </Button>
+					  <Button variant="destructive" onClick={deleteKeys}>
+						Delete
+					  </Button>
+					</DialogFooter>
+				  </DialogContent>
+				</Dialog>
+			  </div>
 			);
-		},
+		  },
 		enableSorting: false,
 		enableHiding: false,
 		enableResizing: false,
