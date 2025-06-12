@@ -52,7 +52,6 @@ export type RescanInput = { path: string; tag: string }
 
 export type Location = { id: number; tag: string; name: string; path: string; is_favourite: boolean; num_of_keys: number; num_of_untranslated_keys: number; added_at: string }
 
-export type Location = { tag?: string; name?: string; path?: string; is_favourite?: boolean; num_of_keys?: number; num_of_untranslated_keys?: number; added_at?: string }
 
 export type TranslationEntry = { key?: string; value?: string; translations?: { [key: string]: string }; in_use?: boolean }
 
