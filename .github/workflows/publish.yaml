@@ -26,19 +26,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20.x' # Use stable LTS version
-          cache: 'pnpm'
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9 # Latest stable pnpm version as of June 2025
-          run_install: false # Install dependencies in a separate step
-
-      - name: Verify pnpm installation
-        run: pnpm --version # Confirm pnpm is installed
+          cache: 'npm'
 
       - name: Install frontend dependencies
-        run: pnpm install --frozen-lockfile # Use lockfile for consistent installs
+        run: npm install --frozen-lockfile # Use lockfile for consistent installs
 
       - name: Rust setup
         uses: dtolnay/rust-toolchain@stable
