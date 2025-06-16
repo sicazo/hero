@@ -22,6 +22,24 @@ jobs:
         with:
           fetch-depth: 0 # Ensure full history for tag-based versioning
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x' # Use stable LTS version
+          cache: 'pnpm'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9 # Latest stable pnpm version as of June 2025
+          run_install: false # Install dependencies in a separate step
+
+      - name: Verify pnpm installation
+        run: pnpm --version # Confirm pnpm is installed
+
+      - name: Install frontend dependencies
+        run: pnpm install --frozen-lockfile # Use lockfile for consistent installs
+
       - name: Rust setup
         uses: dtolnay/rust-toolchain@stable
         with:
@@ -33,20 +51,6 @@ jobs:
         with:
           workspaces: './app-tauri -> target'
           cache-all-crates: true # Cache all dependencies for faster Windows builds
-
-      - name: Sync node version and setup cache
-        uses: actions/setup-node@v4
-        with:
-          node-version: 'lts/*'
-          cache: 'pnpm'
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: latest
-
-      - name: Install frontend dependencies
-        run: pnpm install --frozen-lockfile # Use lockfile for consistent installs
 
       - name: Generate prisma client
         working-directory: crates/db
