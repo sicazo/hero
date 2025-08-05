@@ -698,7 +698,7 @@ export default function TranslationManager() {
               </Button>
               <Button
                 onClick={handleSaveNewLanguage}
-                disabled={!newLanguageCode || (editingKey && editingKey.translations[newLanguageCode])}
+
               >
                 <Plus className="w-4 h-4 mr-2" />
                 Add Language
