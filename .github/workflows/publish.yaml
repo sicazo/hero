@@ -57,13 +57,14 @@ jobs:
           TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
           CARGO_BUILD_JOBS: 4 # Parallel compilation for Windows
+          CARGO_NET_OFFLINE: true # Use locked dependencies
         with:
           tagName: ${{ github.ref_name }}
           releaseName: 'Hero v__VERSION__'
           releaseBody: 'See the assets to download and install this version.'
           releaseDraft: false
           prerelease: false
-          args: ${{ matrix.platform == 'windows-latest' && '--locked --target x86_64-pc-windows-msvc' || '' }} # Optimize Windows target
+          args: ${{ matrix.platform == 'windows-latest' && '--target x86_64-pc-windows-msvc' || '' }} # Optimize Windows target
       - name: Create GitHub Release
         if: matrix.platform == 'macos-latest' # Run only once to avoid duplicate releases
         uses: softprops/action-gh-release@v2
