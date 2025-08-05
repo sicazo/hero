@@ -93,8 +93,7 @@ impl TranslationHandler {
                         }
                     }
                 }
-                Err(_) => {
-                   }
+                Err(_) => {}
             }
         }
 

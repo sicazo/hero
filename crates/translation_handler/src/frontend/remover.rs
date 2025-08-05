@@ -9,7 +9,7 @@ use std::io::{self, Read, Write};
 use tracing::{error, info};
 
 impl TranslationHandler {
-    fn extract_language_code(line: &str, language_code_regex: &Regex) -> Option<String> {
+    pub fn extract_language_code(line: &str, language_code_regex: &Regex) -> Option<String> {
         let captures = language_code_regex.captures(line)?;
         let language_code = captures.get(1)?;
         Some(language_code.as_str().to_string())

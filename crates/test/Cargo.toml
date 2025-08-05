@@ -1,0 +1,21 @@
+[package]
+name = "test"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+# Add dependencies to the crates we're testing
+translation_handler = { path = "../translation_handler" }
+local_storage = { path = "../local_storage" }
+db = { path = "../db" }
+server = { path = "../server" }
+prisma-cli = { path = "../prisma-cli" }
+
+# Common dependencies needed for testing
+tokio = { workspace = true, features = ["full"] }
+serde = { workspace = true }
+serde_json = { workspace = true }
+tracing = { workspace = true }
+glob = { workspace = true }
+regex = { workspace = true }
+tempfile = { workspace = true }
